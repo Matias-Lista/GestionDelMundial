@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Default" />
+    <Platform Name="Default" />
+  </Configurations>
+  <Folder Name="/BBDA/" />
+  <Folder Name="/BBDA/0000  - SCHEMA/">
+    <File Path="BBDD/0000 - extras.sql" />
+    <File Path="BBDD/0000 - Limpieza.sql" />
+    <File Path="BBDD/0001 - TABLAS.sql" />
+    <File Path="BBDD/0002 - SPs.sql" />
+  </Folder>
+</Solution>
