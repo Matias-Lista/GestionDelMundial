@@ -37,7 +37,8 @@ DROP TABLE IF EXISTS Administracion.Clubes;
 DROP TABLE IF EXISTS Mundial.Mundiales;
 GO
 
---todo eliminar participa en actividad
+DROP PROCEDURE IF EXISTS Administracion.sp_registrar_reglas;
+DROP PROCEDURE IF EXISTS Mundial.sp_crear_mundial;
 
 -- Eliminar Schemas
 DROP SCHEMA IF EXISTS [Administracion]
@@ -49,17 +50,18 @@ DROP SCHEMA IF EXISTS [Arbitraje]
 
 GO
 
-
+/*
 USE master;
-GO
+GO*/
 -- Eliminar conexiones activas
-ALTER DATABASE GestionDelMundial 
+/*ALTER DATABASE GestionDelMundial 
 SET SINGLE_USER 
 WITH ROLLBACK IMMEDIATE;
-GO
+GO*/
 
 -- Eliminar Base de Datos
-
+/*
 USE master
 DROP DATABASE IF EXISTS [GestionDelMundial];
 GO
+*/
