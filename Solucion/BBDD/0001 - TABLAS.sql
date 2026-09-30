@@ -1,9 +1,17 @@
 
+--TODO: Hay que poner las FKs semánticas!
+--TODO: Hay que sumar la tabla de penal
+--TODO: Hay que confirmar qué hacemos con los husos horarios
+
 --CREACION BASE DE DATOS
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'GestionDelMundial')
 BEGIN
 	CREATE DATABASE GestionDelMundial
 	COLLATE Latin1_General_100_CI_AS_SC_UTF8;
+    
+    ALTER DATABASE [GestionDelMundial] 
+    SET MULTI_USER 
+    WITH ROLLBACK IMMEDIATE;
 END
 GO
 
@@ -65,22 +73,22 @@ GO
 IF OBJECT_ID('Mundial.Mundiales', 'U') IS NULL
 BEGIN
 CREATE TABLE Mundial.Mundiales (
-    id INT PRIMARY KEY IDENTITY (1,1), --TODO: Y si en vez de ID, simplemente tenemos "año" como primary key. O la fecha de inicio. Son pocos datos pra ordenar y siempre crecientes, asique es una buena clave primaria 
-    -- TODO: LO QUE ENCONTRÉ QUE SE PUEDE USAR ES "PERSISTED", QUE GUARDA EL VALOR YEAR(F_INICIO) COMO UN CAMPO Y LO ACTUALIZA SOLO
-    --SERÍA: año AS (YEAR(f_inicio)) PERSISTED PRIMARY KEY,
-    nombre VARCHAR(100), -- TODO: Por qué pusimos nombre en mundiales? jajaja
+    año AS (CAST(YEAR(f_inicio) AS SMALLINT)) PERSISTED,
     f_inicio DATE UNIQUE CHECK (YEAR(f_inicio) >= 1930), -- 1930 => Primer mundial de futbol masculino
     f_fin DATE UNIQUE CHECK (YEAR(f_fin) >= 1930),
     
-    CONSTRAINT CK_Mundiales_Fin_Despues_Inicio CHECK (f_fin >= f_inicio)
+    CONSTRAINT CK_Mundiales_Fin_Despues_Inicio CHECK (f_fin >= f_inicio),
+    CONSTRAINT PK_Un_Mundial_Por_Año PRIMARY KEY (año)
 );
 END
 
 IF OBJECT_ID('Administracion.Clubes', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Clubes (
-    id INT PRIMARY KEY IDENTITY (1,1),
-    nombre VARCHAR(100) UNIQUE
+    id INT IDENTITY (1,1),
+    nombre VARCHAR(100) UNIQUE,
+    
+    CONSTRAINT PK_Clubes PRIMARY KEY (id)
 );
 END
 GO
@@ -88,10 +96,12 @@ GO
 IF OBJECT_ID('Administracion.Confederaciones', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Confederaciones (
-    id INT PRIMARY KEY IDENTITY (1,1),
+    id INT IDENTITY (1,1),
     nombre VARCHAR(100) UNIQUE,
-    siglas char(3) UNIQUE,
-    f_fundacion DATE
+    siglas VARCHAR(8) UNIQUE,
+    f_fundacion DATE,
+
+    CONSTRAINT FK_Confederaciones PRIMARY KEY (id)
 );
 END
 GO
@@ -100,7 +110,7 @@ IF OBJECT_ID('Administracion.Reglas', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Reglas (
     id INT PRIMARY KEY IDENTITY (1,1),
-    mundial_id INT NOT NULL REFERENCES Mundial.Mundiales(id),
+    mundial_id SMALLINT NOT NULL REFERENCES Mundial.Mundiales(año),
     codigo VARCHAR(100),
     valor varchar(100),
 
@@ -154,9 +164,9 @@ BEGIN
 CREATE TABLE Mundial.Paises_Participes (
     id             INT     PRIMARY KEY IDENTITY(1,1),
     pais_id        char(2) REFERENCES Administracion.Paises(codigo) NOT NULL,
-    mundial_id     INT     REFERENCES Mundial.Mundiales(id) NOT NULL,
+    mundial_id     SMALLINT     REFERENCES Mundial.Mundiales(año) NOT NULL,
     seleccion_id   INT     REFERENCES Mundial.Selecciones(id), -- No pongo not null acá para poder asociar un pais al mundial sin haber creado la seleccion aun
-    esta_eliminado BIT,
+    esta_eliminado BIT DEFAULT 0,
     grupo          char(1) CHECK (grupo LIKE '[A-Z]')
 );
 END
@@ -187,7 +197,7 @@ IF OBJECT_ID('Mundial.Habilitacion_Arbitro', 'U') IS NULL
 BEGIN
 CREATE TABLE Mundial.Habilitacion_Arbitro (
     id               INT PRIMARY KEY IDENTITY(1,1),
-    mundial_id       INT REFERENCES Mundial.Mundiales(id) NOT NULL,
+    mundial_id       SMALLINT REFERENCES Mundial.Mundiales(año) NOT NULL,
     arbitro_id       INT REFERENCES Arbitraje.Arbitros(id) NOT NULL,
     confederacion_id INT REFERENCES Administracion.Confederaciones(id) NOT NULL
 );
@@ -203,7 +213,6 @@ CREATE TABLE Administracion.Sedes (
     ciudad       VARCHAR(100)  NOT NULL,
     capacidad    INT           CHECK (capacidad > 0) NOT NULL,
     huso_horario SMALLINT      CHECK (huso_horario BETWEEN -12 and 12) NOT NULL
-    -- TODO: LATITUD Y LONGITUD? COMO LO GESTIONAMOS.
 );
 END
 GO
@@ -230,10 +239,11 @@ CREATE TABLE Equipos.ConvocacionEnSeleccion (
     f_convocacion DATE NOT NULL,
     f_fin DATE,
     motivo VARCHAR(200),
-    dorsal tinyint,
+    dorsal tinyint CHECK (dorsal between 0 and 26), -- TODO: Vi que el 26 es el máximo, no sé si siempre fue así, sino, sería una REGLA gestionada en su store procedure.
     club_id INT REFERENCES Administracion.Clubes(id),
     
-    CONSTRAINT CK_Convocaciones_Fin_Despues_Inicio CHECK (f_fin >= f_convocacion)
+    CONSTRAINT CK_Convocaciones_Fin_Despues_Inicio CHECK (f_fin >= f_convocacion),
+    CONSTRAINT CK_Solo_Jugadores_Tienen_Dorsal CHECK ((tipo = 'Jugador' and dorsal is not NULL) or (tipo <> 'Jugador' and dorsal is NULL))
 );
 END
 GO
@@ -246,7 +256,7 @@ CREATE TABLE Partidos.Partidos (
     seleccion_A_id INT        REFERENCES Mundial.Selecciones(id) NOT NULL,
     seleccion_B_id INT        REFERENCES Mundial.Selecciones(id) NOT NULL,
     seleccion_ganadora_id INT       REFERENCES Mundial.Selecciones(id),
-    mundial_id INT        REFERENCES Mundial.Mundiales(id) NOT NULL,
+    mundial_id SMALLINT        REFERENCES Mundial.Mundiales(año) NOT NULL,
     sede_id INT        REFERENCES Administracion.Sedes(id) NOT NULL,
     fecha_y_hora DATETIME NOT NULL, --TODO: Podemos guardar "fecha_y_hora" en utc 0 y usar AT TIME ZONE para mostrar el horario q queramos
     fase CHAR(25) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
@@ -258,6 +268,9 @@ CREATE TABLE Partidos.Partidos (
     hubo_tiempo_suplementario BIT,
     -- TODO: EN vez de usar una tabla "Penales" que nos diga si hubieron penales, o un flag "hubieron penales",
     -- Podemos simplemente consultar "Penal_pateado" con el id de partido. Si es null, no habian, no si no es null, habian penales.
+
+    CONSTRAINT CK_Selecciones_Enfrentadas_Distintas CHECK (seleccion_A_id <> seleccion_B_id),
+    CONSTRAINT CK_Seleccion_Ganadora_Jugo_El_Partido CHECK (seleccion_ganadora_id in (seleccion_A_id, seleccion_B_id))
 );
 END
 GO
@@ -356,7 +369,7 @@ CREATE TABLE Eventos.Goles (
     jugador_autor_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
     jugador_asistente_id INT REFERENCES Equipos.IntegranteSeleccion(id),
     momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL,
-    tipo CHAR(1) CHECK(tipo in ('T', 'N', 'C')) NOT NULL -- Tiro libre, normal, cabeza
+    tipo CHAR(1) CHECK(tipo in ('T', 'N', 'C', 'P', 'E')) NOT NULL -- Tiro libre, normal, cabeza, Penal (por falta en el area), En Contra
 );
 END
 GO
@@ -377,7 +390,7 @@ BEGIN
 CREATE TABLE Publicidad.Campañas (
     id         INT PRIMARY KEY IDENTITY(1,1),
     anunciante_id INT REFERENCES Publicidad.Anunciantes(id) NOT NULL,
-    mundial_id INT REFERENCES Mundial.Mundiales(id) NOT NULL,
+    mundial_id SMALLINT REFERENCES Mundial.Mundiales(año) NOT NULL,
     nombre VARCHAR(150) NOT NULL,
     descripcion VARCHAR(300),
     horario_minimo SMALLINT check(horario_minimo between 0 AND 24),
@@ -414,7 +427,7 @@ CREATE TABLE Publicidad.Tarifa (
     franja CHAR(1) CHECK (franja in ('P', 'N')) NOT NULL, -- Primer Time, Normal
     fase CHAR(25) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
     costo DECIMAL(10,2) NOT NULL,
-    mundial_id INT REFERENCES Mundial.Mundiales(id) NOT NULL,
+    mundial_id SMALLINT  REFERENCES Mundial.Mundiales(año) NOT NULL,
 );
 END
 GO

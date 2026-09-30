@@ -1,3 +1,4 @@
+
 insert into Administracion.Clubes (nombre) values ('的')
 
 SELECT * FROM Administracion.Clubes
@@ -20,3 +21,12 @@ SELECT
 FROM sys.columns c
 JOIN sys.tables t ON c.object_id = t.object_id
 WHERE t.name = 'Clubes';
+
+
+/* MULTIUSER !*/
+USE master;
+GO
+ALTER DATABASE [GestionDelMundial] 
+SET MULTI_USER 
+WITH ROLLBACK IMMEDIATE;
+GO
