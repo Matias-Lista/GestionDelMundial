@@ -14,6 +14,23 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE Administracion.sp_obtener_regla
+	@AñoMundial INT,
+	@Codigo VARCHAR(100),
+	@Valor VARCHAR(100) OUTPUT
+AS
+BEGIN
+	 -- Si la regla está definida para ese mundial, la carga en @Valor,
+	 -- si no, queda en NULL
+
+	SELECT @Valor = valor 
+	FROM Administracion.Reglas 
+	WHERE mundial_id = @AñoMundial 
+	  AND codigo = @Codigo;
+END
+GO
+
+
 CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 	 @FInicio DATE,
 	 @FFin DATE,
