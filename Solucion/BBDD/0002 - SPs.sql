@@ -2,22 +2,19 @@
 USE GestionDelMundial;
 GO
 
-CREATE OR ALTER PROCEDURE Administracion.sp_registrar_reglas 
+CREATE OR ALTER PROCEDURE Administracion.sp_registrar_regla 
 	@AñoMundial INT,
 	@Codigo VARCHAR(100),
 	@Valor VARCHAR(100)
 AS
 BEGIN
-	
-	DECLARE @mundialId INT = (SELECT id FROM Mundial.Mundiales WHERE YEAR(f_inicio) = @AñoMundial);
 
-	INSERT INTO Administracion.Reglas (mundial_id, codigo, valor) VALUES (@mundialId, @codigo, @valor);
+	INSERT INTO Administracion.Reglas (mundial_id, codigo, valor) VALUES (@AñoMundial, @codigo, @valor);
 
 END
 GO
 
 CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
-	 @Nombre VARCHAR(100),
 	 @FInicio DATE,
 	 @FFin DATE,
 	 --- TODAS LAS CONFIGURACIONES NECESARIAS. Por ejemplo, Abritro de var requerido, o, equipos
@@ -27,7 +24,7 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 AS
 BEGIN
 	-- Registrar Mundial
-	INSERT INTO Mundial.Mundiales (nombre, f_inicio, f_fin) VALUES (@Nombre, @FInicio, @FFin);
+	INSERT INTO Mundial.Mundiales (f_inicio, f_fin) VALUES (@FInicio, @FFin);
 
 	DECLARE @añoMundial INT = YEAR(@FInicio);
 
@@ -39,7 +36,7 @@ BEGIN
 END
 GO 
 -- exec Administracion.sp_registrar_reglas @AñoMundial = 1930, @Codigo = 'ARBITRO_DE_VAR', @Valor = 1
-exec Mundial.sp_crear_mundial @Nombre = 'Mejor mundial', @FInicio = '1935-10-06', @FFin = '1935-10-08', @LimiteJugadoresConvocados = 23, @ArbitroDeVarRequerido = 1, @CantidadDeEquipos=32
+exec Mundial.sp_crear_mundial @FInicio = '1935-10-06', @FFin = '1935-10-08', @LimiteJugadoresConvocados = 23, @ArbitroDeVarRequerido = 1, @CantidadDeEquipos=32
 SELECT * FROM Mundial.Mundiales
 SELECT * FROM Administracion.Reglas
 
