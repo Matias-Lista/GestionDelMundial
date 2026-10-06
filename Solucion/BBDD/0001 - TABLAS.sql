@@ -259,7 +259,7 @@ CREATE TABLE Partidos.Partidos (
     mundial_id SMALLINT        REFERENCES Mundial.Mundiales(año) NOT NULL,
     sede_id INT        REFERENCES Administracion.Sedes(id) NOT NULL,
     fecha_y_hora DATETIME NOT NULL, --TODO: Podemos guardar "fecha_y_hora" en utc 0 y usar AT TIME ZONE para mostrar el horario q queramos
-    fase CHAR(25) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
+    fase VARCHAR(15) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
     siguiente_partid_id INT REFERENCES Partidos.Partidos(id),
     tiempo_adicional_1 SMALLINT,
     tiempo_adicional_2 SMALLINT,
@@ -305,9 +305,11 @@ BEGIN
 CREATE TABLE Partidos.JugadorPosicionInicial (
     id         INT PRIMARY KEY IDENTITY(1,1),
     comienza_jugando BIT NOT NULL,
-    posicion SMALLINT NOT NULL, -- TODO: Poner un check con los numeros validos, o poner texto como posicion
+    --posicion SMALLINT NOT NULL, -- TODO: Poner un check con los numeros validos, o poner texto como posicion
+    posicion CHAR(2) NOT NULL, 
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
-    jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL
+    jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
+    seleccion_id INT REFERENCES Mundial.Selecciones(id) NOT NULL
 );
 END
 GO
@@ -391,7 +393,7 @@ CREATE TABLE Publicidad.Campañas (
     id         INT PRIMARY KEY IDENTITY(1,1),
     anunciante_id INT REFERENCES Publicidad.Anunciantes(id) NOT NULL,
     mundial_id SMALLINT REFERENCES Mundial.Mundiales(año) NOT NULL,
-    nombre VARCHAR(150) NOT NULL,
+    nombre VARCHAR(150) NOT NULL UNIQUE,
     descripcion VARCHAR(300),
     horario_minimo SMALLINT check(horario_minimo between 0 AND 24),
     horario_maximo SMALLINT check(horario_maximo between 0 AND 24)
@@ -428,6 +430,8 @@ CREATE TABLE Publicidad.Tarifa (
     fase CHAR(25) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
     costo DECIMAL(10,2) NOT NULL,
     mundial_id SMALLINT  REFERENCES Mundial.Mundiales(año) NOT NULL,
+
+    CONSTRAINT UQ_Tarifa_Unica_Para_Cada_Franja_Y_Fase_En_un_Mundial UNIQUE(franja, fase, mundial_id)
 );
 END
 GO
