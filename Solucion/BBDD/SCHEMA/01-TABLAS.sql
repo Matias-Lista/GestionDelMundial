@@ -1,7 +1,13 @@
+/* BBDD/SCHEMA/Tablas.sql
+ * Fecha: 9/10/2026
+ * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Descripción: Contiene todos los archivos necesarios para crear la base de datos, sus schemas, sus tablas, y sus restricciones.
+ **/
+
 
 --TODO: Hay que poner las FKs semánticas!
 --TODO: Hay que sumar la tabla de penal
---TODO: Hay que confirmar qué hacemos con los husos horarios
+--TODO: Hay que confirmar qué hacemos con los husos horarios (Me parece que lo mejor es usar una API)
 
 --CREACION BASE DE DATOS
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'GestionDelMundial')
@@ -9,7 +15,7 @@ BEGIN
 	CREATE DATABASE GestionDelMundial
 	COLLATE Latin1_General_100_CI_AS_SC_UTF8;
     
-    ALTER DATABASE [GestionDelMundial] 
+    ALTER DATABASE [GestionDelMundial]
     SET MULTI_USER 
     WITH ROLLBACK IMMEDIATE;
 END
@@ -131,7 +137,7 @@ GO
 IF OBJECT_ID('Administracion.Paises', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Paises (
-    codigo char(2) PRIMARY KEY, -- La versión de dos letras de ISO
+    codigo char(3) PRIMARY KEY, -- La versión de tres letras de ISO
     confederacion_id INT REFERENCES Administracion.Confederaciones(id),
     nombre varchar(100)
     -- TODO: HAY QUE SUMAR HUSO HORARIO AL PAIS TAMBIEN. la gestion de la publicidad requiere saber el 
@@ -144,7 +150,7 @@ IF OBJECT_ID('Administracion.Pais_Habla', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Pais_Habla (
     id        INT     PRIMARY KEY IDENTITY(1,1),
-    pais_id   char(2) REFERENCES Administracion.Paises(codigo),
+    pais_id   char(3) REFERENCES Administracion.Paises(codigo),
     idioma_id char(2) REFERENCES Administracion.Idiomas(codigo)
 );
 END
@@ -154,7 +160,7 @@ IF OBJECT_ID('Mundial.Selecciones', 'U') IS NULL
 BEGIN
 CREATE TABLE Mundial.Selecciones (
     id        INT     PRIMARY KEY IDENTITY(1,1),
-    pais_id   char(2) REFERENCES Administracion.Paises(codigo)
+    pais_id   char(3) REFERENCES Administracion.Paises(codigo)
 );
 END
 GO
@@ -163,7 +169,7 @@ IF OBJECT_ID('Mundial.Paises_Participes', 'U') IS NULL
 BEGIN
 CREATE TABLE Mundial.Paises_Participes (
     id             INT     PRIMARY KEY IDENTITY(1,1),
-    pais_id        char(2) REFERENCES Administracion.Paises(codigo) NOT NULL,
+    pais_id        char(3) REFERENCES Administracion.Paises(codigo) NOT NULL,
     mundial_id     SMALLINT     REFERENCES Mundial.Mundiales(año) NOT NULL,
     seleccion_id   INT     REFERENCES Mundial.Selecciones(id), -- No pongo not null acá para poder asociar un pais al mundial sin haber creado la seleccion aun
     esta_eliminado BIT DEFAULT 0,
@@ -176,7 +182,7 @@ IF OBJECT_ID('Arbitraje.Arbitros', 'U') IS NULL
 BEGIN
 CREATE TABLE Arbitraje.Arbitros (
     id             INT          PRIMARY KEY IDENTITY(1,1),
-    pais_id        char(2)      REFERENCES Administracion.Paises(codigo) NOT NULL,
+    pais_id        char(3)      REFERENCES Administracion.Paises(codigo) NOT NULL,
     nombre         VARCHAR(100),
     apellido       VARCHAR(100)
 );
@@ -208,7 +214,7 @@ IF OBJECT_ID('Administracion.Sedes', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Sedes (
     id           INT           PRIMARY KEY IDENTITY(1,1),
-    pais_id      char(2)       REFERENCES Administracion.Paises(codigo) NOT NULL,
+    pais_id      char(3)       REFERENCES Administracion.Paises(codigo) NOT NULL,
     nombre       VARCHAR(100)  UNIQUE NOT NULL,
     ciudad       VARCHAR(100)  NOT NULL,
     capacidad    INT           CHECK (capacidad > 0) NOT NULL,
@@ -221,10 +227,12 @@ IF OBJECT_ID('Equipos.IntegranteSeleccion', 'U') IS NULL
 BEGIN
 CREATE TABLE Equipos.IntegranteSeleccion (
     id       INT           PRIMARY KEY IDENTITY(1,1),
-    pais_id  char(2)       REFERENCES Administracion.Paises(codigo) NOT NULL,
+    pais_id  char(3)       REFERENCES Administracion.Paises(codigo) NOT NULL,
     nombre   VARCHAR(100)  NOT NULL,
-    apellido VARCHAR(100)  NOT NULL
-    -- todo: nombre y apellido unico? ?como diferenciamos con n y a repetidos?
+    apellido VARCHAR(100)  NOT NULL,
+    f_nacimiento DATE, -- Para diferenciar jugadores con el mismo nombre y país.
+    
+    CONSTRAINT CK_Pais_NyA_Nacimiento_Unico UNIQUE (pais_id, nombre, apellido, f_nacimiento)
 );
 END
 GO
@@ -416,7 +424,7 @@ BEGIN
 CREATE TABLE Publicidad.PaisesInteresados (
     id         INT PRIMARY KEY IDENTITY(1,1),
     pieza_de_contenido_id INT REFERENCES Publicidad.PiezasDeContenido(id) NOT NULL,
-    pais_id CHAR(2) REFERENCES Administracion.Paises(codigo) NOT NULL
+    pais_id CHAR(3) REFERENCES Administracion.Paises(codigo) NOT NULL
 );
 END
 GO
