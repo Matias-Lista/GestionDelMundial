@@ -3,11 +3,25 @@
     <BuildType Name="Default" />
     <Platform Name="Default" />
   </Configurations>
-  <Folder Name="/BBDA/" />
-  <Folder Name="/BBDA/0000  - SCHEMA/">
-    <File Path="BBDD/0000 - extras.sql" />
-    <File Path="BBDD/0000 - Limpieza.sql" />
-    <File Path="BBDD/0001 - TABLAS.sql" />
-    <File Path="BBDD/0002 - SPs.sql" />
+  <Folder Name="/BBDD/" />
+  <Folder Name="/BBDD/00 - Miscelaneo/">
+    <File Path="BBDD/Miscelaneo/extras.sql" />
+    <File Path="BBDD/Miscelaneo/Limpieza.sql" />
+    <File Path="BBDD/Miscelaneo/reinicio.sql" />
+  </Folder>
+  <Folder Name="/BBDD/01 - SCHEMA/">
+    <File Path="BBDD/SCHEMA/01-TABLAS.sql" />
+  </Folder>
+  <Folder Name="/BBDD/02 - SPs/">
+    <File Path="BBDD/SPs/02-Administracion.sql" />
+    <File Path="BBDD/SPs/03-Mundial.sql" />
+    <File Path="BBDD/SPs/04-Equipos.sql" />
+    <File Path="BBDD/SPs/05-Partidos.sql" />
+    <File Path="BBDD/SPs/06-Eventos.sql" />
+    <File Path="BBDD/SPs/07-Arbitraje.sql" />
+    <File Path="BBDD/SPs/08-Publicidad.sql" />
+  </Folder>
+  <Folder Name="/BBDD/03 - Importacion/">
+    <File Path="BBDD/Importacion/Importacion.sql" />
   </Folder>
 </Solution>
