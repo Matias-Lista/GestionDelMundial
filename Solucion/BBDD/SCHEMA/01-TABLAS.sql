@@ -289,7 +289,7 @@ CREATE TABLE Arbitraje.ArbitroAsignadoPartido (
     id         INT              PRIMARY KEY IDENTITY(1,1),
     arbitro_id INT        REFERENCES Arbitraje.Arbitros(id) NOT NULL,
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
-    rol CHAR(50) CHECK (rol in ('1er', 'asistente', '3er arbitro', 'VAR')) NOT NULL --TODO: ver nombres correctos
+    rol CHAR(50) CHECK (rol in ('PRINCIPAL', 'ASISTENTE', 'CUARTO', 'VAR')) NOT NULL --TODO: ver nombres correctos
 );
 END
 GO

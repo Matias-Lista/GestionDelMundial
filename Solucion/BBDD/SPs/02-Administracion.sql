@@ -38,9 +38,6 @@ CREATE OR ALTER PROCEDURE Administracion.sp_obtener_regla
 	@Valor VARCHAR(100) OUTPUT
 AS
 BEGIN
-	 -- Si la regla está definida para ese mundial, la carga en @Valor,
-	 -- si no, queda en NULL
-
 	SELECT @Valor = valor 
 	FROM Administracion.Reglas 
 	WHERE mundial_id = @AñoMundial 

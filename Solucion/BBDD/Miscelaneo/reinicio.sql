@@ -37,6 +37,9 @@ GO
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\08-Publicidad.sql
 GO
 
+:r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Arbitraje-Logica.sql
+GO
+
 -- Descomentar para importación de datos:
 -- :r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Importacion.sql
 GO
