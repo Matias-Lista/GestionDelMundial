@@ -58,6 +58,15 @@ DROP PROCEDURE IF EXISTS Administracion.sp_crear_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_pais;
+DROP PROCEDURE IF EXISTS Administracion.sp_crear_idioma;
+DROP PROCEDURE IF EXISTS Administracion.sp_modificar_idioma
+DROP PROCEDURE IF EXISTS Administracion.sp_asociar_idioma_a_pais
+DROP PROCEDURE IF EXISTS Administracion.sp_crear_club
+DROP PROCEDURE IF EXISTS Administracion.sp_modificar_club;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_idioma;
+DROP PROCEDURE IF EXISTS Administracion.sp_desasociar_idioma_de_pais;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_club;
+
 
 DROP PROCEDURE IF EXISTS Mundial.sp_crear_mundial;
 DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;
