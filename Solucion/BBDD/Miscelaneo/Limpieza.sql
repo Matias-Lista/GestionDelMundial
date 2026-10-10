@@ -73,6 +73,20 @@ DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;
 
 DROP PROCEDURE IF EXISTS Mundial.sp_habilitar_arbitro;
 
+DROP PROCEDURE IF EXISTS Arbitraje.sp_crear_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_modificar_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_eliminar_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_asociar_idioma_a_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_desasociar_idioma_de_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_registrar_informe_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_modificar_informe_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_eliminar_informe_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_designar_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_designar_terna_completa;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_quitar_designacion;
+DROP FUNCTION  IF EXISTS Arbitraje.fn_obtener_arbitro_id;
+DROP FUNCTION  IF EXISTS Arbitraje.fn_historial_arbitro;
+
 DROP PROCEDURE IF EXISTS Equipos.sp_crear_integrante_seleccion;
 DROP PROCEDURE IF EXISTS Equipos.sp_modificar_integrante_seleccion;
 DROP PROCEDURE IF EXISTS Equipos.sp_convocar_jugador;
@@ -90,6 +104,11 @@ DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
 
 DROP PROCEDURE IF EXISTS Partidos.sp_definir_formacion_inicial;
+
+
+
+
+
 
 -- Eliminar Schemas
 DROP SCHEMA IF EXISTS [Administracion]
