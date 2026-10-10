@@ -92,7 +92,7 @@ IF OBJECT_ID('Administracion.Clubes', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Clubes (
     id INT IDENTITY (1,1),
-    nombre VARCHAR(100) UNIQUE,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
     
     CONSTRAINT PK_Clubes PRIMARY KEY (id)
 );
