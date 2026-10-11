@@ -12,6 +12,7 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 	 @FFin DATE,
 	 --- TODAS LAS CONFIGURACIONES NECESARIAS. Por ejemplo, Abritro de var requerido, o, equipos
 	 @LimiteJugadoresConvocados INT,
+	 @LimiteStaffConvocados INT,
 	 @ArbitroDeVarRequerido BIT,
 	 @CantidadDeEquipos INT
 AS
@@ -28,6 +29,8 @@ BEGIN
 
 	IF (@LimiteJugadoresConvocados <= 0) SET @errores = @errores + '- El límite de jugadores convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
 	
+	IF (@LimiteStaffConvocados <= 0) SET @errores = @errores + '- El límite de staff convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
+	
 	IF (@CantidadDeEquipos < 16 OR @CantidadDeEquipos % 4 <> 0) SET @errores = @errores + '- La cantidad de Equipos convocados debe ser al menos 16 y múltiplo de 4.' + CHAR(13) + CHAR(10);
 
 	IF (@errores <> '')
@@ -40,6 +43,7 @@ BEGIN
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'ARBITRO_DE_VAR', @Valor = @ArbitroDeVarRequerido;
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_CONVOCADOS', @Valor = @LimiteJugadoresConvocados;
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'CANTIDAD_EQUIPOS', @Valor = @CantidadDeEquipos;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_STAFF_CONVOCADOS', @Valor = @LimiteStaffConvocados;
 		COMMIT TRANSACTION
 	END TRY
 	BEGIN CATCH
