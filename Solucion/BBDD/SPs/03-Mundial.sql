@@ -12,112 +12,182 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 	 @FFin DATE,
 	 --- TODAS LAS CONFIGURACIONES NECESARIAS. Por ejemplo, Abritro de var requerido, o, equipos
 	 @LimiteJugadoresConvocados INT,
+	 @LimiteStaffConvocados INT,
 	 @ArbitroDeVarRequerido BIT,
 	 @CantidadDeEquipos INT
 AS
 BEGIN
-	-- Registrar Mundial
-	INSERT INTO Mundial.Mundiales (f_inicio, f_fin) VALUES (@FInicio, @FFin);
-
+	SET NOCOUNT ON
 	DECLARE @añoMundial INT = YEAR(@FInicio);
 
-	-- Registrar Reglas.
-	exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'ARBITRO_DE_VAR', @Valor = @ArbitroDeVarRequerido;
-	exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_CONVOCADOS', @Valor = @LimiteJugadoresConvocados;
-	exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'CANTIDAD_EQUIPOS', @Valor = @CantidadDeEquipos;
+	DECLARE @errores VARCHAR(500) = '';
 
+	IF EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @añoMundial) 
+		SET @errores = @errores + '- Ya existe un mundial en ese año. '+ CHAR(13) + CHAR(10);
+
+	IF (@FInicio >= @FFin) SET @errores = @errores + '- La fecho de inicio debe ser anterior a la fecha de fin.' + CHAR(13) + CHAR(10);
+
+	IF (@LimiteJugadoresConvocados <= 0) SET @errores = @errores + '- El límite de jugadores convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
+	
+	IF (@LimiteStaffConvocados <= 0) SET @errores = @errores + '- El límite de staff convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
+	
+	IF (@CantidadDeEquipos < 16 OR @CantidadDeEquipos % 4 <> 0) SET @errores = @errores + '- La cantidad de Equipos convocados debe ser al menos 16 y múltiplo de 4.' + CHAR(13) + CHAR(10);
+
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
+
+	BEGIN TRY
+		BEGIN TRANSACTION
+			INSERT INTO Mundial.Mundiales (f_inicio, f_fin) VALUES (@FInicio, @FFin);
+
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'ARBITRO_DE_VAR', @Valor = @ArbitroDeVarRequerido;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_CONVOCADOS', @Valor = @LimiteJugadoresConvocados;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'CANTIDAD_EQUIPOS', @Valor = @CantidadDeEquipos;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_STAFF_CONVOCADOS', @Valor = @LimiteStaffConvocados;
+		COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION;
+
+			throw;
+	END CATCH;
 END
 GO 
+
 -- exec Administracion.sp_registrar_reglas @AñoMundial = 1930, @Codigo = 'ARBITRO_DE_VAR', @Valor = 1
---exec Mundial.sp_crear_mundial @FInicio = '1935-10-06', @FFin = '1935-10-08', @LimiteJugadoresConvocados = 23, @ArbitroDeVarRequerido = 1, @CantidadDeEquipos=32
+-- exec Mundial.sp_crear_mundial @FInicio = '1935-10-06', @FFin = '1935-10-01', @LimiteJugadoresConvocados = 0, @ArbitroDeVarRequerido = 1, @CantidadDeEquipos=32
 --SELECT * FROM Mundial.Mundiales
 --SELECT * FROM Administracion.Reglas
-
 GO
+
+-- Sobre Mundial.sp_incluir_pais
+-- En la realidad, se arman varios bombos con diferentes países y reglas, como, no más de x países de cada continente por grupo, excepto europa que puede tener 2.
+-- Los bombos a partir de los cuales se hacen los sorteos se definen con datos como el ranking fifa.
+--
+-- En este SP, se pasa directamente el grupo al que se asigna un país, o se asigna el primero disponible. (Por ejemplo, si hay un equipo en el A, y uno en el B, el primero disponible es el A).
 CREATE OR ALTER PROCEDURE Mundial.sp_incluir_pais
 	 @CodigoPais CHAR(3),
 	 @AñoMundial INT,
-	 @Grupo char(1) = NULL
+	 @Grupo char(1) = NULL 
 AS
 BEGIN
-	-- Comprueba que el país no esté ya incluído.
-	-- Crea una selección para ese país
-	-- Crea el registro países_participes asociando todo lo necesario
+	SET NOCOUNT ON
+	DECLARE @errores VARCHAR(500) = '';
 
-	-- Lógica real: se arman distintos bombos, se van seleccionando y tienen reglas como " no más de x de cada continente, excepto europa que puede tener 2 ..."
-	-- Esos bombos se arman teniendo en cuenta cosas como el ranking fifa. Me parece excesivamente complicado para el tp
-	-- asíque propongo esta lógica más amena y qeu nos sirve igual para la importación:
+	IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial)
+		SET @errores = @errores + '- No hay mundial registrado en ese año.' + CHAR(13) + CHAR(10);
+		
+	IF NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
+		SET @errores = @errores + '- El país no se encuentra registrado.' + CHAR(13) + CHAR(10);
 
-	-- Grupos: O se pasa por parámetro, o se asigna automáticamente a la primer posicion disponible (por ejemplo, si hay dos equipos, le da el grupo A posicion 3)
+	IF EXISTS (SELECT 1 FROM Mundial.Paises_Participes WHERE mundial_id = @AñoMundial AND pais_id = @CodigoPais)
+		SET @errores = @errores + '- El equipo ya está participando de ese mundial.' + CHAR(13) + CHAR(10);
 
-	INSERT INTO Mundial.Selecciones (pais_id) VALUES (@CodigoPais)
-	DECLARE @seleccionId INT = (SELECT SCOPE_IDENTITY());
+	
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
 
-	IF (@Grupo is null)
-	BEGIN
-		DECLARE @cantidadEquipos VARCHAR(100); 
-		exec Administracion.sp_obtener_regla 
-			 @AñoMundial = @AñoMundial, 
-			 @Codigo = 'SELECCIONES', 
-			 @Valor = @cantidadEquipos
+	-- NOTA: en los primeros mundiales hubieron equipos de 3.
+	DECLARE @cantidadEquipos INT; 
+	exec Administracion.sp_obtener_regla @AñoMundial = @AñoMundial, @Codigo = 'CANTIDAD_EQUIPOS', @Valor = @cantidadEquipos OUTPUT;
+	
+	DECLARE @cantidadDeGrupos INT = @cantidadEquipos / 4;
 
-		-- La cantidad de grupos siempre es cantidadDeEquipos / 4.
+	BEGIN TRY
+	BEGIN TRANSACTION -- Incluyo la validación del cupo y del grupo en una transacción con SERIALIZABLE.
+		IF ((SELECT COUNT(*) FROM Mundial.Paises_Participes WITH (UPDLOCK, SERIALIZABLE) WHERE mundial_id = @AñoMundial) = @cantidadEquipos)
+			SET @errores = @errores + '- Este mundial alcanzo su cupo de participantes.' + CHAR(13) + CHAR(10);
 
-		-- con este código puedo obtener el primer grupo disponible
-		-- Se puede mover más arriba grupo disponible para saber si el parametro ingresado es válido
-		-- Convertir WITH a # temproal para poder usarla varias veces
-		/* 
-		WITH GruposPosibles AS (
-		    -- Caso base: Empezamos con la letra 'A' (Código ASCII 65)
-		    SELECT 1 AS Indice, CHAR(65) AS Letra
-		    UNION ALL
-		    -- Paso recursivo: Generamos las siguientes letras hasta llegar a @cantidadGrupos
-		    SELECT Indice + 1, CHAR(65 + Indice)
-		    FROM GruposPosibles
-		    WHERE Indice < @cantidadGrupos
-			)
-			-- 2. Buscamos el primer grupo con menos de 4 equipos
-			SELECT TOP 1 
-			    G.Letra AS GrupoDisponible
-			FROM GruposPosibles G
-			-- LEFT JOIN permite incluir los grupos que todavía tienen 0 equipos asignados
-			LEFT JOIN Mundial.Paises_Participes P 
-			    ON G.Letra = P.grupo 
-			    AND P.mundial_id = @mundial_id 
-			GROUP BY 
-			    G.Letra
-			HAVING 
-			    COUNT(P.id) < 4 -- Exige que haya al menos 1 lugar disponible (máximo 4 por grupo)
-			ORDER BY 
-			    G.Letra ASC;
-		 */
-	END
+		DECLARE @TablaGruposPosibles TABLE (letra CHAR(1));
 
-	INSERT INTO Mundial.Paises_Participes 
-		(pais_id, mundial_id, seleccion_id, esta_eliminado, grupo)
-		VALUES
-		(@CodigoPais, @AñoMundial, @seleccionId, 0, @Grupo);
+		WITH TodasLasLetras AS (
+			-- caso base: A
+			SELECT 1 AS indice, CHAR(65) AS letra
+			UNION ALL
+			-- Paso recursivo: Generamos las siguientes letras hasta llegar a @cantidadGrupos
+			SELECT indice + 1, CHAR(65 + indice)
+			FROM TodasLasLetras
+			WHERE indice < @cantidadDeGrupos
+		)
+		INSERT INTO @TablaGruposPosibles (Letra)
+		SELECT G.Letra
+		FROM TodasLasLetras G
+		LEFT JOIN Mundial.Paises_Participes P WITH (UPDLOCK, SERIALIZABLE)
+			ON G.Letra = P.grupo 
+			AND P.mundial_id = @AñoMundial 
+		GROUP BY G.Letra
+		HAVING COUNT(P.id) < 4; -- Esto me da warning aunque  funciona, no sé si es relevante
 
+		IF (@Grupo IS NOT NULL AND ASCII(@Grupo) not between 65 and (65 + @cantidadDeGrupos - 1)) 
+			SET @errores = @errores + '- Si se define un grupo, debe ser válido.' + CHAR(13) + CHAR(10);
+		ELSE IF (@Grupo is not null and (NOT EXISTS (SELECT 1 FROM @TablaGruposPosibles WHERE Letra = @Grupo)))
+			SET @errores = @errores + '- El grupo indicado está lleno.' + CHAR(13) + CHAR(10);
+
+		IF (@errores <> '')
+			throw 50001, @errores, 1;
+
+		
+		IF (@Grupo is null)
+			SET @Grupo = (SELECT TOP 1 Letra FROM @TablaGruposPosibles); -- El primer grupo disponible, en orden
+
+		INSERT INTO Mundial.Selecciones (pais_id) VALUES (@CodigoPais)
+		DECLARE @seleccionId INT = (SELECT SCOPE_IDENTITY());
+
+		INSERT INTO Mundial.Paises_Participes 
+			(pais_id, mundial_id, seleccion_id, esta_eliminado, grupo)
+			VALUES
+			(@CodigoPais, @AñoMundial, @seleccionId, 0, @Grupo);
+	COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+		if @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION;
+		throw
+	END CATCH
 END
 GO
+
+--exec Mundial.sp_crear_mundial @FInicio = '2026-10-06', @FFin = '2026-10-09', @LimiteJugadoresConvocados = 10, @ArbitroDeVarRequerido = 1, @CantidadDeEquipos=32
+/*exec Mundial.sp_incluir_pais 'ARG', 2026, 'A'
+exec Mundial.sp_incluir_pais 'ESP', 2026, 'A'
+exec Mundial.sp_incluir_pais 'USA', 2026, 'A'
+exec Mundial.sp_incluir_pais 'PRY', 2026, 'A'
+exec Mundial.sp_incluir_pais 'RUS', 2026, 'A' -- FALLA POR GRUPO LLENO! CORRECTO
+exec Mundial.sp_incluir_pais 'RUS', 2026      -- ASIGNA AUTOMATICAMENTE EL GRUPO B! CORRECTO
+select * from Mundial.Paises_Participes
+GO*/
 
 CREATE OR ALTER PROCEDURE Mundial.sp_habilitar_arbitro
 	@AñoMundial INT,
 	@ArbitroID INT,
-	@Confederacion varchar(8) = NULL
+	@ConfederacionID INT = NULL
 AS
 BEGIN
+	SET NOCOUNT ON
 
-	-- Que el Arbitro no esté asignado a ese mundial, 
-	-- que la confederacion exista.
-	-- que el mundial exista
-	-- que el arbitro exista
+	DECLARE @errores VARCHAR(500) = '';
 
-	DECLARE @confederacionId INT = IIF(@Confederacion is not NULL,
-		(SELECT id FROM Administracion.Confederaciones WHERE siglas = @Confederacion),
-		(NULL)
-	);
+	-- Que el Arbitro no esté asignado a ese mundial,
 
+	IF (@ConfederacionID is not null and NOT EXISTS (SELECT 1 FROM Administracion.Confederaciones WHERE id = @ConfederacionID))
+		SET @errores = '- La confederación no existe.' + CHAR(13) + CHAR(10)
+
+	IF (@AñoMundial is null)
+		SET @errores = '- Debe indicar un mundial' + CHAR(13) + CHAR(10)
+
+	IF (@ArbitroID is null)
+		SET @errores = '- Debe indicar un arbitro' + CHAR(13) + CHAR(10)
+	
+	IF (@ArbitroID is not null and NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID))
+		SET @errores = '- El arbitro no existe.' + CHAR(13) + CHAR(10)
+
+	-- Duda: Deberíamos hacer transacciones acá? (para no habilitar dos veces al mismo arbitro, aunque la constraint UQ lo evitaría).
+	IF EXISTS (SELECT 1 FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @AñoMundial and arbitro_id = @ArbitroID)
+		SET @errores = '- El arbitro ya está habilitado para ese mundial.' + CHAR(13) + CHAR(10)
+		
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
 
 	INSERT INTO Mundial.Habilitacion_Arbitro 
 		(mundial_id, arbitro_id, confederacion_id)
