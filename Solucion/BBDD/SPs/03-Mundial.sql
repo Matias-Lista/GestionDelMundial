@@ -76,7 +76,7 @@ BEGIN
 	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial)
-		SET @errores = @errores + '- No hay mundial registrado para ese país mundial.' + CHAR(13) + CHAR(10);
+		SET @errores = @errores + '- No hay mundial registrado en ese año.' + CHAR(13) + CHAR(10);
 		
 	IF NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
 		SET @errores = @errores + '- El país no se encuentra registrado.' + CHAR(13) + CHAR(10);
