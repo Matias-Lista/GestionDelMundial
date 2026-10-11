@@ -272,7 +272,14 @@ END
 GO
 
 
-
+CREATE OR ALTER FUNCTION Administracion.fn_obtener_regla (@AñoMundial INT, @Codigo VARCHAR(100))
+RETURNS VARCHAR(100)
+AS
+BEGIN
+	-- como sp_obtener_regla pero usable dentro de una expresion o de otra funcion
+	RETURN (SELECT valor FROM Administracion.Reglas WHERE mundial_id = @AñoMundial AND codigo = @Codigo);
+END
+GO
 
 
 ---------Los SP de eliminacion/desasociar--------------------------------------------------------------------------------------------------------------
