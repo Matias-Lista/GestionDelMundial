@@ -1,6 +1,7 @@
 use GestionDelMundial;
 GO
 
+
 -- Prueba de concepto de la improtación de datos. Es un boceto, probé como se manipulan los .csv de datahub.io/football/worldcup
 -- Tiene rutas hardcodeadas, hay que convertir eso a Store Procedure/s. De momento no me imagino que se puedan importar cosas sueltas (por ejemplo,
 -- solo los goles de un partido), sino que veo necesario importar todos los datasets juntos. Porque a veces utilizamos cosas como los ids internos del .csv
@@ -15,8 +16,8 @@ IF OBJECT_ID('tempdb..#Squads') IS NOT NULL DROP TABLE #Squads;
 GO 
 SET NOCOUNT ON
 
+
 CREATE TABLE #Confederations (
-    
     key_id INT PRIMARY KEY CLUSTERED,
     confederation_id CHAR(4),
     confederation_name VARCHAR(200),
@@ -45,6 +46,7 @@ DECLARE @idConfederacionActual INT = 1;
 DECLARE @confederacionesInsertadas INT = 0;
 DECLARE @confederacionesActualizadas INT = 0;
 
+BEGIN TRAN
 WHILE (@idConfederacionActual <= @maxConfederacionID) BEGIN
     
     DECLARE @nombre VARCHAR(100);
@@ -67,14 +69,13 @@ WHILE (@idConfederacionActual <= @maxConfederacionID) BEGIN
 
     SET @idConfederacionActual = @idConfederacionActual + 1;
 END;
-
+COMMIT TRAN
 -- SELECT * FROM Administracion.Confederaciones
 
 
 ----- IMPORT DE EQUIPOS 
 
 CREATE TABLE #Teams (
-    
     key_id INT PRIMARY KEY CLUSTERED,
     team_id CHAR(4),
     team_name VARCHAR(200),
@@ -104,13 +105,13 @@ WITH (
 
 -- SELECT * FROM #Teams
 
-
 DECLARE @maxEquipoID INT = (SELECT max(key_id) FROM #Teams);
 
 DECLARE @idEquipoActual INT = 1;
 DECLARE @paisesInsertados INT = 0;
 DECLARE @paisesModificados INT = 0;
 
+BEGIN TRAN
 WHILE (@idEquipoActual <= @maxEquipoID) BEGIN
     
     DECLARE @codigoPais CHAR(3);
@@ -138,7 +139,7 @@ WHILE (@idEquipoActual <= @maxEquipoID) BEGIN
 
     SET @idEquipoActual = @idEquipoActual + 1;
 END;
-
+COMMIT TRAN
 
 print CONCAT('Confederaciones ACTUALIZADAS: ', @confederacionesActualizadas);
 print CONCAT('Confederaciones insertadas: ', @confederacionesInsertadas);
@@ -175,15 +176,19 @@ WITH (
 );
 
 DELETE FROM #Players WHERE female = 1; -- Dejamos solo jugadores masculinos
-CREATE NONCLUSTERED INDEX IX_Players_Player_ID ON #Players (player_id); -- Utilizado para sumar los paises
 
 ALTER TABLE #Players ADD CodigoPais CHAR(3);
+
+ALTER TABLE #Players ADD map_id INT; -- REFERENCES Equipos.IntegranteSeleccion(id);
+CREATE NONCLUSTERED INDEX IX_Player_ID_MAP_ID ON #Players (player_id) INCLUDE(map_id);
+
+
 UPDATE #Players 
 SET birth_date = NULL 
 WHERE TRY_CAST(birth_date AS DATE) IS NULL;
 
 ALTER TABLE #Players ALTER COLUMN birth_date DATE;
-
+--SELECT * FROM #Players
 
 CREATE TABLE #Squads (
     key_id INT PRIMARY KEY CLUSTERED,
@@ -208,7 +213,7 @@ WITH (
     FORMAT = 'CSV',
     FIELDQUOTE = '"',         -- Ignora las comas que estén dentro de estas comillas
     FIELDTERMINATOR = ',', 
-    ROWTERMINATOR = '0x0a',
+    ROWTERMINATOR = '\n',
     FIRSTROW = 2,             -- Salta los encabezados
     CODEPAGE = '65001'        -- UTF-8
 );
@@ -224,6 +229,8 @@ SET P.CodigoPais = JP.team_code
 FROM #Players P
 INNER JOIN jugador_pais JP ON P.player_id = JP.player_id;
 
+UPDATE #Squads SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+
 DECLARE @maxJugadorID INT = (SELECT max(key_id) FROM #Players);
 
 DECLARE @idJugadorActual INT = 1;
@@ -231,6 +238,7 @@ DECLARE @idJugadorActual INT = 1;
 DECLARE @jugadoresModificados INT = 0;
 DECLARE @jugadoresInsertados INT = 0;
 
+BEGIN TRAN
 WHILE (@idJugadorActual < @maxJugadorID) BEGIN
 
     DECLARE @nombreJugador VARCHAR(100) = NULL;
@@ -251,23 +259,285 @@ WHILE (@idJugadorActual < @maxJugadorID) BEGIN
     EXEC @idJugador = Equipos.fn_obtener_integrante_id @Nombre = @nombreJugador, @Apellido = @apellidoJugador, @FNacimiento = @f_nacimiento, @CodigoPais = @nacionalidad;
 
     if (@idJugador is null) BEGIN
-        exec Equipos.sp_crear_integrante_seleccion @CodigoPais = @nacionalidad, @Nombre = @nombreJugador, @Apellido = @apellidoJugador, @FNacimiento = @f_nacimiento;
+        DECLARE @ID INT;
+        exec Equipos.sp_crear_integrante_seleccion @CodigoPais = @nacionalidad, @Nombre = @nombreJugador, @Apellido = @apellidoJugador, @FNacimiento = @f_nacimiento, @ID = @ID OUTPUT;
+
+        UPDATE #Players
+            SET map_id = @ID
+            WHERE key_id = @idJugadorActual;
+
         SET @jugadoresInsertados = @jugadoresInsertados + 1;
     END
     ELSE BEGIN
         exec Equipos.sp_modificar_integrante_seleccion @ID = @idJugador, @CodigoPais = @nacionalidad, @Nombre = @nombreJugador, @Apellido = @apellidoJugador, @FNacimiento = @f_nacimiento;
         SET @jugadoresModificados = @jugadoresModificados + 1;
-        print CONCAT(@nombreJugador, @apellidoJugador)
+        -- print CONCAT(@nombreJugador, @apellidoJugador)
     END
     
     SET @idJugadorActual = @idJugadorActual + 1;
 
 END;
 select top 10 * FROM Equipos.IntegranteSeleccion
+COMMIT TRAN
+
+/*****************************/
+/*      Mundiales            */
+/*****************************/
+-- Hay un problema con los mundiales: no traen reglas en los datasets. Asique, se me ocurren un par de acciones:
+-- 1. Cambiar los store procedures para poder sumar mundiales sin reglas
+-- 2. Crear un dataset propio de reglas. (La consigna pone que hay que encontrrar el modo de meter todos lso datos que no esten en datasets).
+-- Para esta Prueba de Concepto simplemente voy a hardcodear algunas reglas
 
 
-DECLARE @inserciones    INT = @confederacionesInsertadas + @paisesInsertados + @jugadoresInsertados;
+IF OBJECT_ID('tempdb..#Tournaments') IS NOT NULL DROP TABLE #Tournaments;
+CREATE TABLE #Tournaments (
+    key_id INT PRIMARY KEY CLUSTERED,
+    tournament_id CHAR(7),
+    tournament_name VARCHAR(200),
+    year INT,
+    start_date VARCHAR(50),
+    end_date  VARCHAR(50),
+    host_country VARCHAR(100),
+    winner VARCHAR(150),
+    host_won BIT,
+    count_teams INT,
+    group_stage BIT,
+    second_group_stage BIT,
+    final_round BIT,
+    round_of_16 BIT,
+    quarter_finals BIT,
+    semi_finals BIT,
+    third_place_match BIT,
+    final INT
+);
+
+BULK INSERT #Tournaments
+FROM 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv'
+WITH (
+    FORMAT = 'CSV',
+    FIELDQUOTE = '"',         -- Ignora las comas que estén dentro de estas comillas
+    FIELDTERMINATOR = ',', 
+    ROWTERMINATOR = '0x0a',
+    FIRSTROW = 2,             -- Salta los encabezados
+    CODEPAGE = '65001'        -- UTF-8
+);
+
+DELETE FROM #Tournaments WHERE tournament_name LIKE  '%Women%';
+DELETE FROM #Tournaments WHERE count_teams = 13;
+DELETE FROM #Tournaments WHERE count_teams = 15;
+
+UPDATE #Tournaments 
+SET end_date = NULL 
+WHERE TRY_CAST(end_date AS DATE) IS NULL;
+
+
+UPDATE #Tournaments 
+SET start_date = NULL 
+WHERE TRY_CAST(start_date AS DATE) IS NULL;
+
+ALTER TABLE #Tournaments ALTER COLUMN start_date DATE;
+ALTER TABLE #Tournaments ALTER COLUMN end_date DATE;
+
+SELECT TOP 5 * FROM #Tournaments
+
+
+DECLARE @maxMundialID INT = (SELECT max(key_id) FROM #Tournaments);
+
+DECLARE @idMundialActual INT = 1;
+
+DECLARE @mundialesInsertados INT = 0;
+DECLARE @mundialesActualizados INT = 0;
+DECLARE @mundialesOmitidos INT = 0;
+
+BEGIN TRAN
+WHILE (@idMundialActual <= @maxMundialID) BEGIN
+    -- tournament_name LIKE  '%Women%'
+    DECLARE @fechaInicio DATE = NULL;
+    DECLARE @fechaFin DATE = NULL;
+    DECLARE @cantidadDeEquipos INT = NULL;
+    
+    SELECT @fechaInicio = start_date, @fechaFin = end_date, @cantidadDeEquipos = count_teams
+    FROM #Tournaments
+    WHERE key_id = @idMundialActual;
+
+    IF (@fechaInicio is null) BEGIN
+        SET @idMundialActual = @idMundialActual + 1;
+        CONTINUE; -- Con este if, salteamos los baches que quedan por eliminar campos
+    END;
+
+    DECLARE @idMundial INT = (SELECT año FROM Mundial.Mundiales WHERE año = YEAR(@fechaInicio));
+    print @idMundial
+    print @fechaInicio
+    if (@idMundial is null) BEGIN
+        exec Mundial.sp_crear_mundial @FInicio = @fechaInicio, @FFin = @fechaFin,  
+	                                  @LimiteJugadoresConvocados = 23,  @LimiteStaffConvocados = 23,
+                                      @ArbitroDeVarRequerido = 0,
+                                      @CantidadDeEquipos = @cantidadDeEquipos;
+        SET @mundialesInsertados = @mundialesInsertados + 1;
+    END ELSE BEGIN
+        SET @mundialesOmitidos = @mundialesOmitidos + 1; --- Los mundiales no se pueden editar.
+    END
+
+    SET @idMundialActual = @idMundialActual + 1;
+END;
+COMMIT TRAN
+
+/******************************/
+/* Países partícipes y grupos */
+/******************************/
+
+
+
+IF OBJECT_ID('tempdb..#GroupStandings') IS NOT NULL DROP TABLE #GroupStandings;
+CREATE TABLE #GroupStandings (
+    key_id INT PRIMARY KEY CLUSTERED,
+    tournament_id CHAR(7),
+    tournament_name VARCHAR(200),
+    stage_number INT,
+    stage_name VARCHAR(100),
+    group_name VARCHAR(15),
+    position INT,
+    team_id char(4),
+    team_name VARCHAR(100),
+    team_code CHAR(3),
+    played INT,
+    wins INT,
+    draws INT,
+    losses INT,
+    goals_for INT,
+    goals_against INT,
+    goals_difference INT,
+    points INT,
+    advanced INT
+);
+
+BULK INSERT #GroupStandings
+FROM 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv'
+WITH (
+    FORMAT = 'CSV',
+    FIELDQUOTE = '"',         -- Ignora las comas que estén dentro de estas comillas
+    FIELDTERMINATOR = ',', 
+    ROWTERMINATOR = '0x0a',
+    FIRSTROW = 2,             -- Salta los encabezados
+    CODEPAGE = '65001'        -- UTF-8
+);
+
+DELETE FROM #GroupStandings WHERE tournament_name LIKE  '%Women%';
+
+UPDATE #GroupStandings SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+SELECT * FROM #GroupStandings
+
+
+DECLARE @maxSeleccionID INT = (SELECT max(key_id) FROM #GroupStandings);
+
+DECLARE @idSeleccionActual INT = 1;
+
+DECLARE @participacionesInsertadas   INT = 0;
+DECLARE @participacionesActualizadas INT = 0;
+DECLARE @participacionesOmitidas     INT = 0;
+
+BEGIN TRAN
+WHILE (@idSeleccionActual <= @maxSeleccionID) BEGIN
+    --- NECESITAMOS: CODIGO PAIS - AÑO MUNDIAL - GRUPO. NADA MAS
+    DECLARE @__codigoPais char(3) = NULL;
+    DECLARE @groupName VARCHAR(15) = NULL;
+    DECLARE @tournamentId CHAR(7) = NULL;
+    DECLARE @__añoMundial INT = NULL;
+
+    SELECT @__codigoPais = team_code, @groupName = group_name, @tournamentId = tournament_id
+    FROM #GroupStandings
+    WHERE key_id = @idSeleccionActual;
+    
+    SET @__añoMundial = @tournamentId;
+
+    IF (@__añoMundial is null) BEGIN
+        SET @idSeleccionActual = @idSeleccionActual + 1;
+        CONTINUE;
+    END;
+    -- hay grupos que se llaman Group 1...
+    BEGIN TRY
+           
+           DECLARE @GrupoFormateado CHAR(1) = right(@groupName, 1); -- agarra el ultimo char
+
+           if @GrupoFormateado LIKE '[0-9]'
+              SET @GrupoFormateado = CHAR(65 + CAST(@GrupoFormateado AS INT)); -- Si es un numero, le suma el valor a la letra A. 0 => A, 1 => B, 2 => C.
+
+        exec Mundial.sp_incluir_pais @CodigoPais = @__codigoPais, @AñoMundial = @__añoMundial, @Grupo = @GrupoFormateado
+        set @participacionesInsertadas = @participacionesInsertadas + 1;
+    END TRY
+    BEGIN CATCH
+        print 'skip por error'
+        set @participacionesOmitidas = @participacionesOmitidas + 1;
+        print ERROR_MESSAGE();
+        print @GrupoFormateado
+        print @__añoMundial;
+    END CATCH
+
+    SET @idSeleccionActual = @idSeleccionActual + 1;
+END;
+COMMIT TRAN
+
+/********************************/
+/*      Convocados!             */
+/*******************************/
+
+
+DECLARE @maxConvocacionesID INT = (SELECT max(key_id) FROM #Squads);
+
+DECLARE @idConvocacionActual INT = 1;
+
+DECLARE @convocacionesInsertadas   INT = 0;
+DECLARE @convocacionesActualizadas INT = 0;
+DECLARE @convocacionesOmitidas     INT = 0;
+
+BEGIN TRAN
+WHILE (@idConvocacionActual <= @maxConvocacionesID) BEGIN
+    --- NECESITAMOS: CODIGO PAIS - AÑO MUNDIAL - GRUPO. NADA MAS
+    -- DECLARE @___codigoPais char(3) = NULL;
+    DECLARE @___añoMundial INT = NULL;
+    -- DECLARE @__nombre VARCHAR(100) = NULL;
+    -- DECLARE @__apellido VARCHAR(100) = NULL;
+    DECLARE @_IDJugador INT = NULL;
+    DECLARE @dorsal INT = NULL;
+    DECLARE @_tournamentId CHAR(7) = NULL;
+    DECLARE @PlayerCode VARCHAR(100) = null;
+
+    SELECT @dorsal = shirt_number, @_tournamentId = tournament_id, @PlayerCode = player_id
+    FROM #Squads
+    WHERE key_id = @idConvocacionActual;
+    
+    SET @___añoMundial = @_tournamentId;
+
+    SET @_IDJugador = (SELECT map_id FROM #Players WHERE player_id = @PlayerCode);
+
+    IF (@_IDJugador is null) BEGIN
+        print 'SKIP ID NOT MAPPED' 
+        SET @idConvocacionActual = @idConvocacionActual + 1; -- enrealidad sería obtener el id por nombre apellido, etc
+        CONTINUE;
+    END;
+    
+    BEGIN TRY
+        exec Equipos.sp_convocar_jugador @AñoMundial = @___añoMundial, @MiembroID = @_IDJugador, @FConvocacion = '01-01-1900', @Dorsal = @dorsal, @ClubId = null
+        set @convocacionesInsertadas = @convocacionesInsertadas + 1;
+    END TRY
+    BEGIN CATCH
+        print 'skip por error'
+        set @convocacionesOmitidas = @convocacionesOmitidas + 1;
+        print ERROR_MESSAGE();
+    END CATCH
+
+    SET @idConvocacionActual = @idConvocacionActual + 1;
+END;
+COMMIT TRAN
+
+SELECT * FROM Equipos.ConvocacionEnSeleccion
+select * from Mundial.Mundiales
+-- SELECT * FROM Mundial.Paises_Participes
+
+DECLARE @inserciones    INT = @confederacionesInsertadas + @paisesInsertados + @jugadoresInsertados + @mundialesInsertados + @participacionesInsertadas + @convocacionesInsertadas;
 DECLARE @modificaciones INT = @confederacionesActualizadas + @paisesModificados + @jugadoresModificados;
+DECLARE @omisiones      INT = @mundialesOmitidos + @participacionesOmitidas + @convocacionesOmitidas
+
 
 SELECT 
     @confederacionesInsertadas   as 'Confederaciones Insertadas',
@@ -276,5 +546,9 @@ SELECT
     @paisesModificados           as 'Paises Modificados', -- Te da al principio editado uno porque hay dos registros diferentes para Alemania.
     @jugadoresInsertados         as 'Jugadores Insertados',
     @jugadoresModificados        as 'Jugadores Modificados',
+    @mundialesInsertados         as 'Mundiales Insertados',
+    @participacionesInsertadas   as 'Participaciones Insertadas',
+    @convocacionesInsertadas     as 'Convocados Insertados',
     @inserciones                 as 'Inserciones totales',
-    @modificaciones              as 'Modificaciones totales';
+    @modificaciones              as 'Modificaciones totales',
+    @omisiones                   as 'Omisiones totales';
