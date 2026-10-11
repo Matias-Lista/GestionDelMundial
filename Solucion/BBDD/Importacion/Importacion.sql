@@ -208,7 +208,7 @@ WITH (
     FORMAT = 'CSV',
     FIELDQUOTE = '"',         -- Ignora las comas que estén dentro de estas comillas
     FIELDTERMINATOR = ',', 
-    ROWTERMINATOR = '0x0a',
+    ROWTERMINATOR = '\n',
     FIRSTROW = 2,             -- Salta los encabezados
     CODEPAGE = '65001'        -- UTF-8
 );
