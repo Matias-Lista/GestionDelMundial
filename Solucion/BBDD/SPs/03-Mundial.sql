@@ -119,7 +119,7 @@ BEGIN
 		GROUP BY G.Letra
 		HAVING COUNT(P.id) < 4; -- Esto me da warning aunque  funciona, no sé si es relevante
 
-		IF (@Grupo IS NOT NULL AND ASCII(@Grupo) not between 65 and (65 + @cantidadDeGrupos)) 
+		IF (@Grupo IS NOT NULL AND ASCII(@Grupo) not between 65 and (65 + @cantidadDeGrupos - 1)) 
 			SET @errores = @errores + '- Si se define un grupo, debe ser válido.' + CHAR(13) + CHAR(10);
 		ELSE IF (@Grupo is not null and (NOT EXISTS (SELECT 1 FROM @TablaGruposPosibles WHERE Letra = @Grupo)))
 			SET @errores = @errores + '- El grupo indicado está lleno.' + CHAR(13) + CHAR(10);
