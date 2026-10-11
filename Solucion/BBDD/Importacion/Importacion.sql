@@ -173,15 +173,20 @@ WITH (
 );
 
 DELETE FROM #Players WHERE female = 1; -- Dejamos solo jugadores masculinos
-CREATE NONCLUSTERED INDEX IX_Players_Player_ID ON #Players (player_id); -- Utilizado para sumar los paises
 
 ALTER TABLE #Players ADD CodigoPais CHAR(3);
+
+ALTER TABLE #Players ADD map_id INT; -- REFERENCES Equipos.IntegranteSeleccion(id);
+CREATE NONCLUSTERED INDEX IX_Player_ID_MAP_ID ON #Players (player_id) INCLUDE(map_id);
+
+
 UPDATE #Players 
 SET birth_date = NULL 
 WHERE TRY_CAST(birth_date AS DATE) IS NULL;
 
 ALTER TABLE #Players ALTER COLUMN birth_date DATE;
 
+--SELECT * FROM #Players
 
 CREATE TABLE #Squads (
     key_id INT PRIMARY KEY CLUSTERED,
@@ -249,7 +254,13 @@ WHILE (@idJugadorActual < @maxJugadorID) BEGIN
     EXEC @idJugador = Equipos.fn_obtener_integrante_id @Nombre = @nombreJugador, @Apellido = @apellidoJugador, @FNacimiento = @f_nacimiento, @CodigoPais = @nacionalidad;
 
     if (@idJugador is null) BEGIN
-        exec Equipos.sp_crear_integrante_seleccion @CodigoPais = @nacionalidad, @Nombre = @nombreJugador, @Apellido = @apellidoJugador, @FNacimiento = @f_nacimiento;
+        DECLARE @ID INT;
+        exec Equipos.sp_crear_integrante_seleccion @CodigoPais = @nacionalidad, @Nombre = @nombreJugador, @Apellido = @apellidoJugador, @FNacimiento = @f_nacimiento, @ID = @ID OUTPUT;
+
+        UPDATE #Players
+            SET map_id = @ID
+            WHERE key_id = @idJugadorActual;
+
         SET @jugadoresInsertados = @jugadoresInsertados + 1;
     END
     ELSE BEGIN
@@ -461,10 +472,61 @@ END;
 /*      Convocados!             */
 /*******************************/
 
-SELECT * FROM Mundial.Paises_Participes
 
-DECLARE @inserciones    INT = @confederacionesInsertadas + @paisesInsertados + @jugadoresInsertados + @mundialesInsertados;
+DECLARE @maxConvocacionesID INT = (SELECT max(key_id) FROM #Squads);
+
+DECLARE @idConvocacionActual INT = 1;
+
+DECLARE @convocacionesInsertadas   INT = 0;
+DECLARE @convocacionesActualizadas INT = 0;
+DECLARE @convocacionesOmitidas     INT = 0;
+
+WHILE (@idConvocacionActual <= @maxConvocacionesID) BEGIN
+    --- NECESITAMOS: CODIGO PAIS - AÑO MUNDIAL - GRUPO. NADA MAS
+    -- DECLARE @___codigoPais char(3) = NULL;
+    DECLARE @___añoMundial INT = NULL;
+    -- DECLARE @__nombre VARCHAR(100) = NULL;
+    -- DECLARE @__apellido VARCHAR(100) = NULL;
+    DECLARE @_IDJugador INT = NULL;
+    DECLARE @dorsal INT = NULL;
+    DECLARE @_tournamentId CHAR(7) = NULL;
+    DECLARE @PlayerCode VARCHAR(100) = null;
+
+    SELECT @dorsal = shirt_number, @_tournamentId = tournament_id, @PlayerCode = player_id
+    FROM #Squads
+    WHERE key_id = @idConvocacionActual;
+    
+    SET @___añoMundial = REPLACE(@_tournamentId, 'WC-', '');
+
+    SET @_IDJugador = (SELECT map_id FROM #Players WHERE player_id = @PlayerCode);
+
+    IF (@_IDJugador is null) BEGIN
+        print 'SKIP ID NOT MAPPED' 
+        SET @idConvocacionActual = @idConvocacionActual + 1; -- enrealidad sería obtener el id por nombre apellido, etc
+        CONTINUE;
+    END;
+    
+    BEGIN TRY
+        exec Equipos.sp_convocar_jugador @AñoMundial = @___añoMundial, @MiembroID = @_IDJugador, @FConvocacion = '01-01-1900', @Dorsal = @dorsal, @ClubId = null
+        set @convocacionesInsertadas = @convocacionesInsertadas + 1;
+    END TRY
+    BEGIN CATCH
+        print 'skip por error'
+        set @convocacionesOmitidas = @convocacionesOmitidas + 1;
+        print ERROR_MESSAGE();
+    END CATCH
+
+    SET @idConvocacionActual = @idConvocacionActual + 1;
+END;
+
+SELECT * FROM Equipos.ConvocacionEnSeleccion
+
+-- SELECT * FROM Mundial.Paises_Participes
+
+DECLARE @inserciones    INT = @confederacionesInsertadas + @paisesInsertados + @jugadoresInsertados + @mundialesInsertados + @participacionesInsertadas + @convocacionesInsertadas;
 DECLARE @modificaciones INT = @confederacionesActualizadas + @paisesModificados + @jugadoresModificados;
+DECLARE @omisiones      INT = @mundialesOmitidos + @participacionesOmitidas + @convocacionesOmitidas
+
 
 SELECT 
     @confederacionesInsertadas   as 'Confederaciones Insertadas',
@@ -474,5 +536,8 @@ SELECT
     @jugadoresInsertados         as 'Jugadores Insertados',
     @jugadoresModificados        as 'Jugadores Modificados',
     @mundialesInsertados         as 'Mundiales Insertados',
+    @participacionesInsertadas   as 'Participaciones Insertadas',
+    @convocacionesInsertadas     as 'Convocados Insertados',
     @inserciones                 as 'Inserciones totales',
-    @modificaciones              as 'Modificaciones totales';
+    @modificaciones              as 'Modificaciones totales',
+    @omisiones                   as 'Omisiones totales';
