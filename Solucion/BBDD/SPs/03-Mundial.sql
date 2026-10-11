@@ -57,22 +57,17 @@ GO
 --SELECT * FROM Administracion.Reglas
 GO
 
-
+-- Sobre Mundial.sp_incluir_pais
+-- En la realidad, se arman varios bombos con diferentes países y reglas, como, no más de x países de cada continente por grupo, excepto europa que puede tener 2.
+-- Los bombos a partir de los cuales se hacen los sorteos se definen con datos como el ranking fifa.
+--
+-- En este SP, se pasa directamente el grupo al que se asigna un país, o se asigna el primero disponible. (Por ejemplo, si hay un equipo en el A, y uno en el B, el primero disponible es el A).
 CREATE OR ALTER PROCEDURE Mundial.sp_incluir_pais
 	 @CodigoPais CHAR(3),
 	 @AñoMundial INT,
 	 @Grupo char(1) = NULL 
 AS
 BEGIN
-	-- Comprueba que el país no esté ya incluído.
-	-- Crea una selección para ese país
-	-- Crea el registro países_participes asociando todo lo necesario
-
-	-- Lógica real: se arman distintos bombos, se van seleccionando y tienen reglas como " no más de x de cada continente, excepto europa que puede tener 2 ..."
-	-- Esos bombos se arman teniendo en cuenta cosas como el ranking fifa. Me parece excesivamente complicado para el tp
-	-- asíque propongo esta lógica más amena y que nos sirve igual para la importación:
-
-	-- Grupos: O se pasa por parámetro, o se asigna automáticamente a la primer posicion disponible (por ejemplo, si hay dos equipos, le da el grupo A posicion 3)
 
 	DECLARE @errores VARCHAR(500) = '';
 
@@ -91,49 +86,58 @@ BEGIN
 	
 	DECLARE @cantidadDeGrupos INT = @cantidadEquipos / 4;
 
-	IF ((SELECT COUNT(*) FROM Mundial.Paises_Participes WHERE mundial_id = @AñoMundial) = @cantidadEquipos)
-		SET @errores = @errores + '- Este mundial alcanzo su cupo de participantes.' + CHAR(13) + CHAR(10);
+	BEGIN TRY
+	BEGIN TRANSACTION -- Incluyo la validación del cupo y del grupo en una transacción con SERIALIZABLE.
+		IF ((SELECT COUNT(*) FROM Mundial.Paises_Participes WITH (UPDLOCK, SERIALIZABLE) WHERE mundial_id = @AñoMundial) = @cantidadEquipos)
+			SET @errores = @errores + '- Este mundial alcanzo su cupo de participantes.' + CHAR(13) + CHAR(10);
 
-	DECLARE @TablaGruposPosibles TABLE (letra CHAR(1));
+		DECLARE @TablaGruposPosibles TABLE (letra CHAR(1));
 
-	--TODO: Me quede aca
-	WITH TodasLasLetras AS (
-		-- caso base: A
-		SELECT 1 AS indice, CHAR(65) AS letra
-		UNION ALL
-		-- Paso recursivo: Generamos las siguientes letras hasta llegar a @cantidadGrupos
-		SELECT indice + 1, CHAR(65 + indice)
-		FROM TodasLasLetras
-		WHERE indice < @cantidadDeGrupos
-	)
-	INSERT INTO @TablaGruposPosibles (Letra)
-	SELECT G.Letra
-	FROM TodasLasLetras G
-	LEFT JOIN Mundial.Paises_Participes P 
-		ON G.Letra = P.grupo 
-		AND P.mundial_id = @AñoMundial 
-	GROUP BY G.Letra
-	HAVING COUNT(P.id) < 4; -- Esto me da warning aunque  funciona, no sé si es relevante
+		--TODO: Me quede aca
+		WITH TodasLasLetras AS (
+			-- caso base: A
+			SELECT 1 AS indice, CHAR(65) AS letra
+			UNION ALL
+			-- Paso recursivo: Generamos las siguientes letras hasta llegar a @cantidadGrupos
+			SELECT indice + 1, CHAR(65 + indice)
+			FROM TodasLasLetras
+			WHERE indice < @cantidadDeGrupos
+		)
+		INSERT INTO @TablaGruposPosibles (Letra)
+		SELECT G.Letra
+		FROM TodasLasLetras G
+		LEFT JOIN Mundial.Paises_Participes P WITH (UPDLOCK, SERIALIZABLE)
+			ON G.Letra = P.grupo 
+			AND P.mundial_id = @AñoMundial 
+		GROUP BY G.Letra
+		HAVING COUNT(P.id) < 4; -- Esto me da warning aunque  funciona, no sé si es relevante
 
-	IF (@Grupo IS NOT NULL AND ASCII(@Grupo) not between 65 and (65 + @cantidadDeGrupos)) 
-		SET @errores = @errores + '- Si se define un grupo, debe ser válido.' + CHAR(13) + CHAR(10);
-	ELSE IF (@Grupo is not null and (NOT EXISTS (SELECT 1 FROM @TablaGruposPosibles WHERE Letra = @Grupo)))
-		SET @errores = @errores + '- El grupo indicado está lleno.' + CHAR(13) + CHAR(10);
+		IF (@Grupo IS NOT NULL AND ASCII(@Grupo) not between 65 and (65 + @cantidadDeGrupos)) 
+			SET @errores = @errores + '- Si se define un grupo, debe ser válido.' + CHAR(13) + CHAR(10);
+		ELSE IF (@Grupo is not null and (NOT EXISTS (SELECT 1 FROM @TablaGruposPosibles WHERE Letra = @Grupo)))
+			SET @errores = @errores + '- El grupo indicado está lleno.' + CHAR(13) + CHAR(10);
 
-	IF (@errores <> '')
-		throw 50001, @errores, 1;
+		IF (@errores <> '')
+			throw 50001, @errores, 1;
 
-	INSERT INTO Mundial.Selecciones (pais_id) VALUES (@CodigoPais)
-	DECLARE @seleccionId INT = (SELECT SCOPE_IDENTITY());
+		
+		IF (@Grupo is null)
+			SET @Grupo = (SELECT TOP 1 Letra FROM @TablaGruposPosibles); -- El primer grupo disponible, en orden
 
-	IF (@Grupo is null)
-		SET @Grupo = (SELECT TOP 1 Letra FROM @TablaGruposPosibles); -- El primer grupo disponible, en orden
+		INSERT INTO Mundial.Selecciones (pais_id) VALUES (@CodigoPais)
+		DECLARE @seleccionId INT = (SELECT SCOPE_IDENTITY());
 
-	INSERT INTO Mundial.Paises_Participes 
-		(pais_id, mundial_id, seleccion_id, esta_eliminado, grupo)
-		VALUES
-		(@CodigoPais, @AñoMundial, @seleccionId, 0, @Grupo);
-
+		INSERT INTO Mundial.Paises_Participes 
+			(pais_id, mundial_id, seleccion_id, esta_eliminado, grupo)
+			VALUES
+			(@CodigoPais, @AñoMundial, @seleccionId, 0, @Grupo);
+	COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+		if @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION;
+		throw
+	END CATCH
 END
 GO
 
