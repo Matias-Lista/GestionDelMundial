@@ -16,7 +16,7 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 	 @CantidadDeEquipos INT
 AS
 BEGIN
-	
+	SET NOCOUNT ON
 	DECLARE @añoMundial INT = YEAR(@FInicio);
 
 	DECLARE @errores VARCHAR(500) = '';
@@ -68,7 +68,7 @@ CREATE OR ALTER PROCEDURE Mundial.sp_incluir_pais
 	 @Grupo char(1) = NULL 
 AS
 BEGIN
-
+	SET NOCOUNT ON
 	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial)
@@ -79,6 +79,10 @@ BEGIN
 
 	IF EXISTS (SELECT 1 FROM Mundial.Paises_Participes WHERE mundial_id = @AñoMundial AND pais_id = @CodigoPais)
 		SET @errores = @errores + '- El equipo ya está participando de ese mundial.' + CHAR(13) + CHAR(10);
+
+	
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
 
 	-- NOTA: en los primeros mundiales hubieron equipos de 3.
 	DECLARE @cantidadEquipos INT; 
@@ -93,7 +97,6 @@ BEGIN
 
 		DECLARE @TablaGruposPosibles TABLE (letra CHAR(1));
 
-		--TODO: Me quede aca
 		WITH TodasLasLetras AS (
 			-- caso base: A
 			SELECT 1 AS indice, CHAR(65) AS letra
@@ -154,20 +157,33 @@ GO*/
 CREATE OR ALTER PROCEDURE Mundial.sp_habilitar_arbitro
 	@AñoMundial INT,
 	@ArbitroID INT,
-	@Confederacion varchar(8) = NULL
+	@ConfederacionID INT = NULL
 AS
 BEGIN
+	SET NOCOUNT ON
 
-	-- Que el Arbitro no esté asignado a ese mundial, 
-	-- que la confederacion exista.
-	-- que el mundial exista
-	-- que el arbitro exista
+	DECLARE @errores VARCHAR(500) = '';
 
-	DECLARE @confederacionId INT = IIF(@Confederacion is not NULL,
-		(SELECT id FROM Administracion.Confederaciones WHERE siglas = @Confederacion),
-		(NULL)
-	);
+	-- Que el Arbitro no esté asignado a ese mundial,
 
+	IF (@ConfederacionID is not null and NOT EXISTS (SELECT 1 FROM Administracion.Confederaciones WHERE id = @ConfederacionID))
+		SET @errores = '- La confederación no existe.' + CHAR(13) + CHAR(10)
+
+	IF (@AñoMundial is null)
+		SET @errores = '- Debe indicar un mundial' + CHAR(13) + CHAR(10)
+
+	IF (@ArbitroID is null)
+		SET @errores = '- Debe indicar un arbitro' + CHAR(13) + CHAR(10)
+	
+	IF (@ArbitroID is not null and NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID))
+		SET @errores = '- El arbitro no existe.' + CHAR(13) + CHAR(10)
+
+	-- Duda: Deberíamos hacer transacciones acá? (para no habilitar dos veces al mismo arbitro, aunque la constraint UQ lo evitaría).
+	IF EXISTS (SELECT 1 FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @AñoMundial and arbitro_id = @ArbitroID)
+		SET @errores = '- El arbitro ya está habilitado para ese mundial.' + CHAR(13) + CHAR(10)
+		
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
 
 	INSERT INTO Mundial.Habilitacion_Arbitro 
 		(mundial_id, arbitro_id, confederacion_id)

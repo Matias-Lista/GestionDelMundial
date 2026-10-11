@@ -205,7 +205,8 @@ CREATE TABLE Mundial.Habilitacion_Arbitro (
     id               INT PRIMARY KEY IDENTITY(1,1),
     mundial_id       SMALLINT REFERENCES Mundial.Mundiales(año) NOT NULL,
     arbitro_id       INT REFERENCES Arbitraje.Arbitros(id) NOT NULL,
-    confederacion_id INT REFERENCES Administracion.Confederaciones(id) NOT NULL
+    confederacion_id INT REFERENCES Administracion.Confederaciones(id) NOT NULL,
+    CONSTRAINT UQ_Una_Asignacion_Por_Arbitro_y_Mundial UNIQUE(mundial_id, arbitro_id)
 );
 END
 GO
