@@ -25,7 +25,8 @@ CREATE OR ALTER PROCEDURE Equipos.sp_crear_integrante_seleccion
 	@CodigoPais CHAR(3),
 	@Nombre VARCHAR(100), -- Hay jugadores que no tienen registrado nombre, pero figuran "unavailable".
 	@Apellido VARCHAR(100),
-	@FNacimiento DATE = NULL -- Hay jugadores de los cuales no se tiene registro de cuándo nacieron (los primeros mundiales).
+	@FNacimiento DATE = NULL, -- Hay jugadores de los cuales no se tiene registro de cuándo nacieron (los primeros mundiales).
+	@ID INT = NULL OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -52,6 +53,8 @@ BEGIN
 	(pais_id, nombre, apellido, f_nacimiento)
 	VALUES
 	(@CodigoPais, @Nombre, @Apellido, @FNacimiento);
+
+	SET @ID = SCOPE_IDENTITY();
 
 END
 GO
