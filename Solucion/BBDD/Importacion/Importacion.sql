@@ -1,6 +1,9 @@
 use GestionDelMundial;
 GO
 
+-- TODO: Optimización: Sacar todo lo que se ejecuta dentro de los bucles afuera (por ejemplo, la limpieza de los ids WC-)
+
+
 -- Prueba de concepto de la improtación de datos. Es un boceto, probé como se manipulan los .csv de datahub.io/football/worldcup
 -- Tiene rutas hardcodeadas, hay que convertir eso a Store Procedure/s. De momento no me imagino que se puedan importar cosas sueltas (por ejemplo,
 -- solo los goles de un partido), sino que veo necesario importar todos los datasets juntos. Porque a veces utilizamos cosas como los ids internos del .csv
@@ -102,7 +105,6 @@ WITH (
 
 -- SELECT * FROM #Teams
 
-
 DECLARE @maxEquipoID INT = (SELECT max(key_id) FROM #Teams);
 
 DECLARE @idEquipoActual INT = 1;
@@ -185,7 +187,6 @@ SET birth_date = NULL
 WHERE TRY_CAST(birth_date AS DATE) IS NULL;
 
 ALTER TABLE #Players ALTER COLUMN birth_date DATE;
-
 --SELECT * FROM #Players
 
 CREATE TABLE #Squads (
