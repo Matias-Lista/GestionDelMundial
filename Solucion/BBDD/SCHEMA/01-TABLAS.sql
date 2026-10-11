@@ -92,7 +92,7 @@ IF OBJECT_ID('Administracion.Clubes', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Clubes (
     id INT IDENTITY (1,1),
-    nombre VARCHAR(100) UNIQUE,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
     
     CONSTRAINT PK_Clubes PRIMARY KEY (id)
 );
@@ -289,7 +289,7 @@ CREATE TABLE Arbitraje.ArbitroAsignadoPartido (
     id         INT              PRIMARY KEY IDENTITY(1,1),
     arbitro_id INT        REFERENCES Arbitraje.Arbitros(id) NOT NULL,
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
-    rol CHAR(50) CHECK (rol in ('1er', 'asistente', '3er arbitro', 'VAR')) NOT NULL --TODO: ver nombres correctos
+    rol CHAR(50) CHECK (rol in ('PRINCIPAL', 'ASISTENTE', 'CUARTO', 'VAR')) NOT NULL --TODO: ver nombres correctos
 );
 END
 GO
@@ -328,6 +328,8 @@ BEGIN
 CREATE TABLE Eventos.Impedimentos (
     id         INT PRIMARY KEY IDENTITY(1,1),
     jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
+    partido_origen_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
+    motivo CHAR(1) CHECK (motivo IN ('A', 'R', 'D')) NOT NULL, -- Acumulación de amarillas, Roja, Disciplinaria
     partidos_restantes SMALLINT CHECK (partidos_restantes >= 0) NOT NULL
 );
 END
@@ -347,18 +349,31 @@ CREATE TABLE Eventos.MomentoEvento (
 END
 GO
 
+
+
+
+--agregu[e las columnas de es_doble_amarilla y tarjeta para poder hacer los casos de expulsi[on por doble amarilla o por tarjeta roja
 IF OBJECT_ID('Eventos.Amonestaciones', 'U') IS NULL
 BEGIN
 CREATE TABLE Eventos.Amonestaciones (
     id         INT PRIMARY KEY IDENTITY(1,1),
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
     jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
-    momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL
-);
+    momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL,
+    tarjeta CHAR(1) CHECK (tarjeta IN ('A', 'R')) NOT NULL, -- Amarilla, Roja
+    es_doble_amarilla BIT DEFAULT 0 NOT NULL, -- 1 = roja generada por la segunda amarilla del partido
+    motivo VARCHAR(200) NOT NULL,
 
+    CONSTRAINT CK_Doble_Amarilla_Es_Roja CHECK (es_doble_amarilla = 0 OR tarjeta = 'R')
+);
 END
 GO
 
+
+
+
+
+--faltaba el tema de los motivos de los cambios, lo dice en el tp por eso lo agregu[e
 IF OBJECT_ID('Eventos.Cambios', 'U') IS NULL
 BEGIN
 CREATE TABLE Eventos.Cambios (
@@ -366,11 +381,17 @@ CREATE TABLE Eventos.Cambios (
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
     jugador_entra_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
     jugador_sale_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
-    momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL
+    momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL,
+    motivo VARCHAR(10) CHECK (motivo IN ('TACTICO', 'LESION', 'PRECAUCION')) NOT NULL,
+
+    CONSTRAINT CK_Cambio_Jugadores_Distintos CHECK (jugador_entra_id <> jugador_sale_id)
 );
 END
 GO
 
+
+
+--ac[a solo le agregu[e un check para que el jugador que relaiza el gol no sea el mismo al que asiste.
 IF OBJECT_ID('Eventos.Goles', 'U') IS NULL
 BEGIN
 CREATE TABLE Eventos.Goles (
@@ -379,7 +400,9 @@ CREATE TABLE Eventos.Goles (
     jugador_autor_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
     jugador_asistente_id INT REFERENCES Equipos.IntegranteSeleccion(id),
     momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL,
-    tipo CHAR(1) CHECK(tipo in ('T', 'N', 'C', 'P', 'E')) NOT NULL -- Tiro libre, normal, cabeza, Penal (por falta en el area), En Contra
+    tipo CHAR(1) CHECK(tipo in ('T', 'N', 'C', 'P', 'E')) NOT NULL, -- Tiro libre, normal, cabeza, Penal (por falta en el area), En Contra
+
+    CONSTRAINT CK_Gol_Asistente_Distinto_Del_Autor CHECK (jugador_asistente_id IS NULL OR jugador_asistente_id <> jugador_autor_id)
 );
 END
 GO

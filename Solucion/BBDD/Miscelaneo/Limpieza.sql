@@ -58,11 +58,34 @@ DROP PROCEDURE IF EXISTS Administracion.sp_crear_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_pais;
+DROP PROCEDURE IF EXISTS Administracion.sp_crear_idioma;
+DROP PROCEDURE IF EXISTS Administracion.sp_modificar_idioma
+DROP PROCEDURE IF EXISTS Administracion.sp_asociar_idioma_a_pais
+DROP PROCEDURE IF EXISTS Administracion.sp_crear_club
+DROP PROCEDURE IF EXISTS Administracion.sp_modificar_club;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_idioma;
+DROP PROCEDURE IF EXISTS Administracion.sp_desasociar_idioma_de_pais;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_club;
+
 
 DROP PROCEDURE IF EXISTS Mundial.sp_crear_mundial;
 DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;
 
 DROP PROCEDURE IF EXISTS Mundial.sp_habilitar_arbitro;
+
+DROP PROCEDURE IF EXISTS Arbitraje.sp_crear_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_modificar_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_eliminar_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_asociar_idioma_a_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_desasociar_idioma_de_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_registrar_informe_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_modificar_informe_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_eliminar_informe_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_designar_arbitro;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_designar_terna_completa;
+DROP PROCEDURE IF EXISTS Arbitraje.sp_quitar_designacion;
+DROP FUNCTION  IF EXISTS Arbitraje.fn_obtener_arbitro_id;
+DROP FUNCTION  IF EXISTS Arbitraje.fn_historial_arbitro;
 
 DROP PROCEDURE IF EXISTS Equipos.sp_crear_integrante_seleccion;
 DROP PROCEDURE IF EXISTS Equipos.sp_modificar_integrante_seleccion;
@@ -72,6 +95,11 @@ DROP PROCEDURE IF EXISTS Equipos.sp_cancelar_convocacion;
 
 DROP FUNCTION  IF EXISTS Equipos.fn_obtener_integrante_id;
 DROP FUNCTION  IF EXISTS Equipos.fn_obtener_jugadores_convocados
+DROP FUNCTION  IF EXISTS Administracion.fn_obtener_regla;
+DROP FUNCTION  IF EXISTS Eventos.fn_orden_fase;
+DROP FUNCTION  IF EXISTS Eventos.fn_validar_momento;
+DROP FUNCTION  IF EXISTS Eventos.fn_resultado_partido;
+DROP FUNCTION  IF EXISTS Eventos.fn_jugadores_en_cancha;
 
 DROP PROCEDURE IF EXISTS Publicidad.sp_crear_tarifa;
 DROP PROCEDURE IF EXISTS Publicidad.sp_crear_anunciante;
@@ -81,6 +109,15 @@ DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
 
 DROP PROCEDURE IF EXISTS Partidos.sp_definir_formacion_inicial;
+
+
+DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_amonestacion;
+DROP PROCEDURE IF EXISTS Eventos.sp_registrar_impedimento;
+DROP PROCEDURE IF EXISTS Eventos.sp_modificar_impedimento;
+DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_impedimento;
+
+
+
 
 -- Eliminar Schemas
 DROP SCHEMA IF EXISTS [Administracion]
