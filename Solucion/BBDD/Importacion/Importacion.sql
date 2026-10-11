@@ -308,7 +308,7 @@ CREATE TABLE #Tournaments (
     quarter_finals BIT,
     semi_finals BIT,
     third_place_match BIT,
-    final BIT
+    final INT
 );
 
 BULK INSERT #Tournaments
@@ -531,7 +531,7 @@ END;
 COMMIT TRAN
 
 SELECT * FROM Equipos.ConvocacionEnSeleccion
-
+select * from Mundial.Mundiales
 -- SELECT * FROM Mundial.Paises_Participes
 
 DECLARE @inserciones    INT = @confederacionesInsertadas + @paisesInsertados + @jugadoresInsertados + @mundialesInsertados + @participacionesInsertadas + @convocacionesInsertadas;
