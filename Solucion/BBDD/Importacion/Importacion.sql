@@ -1,8 +1,6 @@
 use GestionDelMundial;
 GO
 
--- TODO: Optimización: Sacar todo lo que se ejecuta dentro de los bucles afuera (por ejemplo, la limpieza de los ids WC-)
-
 
 -- Prueba de concepto de la improtación de datos. Es un boceto, probé como se manipulan los .csv de datahub.io/football/worldcup
 -- Tiene rutas hardcodeadas, hay que convertir eso a Store Procedure/s. De momento no me imagino que se puedan importar cosas sueltas (por ejemplo,
@@ -228,6 +226,8 @@ SET P.CodigoPais = JP.team_code
 FROM #Players P
 INNER JOIN jugador_pais JP ON P.player_id = JP.player_id;
 
+UPDATE #Squads SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+
 DECLARE @maxJugadorID INT = (SELECT max(key_id) FROM #Players);
 
 DECLARE @idJugadorActual INT = 1;
@@ -418,6 +418,7 @@ WITH (
 
 DELETE FROM #GroupStandings WHERE tournament_name LIKE  '%Women%';
 
+UPDATE #GroupStandings SET tournament_id = REPLACE(tournament_id, 'WC-', '');
 SELECT * FROM #GroupStandings
 
 
@@ -440,7 +441,7 @@ WHILE (@idSeleccionActual <= @maxSeleccionID) BEGIN
     FROM #GroupStandings
     WHERE key_id = @idSeleccionActual;
     
-    SET @__añoMundial = REPLACE(@tournamentId, 'WC-', '');
+    SET @__añoMundial = @tournamentId;
 
     IF (@__añoMundial is null) BEGIN
         SET @idSeleccionActual = @idSeleccionActual + 1;
@@ -497,7 +498,7 @@ WHILE (@idConvocacionActual <= @maxConvocacionesID) BEGIN
     FROM #Squads
     WHERE key_id = @idConvocacionActual;
     
-    SET @___añoMundial = REPLACE(@_tournamentId, 'WC-', '');
+    SET @___añoMundial = @_tournamentId;
 
     SET @_IDJugador = (SELECT map_id FROM #Players WHERE player_id = @PlayerCode);
 
