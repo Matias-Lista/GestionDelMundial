@@ -16,6 +16,7 @@ IF OBJECT_ID('tempdb..#Squads') IS NOT NULL DROP TABLE #Squads;
 GO 
 SET NOCOUNT ON
 
+
 CREATE TABLE #Confederations (
     key_id INT PRIMARY KEY CLUSTERED,
     confederation_id CHAR(4),
@@ -45,6 +46,7 @@ DECLARE @idConfederacionActual INT = 1;
 DECLARE @confederacionesInsertadas INT = 0;
 DECLARE @confederacionesActualizadas INT = 0;
 
+BEGIN TRAN
 WHILE (@idConfederacionActual <= @maxConfederacionID) BEGIN
     
     DECLARE @nombre VARCHAR(100);
@@ -67,7 +69,7 @@ WHILE (@idConfederacionActual <= @maxConfederacionID) BEGIN
 
     SET @idConfederacionActual = @idConfederacionActual + 1;
 END;
-
+COMMIT TRAN
 -- SELECT * FROM Administracion.Confederaciones
 
 
@@ -109,6 +111,7 @@ DECLARE @idEquipoActual INT = 1;
 DECLARE @paisesInsertados INT = 0;
 DECLARE @paisesModificados INT = 0;
 
+BEGIN TRAN
 WHILE (@idEquipoActual <= @maxEquipoID) BEGIN
     
     DECLARE @codigoPais CHAR(3);
@@ -136,7 +139,7 @@ WHILE (@idEquipoActual <= @maxEquipoID) BEGIN
 
     SET @idEquipoActual = @idEquipoActual + 1;
 END;
-
+COMMIT TRAN
 
 print CONCAT('Confederaciones ACTUALIZADAS: ', @confederacionesActualizadas);
 print CONCAT('Confederaciones insertadas: ', @confederacionesInsertadas);
@@ -235,6 +238,7 @@ DECLARE @idJugadorActual INT = 1;
 DECLARE @jugadoresModificados INT = 0;
 DECLARE @jugadoresInsertados INT = 0;
 
+BEGIN TRAN
 WHILE (@idJugadorActual < @maxJugadorID) BEGIN
 
     DECLARE @nombreJugador VARCHAR(100) = NULL;
@@ -274,6 +278,7 @@ WHILE (@idJugadorActual < @maxJugadorID) BEGIN
 
 END;
 select top 10 * FROM Equipos.IntegranteSeleccion
+COMMIT TRAN
 
 /*****************************/
 /*      Mundiales            */
@@ -344,6 +349,7 @@ DECLARE @mundialesInsertados INT = 0;
 DECLARE @mundialesActualizados INT = 0;
 DECLARE @mundialesOmitidos INT = 0;
 
+BEGIN TRAN
 WHILE (@idMundialActual <= @maxMundialID) BEGIN
     -- tournament_name LIKE  '%Women%'
     DECLARE @fechaInicio DATE = NULL;
@@ -374,7 +380,7 @@ WHILE (@idMundialActual <= @maxMundialID) BEGIN
 
     SET @idMundialActual = @idMundialActual + 1;
 END;
-
+COMMIT TRAN
 
 /******************************/
 /* Países partícipes y grupos */
@@ -430,6 +436,7 @@ DECLARE @participacionesInsertadas   INT = 0;
 DECLARE @participacionesActualizadas INT = 0;
 DECLARE @participacionesOmitidas     INT = 0;
 
+BEGIN TRAN
 WHILE (@idSeleccionActual <= @maxSeleccionID) BEGIN
     --- NECESITAMOS: CODIGO PAIS - AÑO MUNDIAL - GRUPO. NADA MAS
     DECLARE @__codigoPais char(3) = NULL;
@@ -468,7 +475,7 @@ WHILE (@idSeleccionActual <= @maxSeleccionID) BEGIN
 
     SET @idSeleccionActual = @idSeleccionActual + 1;
 END;
-
+COMMIT TRAN
 
 /********************************/
 /*      Convocados!             */
@@ -483,6 +490,7 @@ DECLARE @convocacionesInsertadas   INT = 0;
 DECLARE @convocacionesActualizadas INT = 0;
 DECLARE @convocacionesOmitidas     INT = 0;
 
+BEGIN TRAN
 WHILE (@idConvocacionActual <= @maxConvocacionesID) BEGIN
     --- NECESITAMOS: CODIGO PAIS - AÑO MUNDIAL - GRUPO. NADA MAS
     -- DECLARE @___codigoPais char(3) = NULL;
@@ -520,6 +528,7 @@ WHILE (@idConvocacionActual <= @maxConvocacionesID) BEGIN
 
     SET @idConvocacionActual = @idConvocacionActual + 1;
 END;
+COMMIT TRAN
 
 SELECT * FROM Equipos.ConvocacionEnSeleccion
 
