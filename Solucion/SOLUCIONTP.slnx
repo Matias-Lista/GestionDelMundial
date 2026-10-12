@@ -20,6 +20,7 @@
     <File Path="BBDD/SPs/06-Eventos.sql" />
     <File Path="BBDD/SPs/07-Arbitraje.sql" />
     <File Path="BBDD/SPs/08-Publicidad.sql" />
+    <File Path="BBDD/SPs/09-Arbitraje-Logica.sql" />
   </Folder>
   <Folder Name="/BBDD/03 - Importacion/">
     <File Path="BBDD/Importacion/Importacion.sql" />
