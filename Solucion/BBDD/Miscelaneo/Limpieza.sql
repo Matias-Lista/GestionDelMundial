@@ -116,7 +116,27 @@ DROP PROCEDURE IF EXISTS Eventos.sp_registrar_impedimento;
 DROP PROCEDURE IF EXISTS Eventos.sp_modificar_impedimento;
 DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_impedimento;
 
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_convocados;
 
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_paises_participes;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_group_standings_csv;
+
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_mundiales;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_tournaments_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_jugadores;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_players_csv;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_squads_csv;
+
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_paises;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_teams_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_confederaciones;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_confederations_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.PoblarDB;
 
 
 -- Eliminar Schemas
@@ -126,6 +146,7 @@ DROP SCHEMA IF EXISTS [Partidos]
 DROP SCHEMA IF EXISTS [Equipos]
 DROP SCHEMA IF EXISTS [Mundial]
 DROP SCHEMA IF EXISTS [Arbitraje]
+DROP SCHEMA IF EXISTS [Administracion]
 
 GO
 

@@ -5,7 +5,8 @@
 -- Tienen que ser rutas sin espacios, hay que ponerlo sin comillas. 
 -- También hay que entrar a Consulta > Modo SQLCMD. Se tendría que poenr gris las lineas que empiezan con ':' para mostrar que está activo
 
-:setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
+-- :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
+:setvar rutaAlRepositorio C:\gits\GestionDelMundial
 
 /*PRINT 'Ruta al Repositorio: $(rutaAlRepositorio)'
 PRINT 'TABLAS: $(rutaAlRepositorio)\Solucion\BBDD\SCHEMA\01-TABLAS.sql'*/
@@ -40,6 +41,8 @@ GO
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Arbitraje-Logica.sql
 GO
 
--- Descomentar para importación de datos:
--- :r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Importacion.sql
+:r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Importacion.sql
+GO
+
+:r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Staging.sql
 GO

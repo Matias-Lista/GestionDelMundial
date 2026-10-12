@@ -53,7 +53,8 @@ CREATE OR ALTER PROCEDURE Administracion.sp_crear_confederacion
 	@FFundacion DATE = NULL
 AS
 BEGIN
-DECLARE @errores NVARCHAR(500) = '';
+	SET NOCOUNT ON
+	DECLARE @errores NVARCHAR(500) = '';
 
 	IF (@Nombre IS NULL OR TRIM(@Nombre) = '')
 		SET @errores = @errores + 'Debe indicar el nombre de la confederación. ';
@@ -83,6 +84,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_modificar_confederacion
 	@FFundacion DATE = NULL
 AS
 BEGIN
+	SET NOCOUNT ON
 	DECLARE @errores NVARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Administracion.Confederaciones WHERE id = @ID)
@@ -114,6 +116,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_crear_pais
 	@ConfederacionID INT
 AS
 BEGIN
+	SET NOCOUNT ON
 	INSERT INTO Administracion.Paises
 		(codigo, nombre, confederacion_id)
 		VALUES
@@ -127,6 +130,8 @@ CREATE OR ALTER PROCEDURE Administracion.sp_modificar_pais
 	@ConfederacionID INT
 AS
 BEGIN
+	SET NOCOUNT ON
+
 	DECLARE @errores NVARCHAR(500) = '';
 
 	IF (@Codigo IS NULL OR @Codigo NOT LIKE '[A-Z][A-Z][A-Z]')
