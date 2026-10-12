@@ -14,7 +14,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_registrar_regla
 	@Valor VARCHAR(100)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial)
 		SET @errores = @errores + 'El mundial no existe. ';
@@ -53,7 +53,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_crear_confederacion
 	@FFundacion DATE = NULL
 AS
 BEGIN
-DECLARE @errores NVARCHAR(500) = '';
+DECLARE @errores VARCHAR(500) = '';
 
 	IF (@Nombre IS NULL OR TRIM(@Nombre) = '')
 		SET @errores = @errores + 'Debe indicar el nombre de la confederación. ';
@@ -83,7 +83,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_modificar_confederacion
 	@FFundacion DATE = NULL
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Administracion.Confederaciones WHERE id = @ID)
 		SET @errores = @errores + 'No existe una confederación con ese ID. ';
@@ -127,7 +127,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_modificar_pais
 	@ConfederacionID INT
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF (@Codigo IS NULL OR @Codigo NOT LIKE '[A-Z][A-Z][A-Z]')
 		SET @errores = @errores + 'El código del país debe tener 3 letras (ISO). ';
@@ -157,7 +157,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_crear_idioma
 	@Label VARCHAR(100)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
     IF (@Codigo IS NULL OR LTRIM(RTRIM(@Codigo)) = '') --valido que no sea null o que no sean espacion vacíos!
         SET @errores = @errores + 'Debe ingresar el código del idioma. ';
@@ -182,7 +182,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_modificar_idioma
 	@Label VARCHAR(100)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
     IF NOT EXISTS (SELECT 1 FROM Administracion.Idiomas WHERE codigo = @Codigo)
         SET @errores = @errores + 'No existe un idioma con ese código. ';
@@ -203,7 +203,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_asociar_idioma_a_pais
 	@IdiomaID char(2)
 AS 
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
     IF (@CodigoPais IS NULL)
         SET @errores = @errores + 'Debe indicar el código del país. ';
@@ -235,7 +235,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_crear_club
 	@Nombre VARCHAR(100)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF (@Nombre IS NULL)
 		SET @errores = @errores + 'Debe ingresar el nombre del club. ';
@@ -258,7 +258,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_modificar_club
 	@Nombre VARCHAR(100)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Administracion.Clubes WHERE id = @Id)
 		SET @errores = @errores + 'No existe un club con ese ID.';
@@ -287,7 +287,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_eliminar_idioma
 	@Codigo CHAR(2)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF (@Codigo IS NULL)
 		SET @errores = @errores + 'Debe indicar el código del idioma. ';
@@ -315,7 +315,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_desasociar_idioma_de_pais
 	@CodigoIdioma CHAR(2)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF (@CodigoPais IS NULL)
 		SET @errores = @errores + 'Debe indicar el código del país. ';
@@ -340,7 +340,7 @@ CREATE OR ALTER PROCEDURE Administracion.sp_eliminar_club
 	@ID INT
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF (@ID IS NULL)
 		SET @errores = @errores + 'Debe indicar el id del club. ';

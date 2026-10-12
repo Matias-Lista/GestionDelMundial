@@ -13,7 +13,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_designar_arbitro
     @Rol VARCHAR(15)
 AS
 BEGIN
-    DECLARE @errores NVARCHAR(1000) = '';
+    DECLARE @errores VARCHAR(1000) = '';
 
     DECLARE @mundialId SMALLINT;
     DECLARE @fase VARCHAR(15);
@@ -119,7 +119,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_designar_terna_completa
 	@VarID INT = NULL
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	DECLARE @mundialId SMALLINT = (SELECT mundial_id FROM Partidos.Partidos WHERE id = @PartidoID);
 	DECLARE @usaVar VARCHAR(100);
@@ -181,7 +181,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_quitar_designacion
 	@ArbitroID INT
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID AND arbitro_id = @ArbitroID)
 		SET @errores = @errores + 'El árbitro no está designado en ese partido. ';

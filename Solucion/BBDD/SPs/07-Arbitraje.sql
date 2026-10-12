@@ -14,7 +14,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_crear_arbitro
 	@Apellido VARCHAR(100)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
 		SET @errores = @errores + 'El país no existe. ';
@@ -45,7 +45,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_modificar_arbitro
 	@Apellido VARCHAR(100)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ID)
 		SET @errores = @errores + 'No existe un árbitro con ese ID. ';
@@ -90,7 +90,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_asociar_idioma_a_arbitro
 	@CodigoIdioma CHAR(2)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID)
 		SET @errores = @errores + 'El árbitro no existe. ';
@@ -117,7 +117,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_desasociar_idioma_de_arbitro
 	@CodigoIdioma CHAR(2)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitro_Habla WHERE arbitro_id = @ArbitroID AND idioma_id = @CodigoIdioma)
 		SET @errores = @errores + 'El árbitro no tiene asociado ese idioma.';
@@ -139,7 +139,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_registrar_informe_arbitro
 	@PartidoID INT = NULL
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	DECLARE @fechaPartido DATE = (SELECT CAST(fecha_y_hora AS DATE) FROM Partidos.Partidos WHERE id = @PartidoID);
 
@@ -180,7 +180,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_modificar_informe_arbitro
 	@Motivo VARCHAR(250)
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	DECLARE @fechaPartido DATE = (SELECT CAST(P.fecha_y_hora AS DATE)
 									FROM Arbitraje.InformesArbitros I
@@ -238,7 +238,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_eliminar_arbitro
 	@ID INT
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ID)
 		SET @errores = @errores + 'No existe un árbitro con ese ID. ';
@@ -269,7 +269,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_eliminar_informe_arbitro
 	@ID INT
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.InformesArbitros WHERE id = @ID)
 		SET @errores = @errores + 'No existe un informe con ese ID.';

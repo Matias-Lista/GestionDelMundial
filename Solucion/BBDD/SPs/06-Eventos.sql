@@ -30,12 +30,12 @@ GO
 
 ---VALIDA que un evento sucesa en un minuto y tiempo coherente de un partido
 CREATE OR ALTER FUNCTION Eventos.fn_validar_momento (@PartidoID INT, @Minuto SMALLINT, @Tiempo CHAR(1)) --le paso el tiempo (primer tiempo, seg, suplementario1 0 2)
-RETURNS NVARCHAR(300)
+RETURNS VARCHAR(300)
 AS
 BEGIN
 	-- Los minutos son ABSOLUTOS un gol a los 45+2 se carga como minuto 47 DEL TIEMPO 1
 	-- (en caso de no cargarse el tiempo adicional se pone una tolerancia de 10 min)
-	DECLARE @errores NVARCHAR(300) = '';
+	DECLARE @errores VARCHAR(300) = '';
 	DECLARE @fase VARCHAR(15);
 	DECLARE @adicional SMALLINT;
 
@@ -93,7 +93,7 @@ CREATE OR ALTER PROCEDURE Eventos.sp_eliminar_amonestacion
 	@ID INT
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	DECLARE @partidoId INT;
 	DECLARE @jugadorId INT;
@@ -131,7 +131,7 @@ CREATE OR ALTER PROCEDURE Eventos.sp_registrar_impedimento
 	@Motivo CHAR(1) = 'D'
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Partidos.JugadorPosicionInicial WHERE partido_id = @PartidoOrigenID AND jugador_id = @JugadorID)
 		SET @errores = @errores + 'El jugador no participó de ese partido. ';
@@ -161,7 +161,7 @@ CREATE OR ALTER PROCEDURE Eventos.sp_modificar_impedimento
 AS
 BEGIN
 	-- Corrección manual de los partidos que le quedan (0 = sanción cumplida).
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Eventos.Impedimentos WHERE id = @ID)
 		SET @errores = @errores + 'No existe un impedimento con ese ID. ';
@@ -182,7 +182,7 @@ CREATE OR ALTER PROCEDURE Eventos.sp_eliminar_impedimento
 	@ID INT
 AS
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
+	DECLARE @errores VARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Eventos.Impedimentos WHERE id = @ID)
 		SET @errores = @errores + 'No existe un impedimento con ese ID.';
