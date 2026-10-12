@@ -24,5 +24,6 @@
   </Folder>
   <Folder Name="/BBDD/03 - Importacion/">
     <File Path="BBDD/Importacion/Importacion.sql" />
+    <File Path="BBDD/Importacion/Staging.sql" />
   </Folder>
 </Solution>
