@@ -74,6 +74,12 @@ BEGIN
 END
 GO
 
+IF SCHEMA_ID('Importacion') IS NULL
+BEGIN
+    EXEC('CREATE SCHEMA Importacion;');
+END
+GO
+
 --- TABLAS!!!!!
 
 IF OBJECT_ID('Mundial.Mundiales', 'U') IS NULL
