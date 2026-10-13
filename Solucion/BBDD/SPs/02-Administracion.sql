@@ -363,3 +363,86 @@ BEGIN
 		WHERE id = @ID;
 END
 GO
+
+CREATE OR ALTER PROCEDURE Administracion.sp_crear_sede
+    @CodigoPais CHAR(3),
+    @Nombre VARCHAR(100),
+    @Ciudad VARCHAR(100),
+    @Capacidad INT
+AS
+BEGIN
+	SET NOCOUNT ON
+	DECLARE @errores NVARCHAR(500) = '';
+
+	IF (@CodigoPais IS NULL)
+		SET @errores = @errores + '- Debe indicar un país.' + char(13) + char(10);
+		
+	IF (@Nombre IS NULL)
+		SET @errores = @errores + '- Debe indicar un nombre.' + char(13) + char(10);
+		
+	IF (@Ciudad IS NULL)
+		SET @errores = @errores + '- Debe indicar una ciudad.' + char(13) + char(10);
+		
+	IF (@Capacidad IS NULL)
+		SET @errores = @errores + '- Debe indicar una capacidad.' + char(13) + char(10);
+		
+	IF (@Capacidad <= 0)
+		SET @errores = @errores + '- Debe indicar una capacidad positiva.' + char(13) + char(10);
+
+	IF EXISTS (SELECT 1 FROM Administracion.Sedes WHERE pais_id = @CodigoPais and nombre = @Nombre and ciudad = @Ciudad)
+		SET @errores = @errores + '- Ya existe una sede así.' + char(13) + char(10);
+	
+	IF @errores <> ''
+		throw 50001, @errores, 1;
+	
+	INSERT INTO Administracion.Sedes 
+		(pais_id, ciudad, nombre, capacidad)
+		VALUES
+		(@CodigoPais, @Ciudad, @Nombre, @Capacidad);
+END
+GO
+
+/*exec Administracion.sp_crear_sede @CodigoPais = 'ARG', @Nombre = 'Lugar genial', @Ciudad='Ciudad', @Capacidad = 1000
+SELECT * FROM Administracion.Sedes*/
+
+
+CREATE OR ALTER PROCEDURE Administracion.sp_modificar_sede
+    @ID INT,
+	@CodigoPais CHAR(3),
+    @Nombre VARCHAR(100),
+    @Ciudad VARCHAR(100),
+    @Capacidad INT
+AS
+BEGIN
+	SET NOCOUNT ON
+	DECLARE @errores NVARCHAR(500) = '';
+
+	IF (@CodigoPais IS NULL)
+		SET @errores = @errores + '- Debe indicar un país.' + char(13) + char(10);
+		
+	IF (@Nombre IS NULL)
+		SET @errores = @errores + '- Debe indicar un nombre.' + char(13) + char(10);
+		
+	IF (@Ciudad IS NULL)
+		SET @errores = @errores + '- Debe indicar una ciudad.' + char(13) + char(10);
+		
+	IF (@Capacidad IS NULL)
+		SET @errores = @errores + '- Debe indicar una capacidad.' + char(13) + char(10);
+		
+	IF (@Capacidad <= 0)
+		SET @errores = @errores + '- Debe indicar una capacidad positiva.' + char(13) + char(10);
+
+	IF NOT EXISTS (SELECT 1 FROM Administracion.Sedes WHERE pais_id = @CodigoPais and nombre = @Nombre and ciudad = @Ciudad)
+		SET @errores = @errores + '- La sede no existe.' + char(13) + char(10);
+	
+	IF @errores <> ''
+		throw 50001, @errores, 1;
+	
+	UPDATE Administracion.Sedes 
+		set pais_id = @CodigoPais,
+			ciudad = @Ciudad, 
+			nombre = @Nombre, 
+			capacidad = @Capacidad
+		WHERE id = @ID;
+END
+GO

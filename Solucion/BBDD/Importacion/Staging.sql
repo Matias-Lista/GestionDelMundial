@@ -1,6 +1,15 @@
 USE GestionDelMundial;
 GO 
 
+IF OBJECT_ID('tempdb..##Confederations') IS NOT NULL DROP TABLE ##Confederations;
+IF OBJECT_ID('tempdb..##Teams') IS NOT NULL DROP TABLE ##Teams;
+IF OBJECT_ID('tempdb..##Squads') IS NOT NULL DROP TABLE ##Squads;
+IF OBJECT_ID('tempdb..##Players') IS NOT NULL DROP TABLE ##Players;
+IF OBJECT_ID('tempdb..##Tournaments') IS NOT NULL DROP TABLE ##Tournaments;
+IF OBJECT_ID('tempdb..##GroupStandings') IS NOT NULL DROP TABLE ##GroupStandings;
+IF OBJECT_ID('tempdb..##Stadiums') IS NOT NULL DROP TABLE ##Stadiums;
+GO
+
 CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_confederations_csv 
     @Ruta VARCHAR(255)
 AS
@@ -22,6 +31,7 @@ BEGIN
 
     BEGIN TRY
         SET @importacion = '
+        SET NOCOUNT ON
         BULK INSERT ##Confederations
         FROM '''+ @Ruta + '''
         WITH (
@@ -80,6 +90,7 @@ BEGIN
 
     BEGIN TRY
         SET @importacion = '
+        SET NOCOUNT ON
         BULK INSERT ##Teams
         FROM '''+ @Ruta + '''
         WITH (
@@ -145,6 +156,7 @@ BEGIN
 
     BEGIN TRY
         SET @importacion = '
+        SET NOCOUNT ON
         BULK INSERT ##Squads
         FROM '''+ @Ruta + '''
         WITH (
@@ -172,6 +184,11 @@ BEGIN
 
 END
 GO
+
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_players_csv 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
 
     SET NOCOUNT ON
 
@@ -202,13 +219,14 @@ GO
 
     BEGIN TRY
         SET @importacion = '
+        SET NOCOUNT ON
         BULK INSERT ##Players
         FROM '''+ @Ruta + '''
         WITH (
             FORMAT = ''CSV'',
             FIELDQUOTE = ''"'',         -- Ignora las comas que estén dentro de estas comillas
             FIELDTERMINATOR = '','', 
-            ROWTERMINATOR = ''\n'',
+            ROWTERMINATOR = ''0x0a'',
             FIRSTROW = 2,             -- Salta los encabezados
             CODEPAGE = ''65001''        -- UTF-8
         );';
@@ -239,7 +257,7 @@ GO
         WHERE TRY_CAST(birth_date AS DATE) IS NULL;
 
     ALTER TABLE ##Players ALTER COLUMN birth_date DATE;
-
+    
     -- Cargamos la columna "CodigoPais" en #Players.
     WITH jugador_pais as (
         SELECT DISTINCT
@@ -346,6 +364,61 @@ BEGIN
     ALTER TABLE ##Tournaments ALTER COLUMN end_date DATE;
 
     DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Players);
+    
+    -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
+
+END
+GO
+
+
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_stadiums_csv 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Stadiums') IS NOT NULL DROP TABLE ##Stadiums;
+
+    CREATE TABLE ##Stadiums (
+        key_id INT PRIMARY KEY CLUSTERED,
+        tournament_id CHAR(5),
+        stadium_name VARCHAR(100),
+        city_name VARCHAR(100),
+        country_name VARCHAR(100),
+        stadium_capacity INT,
+        stadium_wikipedia_link VARCHAR(200),
+        city_wikipedia_link VARCHAR(200)
+    );
+
+
+    DECLARE @importacion VARCHAR(4000);
+
+    BEGIN TRY
+        SET @importacion = '
+        SET NOCOUNT ON
+        BULK INSERT ##Stadiums
+        FROM '''+ @Ruta + '''
+        WITH (
+            FORMAT = ''CSV'',
+            FIELDQUOTE = ''"'',         -- Ignora las comas que estén dentro de estas comillas
+            FIELDTERMINATOR = '','', 
+            ROWTERMINATOR = ''0x0a'',
+            FIRSTROW = 2,             -- Salta los encabezados
+            CODEPAGE = ''65001''        -- UTF-8
+        );';
+
+        EXEC (@importacion);
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50340, @ErrorBulk, 1;
+        RETURN;
+    END CATCH;
+
+    ALTER TABLE ##Stadiums 
+        DROP COLUMN stadium_wikipedia_link,city_wikipedia_link;
+
+    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Stadiums);
     
     -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
 

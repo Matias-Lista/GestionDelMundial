@@ -190,7 +190,8 @@ CREATE TABLE Arbitraje.Arbitros (
     id             INT          PRIMARY KEY IDENTITY(1,1),
     pais_id        char(3)      REFERENCES Administracion.Paises(codigo) NOT NULL,
     nombre         VARCHAR(100),
-    apellido       VARCHAR(100)
+    apellido       VARCHAR(100),
+    es_mujer       BIT
 );
 END
 GO
@@ -222,10 +223,11 @@ BEGIN
 CREATE TABLE Administracion.Sedes (
     id           INT           PRIMARY KEY IDENTITY(1,1),
     pais_id      char(3)       REFERENCES Administracion.Paises(codigo) NOT NULL,
-    nombre       VARCHAR(100)  UNIQUE NOT NULL,
+    nombre       VARCHAR(100)  NOT NULL,
     ciudad       VARCHAR(100)  NOT NULL,
     capacidad    INT           CHECK (capacidad > 0) NOT NULL,
-    huso_horario SMALLINT      CHECK (huso_horario BETWEEN -12 and 12) NOT NULL
+    
+	CONSTRAINT UQ_Pais_Nombre_Ciudad_Irrepetibles UNIQUE (pais_id, nombre, ciudad, capacidad)
 );
 END
 GO
@@ -268,14 +270,14 @@ IF OBJECT_ID('Partidos.Partidos', 'U') IS NULL
 BEGIN
 CREATE TABLE Partidos.Partidos (
     id       INT              PRIMARY KEY IDENTITY(1,1),
-    seleccion_A_id INT        REFERENCES Mundial.Selecciones(id) NOT NULL,
-    seleccion_B_id INT        REFERENCES Mundial.Selecciones(id) NOT NULL,
+    seleccion_A_id INT        REFERENCES Mundial.Selecciones(id),
+    seleccion_B_id INT        REFERENCES Mundial.Selecciones(id),
     seleccion_ganadora_id INT       REFERENCES Mundial.Selecciones(id),
     mundial_id SMALLINT        REFERENCES Mundial.Mundiales(año) NOT NULL,
     sede_id INT        REFERENCES Administracion.Sedes(id) NOT NULL,
     fecha_y_hora DATETIME NOT NULL, --TODO: Podemos guardar "fecha_y_hora" en utc 0 y usar AT TIME ZONE para mostrar el horario q queramos
     fase VARCHAR(15) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
-    siguiente_partid_id INT REFERENCES Partidos.Partidos(id),
+    siguiente_partido_id INT REFERENCES Partidos.Partidos(id),
     tiempo_adicional_1 SMALLINT,
     tiempo_adicional_2 SMALLINT,
     tiempo_adicional_3 SMALLINT,

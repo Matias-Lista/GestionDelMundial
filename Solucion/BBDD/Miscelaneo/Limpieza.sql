@@ -66,7 +66,8 @@ DROP PROCEDURE IF EXISTS Administracion.sp_modificar_club;
 DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_idioma;
 DROP PROCEDURE IF EXISTS Administracion.sp_desasociar_idioma_de_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_club;
-
+DROP PROCEDURE IF EXISTS Administracion.sp_crear_sede;
+DROP PROCEDURE IF EXISTS Administracion.sp_modificar_sede;
 
 DROP PROCEDURE IF EXISTS Mundial.sp_crear_mundial;
 DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;
@@ -115,6 +116,14 @@ DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_amonestacion;
 DROP PROCEDURE IF EXISTS Eventos.sp_registrar_impedimento;
 DROP PROCEDURE IF EXISTS Eventos.sp_modificar_impedimento;
 DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_impedimento;
+
+
+DROP PROCEDURE IF EXISTS Partidos.sp_generar_partidos;
+DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
+
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_sedes;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_group_stadiums_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_convocados;
 

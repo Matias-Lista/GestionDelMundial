@@ -7,6 +7,7 @@ IF OBJECT_ID('tempdb..##Squads') IS NOT NULL DROP TABLE ##Squads;
 IF OBJECT_ID('tempdb..##Players') IS NOT NULL DROP TABLE ##Players;
 IF OBJECT_ID('tempdb..##Tournaments') IS NOT NULL DROP TABLE ##Tournaments;
 IF OBJECT_ID('tempdb..##GroupStandings') IS NOT NULL DROP TABLE ##GroupStandings;
+IF OBJECT_ID('tempdb..##Stadiums') IS NOT NULL DROP TABLE ##Stadiums;
 GO
 
 CREATE OR ALTER PROCEDURE Importacion.sp_upsert_confederaciones
@@ -125,11 +126,6 @@ BEGIN
 END
 GO
 
-CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_players_csv 
-    @Ruta VARCHAR(255)
-AS
-BEGIN 
-
 CREATE OR ALTER PROCEDURE Importacion.sp_upsert_jugadores
 AS
 BEGIN
@@ -201,7 +197,6 @@ BEGIN
 
 END
 GO
-
 
 CREATE OR ALTER PROCEDURE Importacion.sp_upsert_mundiales
 AS
@@ -553,6 +548,98 @@ BEGIN
 END
 GO
 
+/********/
+/* SEDE */
+/********/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_sedes
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Stadiums') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de Stadiums.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##Stadiums);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        DECLARE @nombrePais VARCHAR(100) = NULL;
+        DECLARE @nombreCiudad VARCHAR(100) = NULL;
+        DECLARE @nombre VARCHAR(100) = NULL;
+        DECLARE @codigoPais CHAR(3) = NULL;
+        DECLARE @capacidad INT = NULL;
+
+
+        SELECT @nombrePais = country_name,
+               @nombreCiudad = city_name,
+               @capacidad = stadium_capacity,
+               @nombre = stadium_name
+            FROM ##Stadiums
+            WHERE key_id = @idActual;
+        
+        SET @codigoPais = (SELECT codigo FROM Administracion.Paises WHERE nombre = @nombrePais);
+
+        BEGIN TRY
+
+            IF (@codigoPais is null) BEGIN
+                DECLARE @msg VARCHAR(250) = CONCAT('SKIP PAÍS INVÁLIDO O NO REGISTRADO: ', @nombrePais);
+                THROW 50001, @msg, 1;
+            END;
+
+
+            DECLARE @idReal INT = (SELECT id FROM Administracion.Sedes 
+                                   WHERE pais_id = @codigoPais and nombre = @nombre 
+                                     and ciudad = @nombreCiudad);
+
+            IF @idReal is NULL BEGIN
+
+                 exec Administracion.sp_crear_sede
+                    @CodigoPais = @codigoPais,
+                    @Nombre = @nombre,
+                    @Ciudad = @nombreCiudad,
+                    @Capacidad = @capacidad;
+
+                    SET @insertadas = @insertadas + 1;
+            END ELSE BEGIN
+
+                 exec Administracion.sp_modificar_sede
+                    @ID = @idReal,
+                    @CodigoPais = @codigoPais,
+                    @Nombre = @nombre,
+                    @Ciudad = @nombreCiudad,
+                    @Capacidad = @capacidad;
+
+                    SET @actualizadas = @actualizadas + 1;
+
+            END
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            print ERROR_MESSAGE();
+        END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'Sedes insertadas',
+        @actualizadas as 'Sedes actualizados',
+        @omitidas as 'Sedes omitidos';
+
+END
+GO
+
 -- Hay algunos datos que se pueden importar solos ... 
 -- por ejemplo, con players.csv y teams.csv (para obtener paises de jugadores)
 -- podemos insertar todos los jugadores en Equipos.IntegranteSeleccion
@@ -569,6 +656,7 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaSquadsCSV VARCHAR(255),
     @RutaTournamentsCSV VARCHAR(255),
     @RutaGroupStandingsCSV VARCHAR(255),
+    @RutaStadiumsCSV VARCHAR(255),
     @MostrarDatos BIT = 0
 AS
 BEGIN
@@ -586,7 +674,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_players_csv            @Ruta = @RutaPlayersCSV
     EXEC Importacion.sp_crear_y_cargar_tournaments_csv        @Ruta = @RutaTournamentsCSV
     EXEC Importacion.sp_crear_y_cargar_group_standings_csv    @Ruta = @RutaGroupStandingsCSV
-
+    EXEC Importacion.sp_crear_y_cargar_stadiums_csv           @Ruta = @RutaStadiumsCSV
 
     -- ejecutar inserción de los datos
     EXEC Importacion.sp_upsert_confederaciones;
@@ -597,9 +685,9 @@ BEGIN
     if @MostrarDatos = 1 
         SELECT TOP 5 * FROM Administracion.Paises
 
-    EXEC Importacion.sp_upsert_jugadores;
+    /*EXEC Importacion.sp_upsert_jugadores;
     if @MostrarDatos = 1 
-        SELECT TOP 5 * FROM Equipos.IntegranteSeleccion;
+        SELECT TOP 5 * FROM Equipos.IntegranteSeleccion;*/
 
     EXEC Importacion.sp_upsert_mundiales;
     if @MostrarDatos = 1 
@@ -609,9 +697,13 @@ BEGIN
     if @MostrarDatos = 1 
         SELECT TOP 5 * FROM Mundial.Paises_Participes ORDER BY mundial_id DESC;
 
-    EXEC Importacion.sp_upsert_convocados;
+    /*EXEC Importacion.sp_upsert_convocados;
     if @MostrarDatos = 1 
-            SELECT TOP 5 * FROM Equipos.ConvocacionEnSeleccion
+            SELECT TOP 5 * FROM Equipos.ConvocacionEnSeleccion*/
+
+    EXEC Importacion.sp_upsert_sedes;
+    if @MostrarDatos = 1 
+            SELECT TOP 5 * FROM Administracion.Sedes
 
 
     -- Limpieza
@@ -620,14 +712,15 @@ GO
 
 -- DESCOMENTAR ALGUNA DE STAS LINEAS PARA IMPORTAR!
 
-/*exec Importacion.PoblarDB 
+exec Importacion.PoblarDB 
         @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
         @RutaTeamsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\teams.csv',
         @RutaPlayersCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\players.csv',
         @RutaSquadsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\squads.csv',
         @RutaTournamentsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv',
         @RutaGroupStandingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv',
-        @MostrarDatos = 1*/
+        @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\stadiums.csv',
+        @MostrarDatos = 1
 
 /*exec Importacion.PoblarDB 
     @RutaConfederationsCSV = 'C:\gits\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
