@@ -1,6 +1,6 @@
 /* BBDD/Miscelaneo/Limpieza.sql
  * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Lista, Matías Josué.
  * Descripción: Este script elimina todos los objetos de la base de datos GestionDelMundial.
 				Deja la base de datos en un estado limpio para regenerar todos sus objetos y reimportar sus datos.
  **/
@@ -60,8 +60,10 @@ DROP PROCEDURE IF EXISTS Administracion.sp_registrar_regla;
 DROP PROCEDURE IF EXISTS Administracion.sp_obtener_regla;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_confederacion;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_pais;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_idioma;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_idioma
 DROP PROCEDURE IF EXISTS Administracion.sp_asociar_idioma_a_pais
@@ -72,6 +74,7 @@ DROP PROCEDURE IF EXISTS Administracion.sp_desasociar_idioma_de_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_club;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_sede;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_sede;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_sede;
 
 DROP PROCEDURE IF EXISTS Mundial.sp_crear_mundial;
 DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;

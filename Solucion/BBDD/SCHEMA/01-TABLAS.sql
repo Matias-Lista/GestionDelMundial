@@ -135,7 +135,9 @@ IF OBJECT_ID('Administracion.Idiomas', 'U') IS NULL
 BEGIN
 CREATE TABLE Administracion.Idiomas (
     codigo char(2) PRIMARY KEY,
-    label varchar(100)
+    label varchar(100),
+    CONSTRAINT UQ_Label_Idioma UNIQUE(label),
+    CONSTRAINT CK_Codigo_Idioma_ISO CHECK(codigo LIKE '[A-Z][A-Z]')
 );
 END
 GO
