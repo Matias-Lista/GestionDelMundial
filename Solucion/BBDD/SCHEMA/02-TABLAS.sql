@@ -189,11 +189,12 @@ GO
 IF OBJECT_ID('Arbitraje.Arbitros', 'U') IS NULL
 BEGIN
 CREATE TABLE Arbitraje.Arbitros (
-    id             INT          PRIMARY KEY IDENTITY(1,1),
-    pais_id        char(3)      REFERENCES Administracion.Paises(codigo) NOT NULL,
-    nombre         VARCHAR(100),
-    apellido       VARCHAR(100),
-    es_mujer       BIT
+    id               INT          PRIMARY KEY IDENTITY(1,1),
+    pais_id          char(3)      REFERENCES Administracion.Paises(codigo) NOT NULL,
+    nombre           VARCHAR(100),
+    apellido         VARCHAR(100),
+    es_mujer         BIT,
+    confederacion_id INT REFERENCES Administracion.Confederaciones(id) NOT NULL
 );
 END
 GO
@@ -214,7 +215,6 @@ CREATE TABLE Mundial.Habilitacion_Arbitro (
     id               INT PRIMARY KEY IDENTITY(1,1),
     mundial_id       SMALLINT REFERENCES Mundial.Mundiales(año) NOT NULL,
     arbitro_id       INT REFERENCES Arbitraje.Arbitros(id) NOT NULL,
-    confederacion_id INT REFERENCES Administracion.Confederaciones(id) NOT NULL,
     CONSTRAINT UQ_Una_Asignacion_Por_Arbitro_y_Mundial UNIQUE(mundial_id, arbitro_id)
 );
 END
@@ -459,9 +459,9 @@ END
 GO
 
 
-IF OBJECT_ID('Publicidad.Tarifa', 'U') IS NULL
+IF OBJECT_ID('Publicidad.Tarifas', 'U') IS NULL
 BEGIN
-CREATE TABLE Publicidad.Tarifa (
+CREATE TABLE Publicidad.Tarifas (
     id         INT PRIMARY KEY IDENTITY(1,1),
     franja CHAR(1) CHECK (franja in ('P', 'N')) NOT NULL, -- Primer Time, Normal
     fase CHAR(25) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,

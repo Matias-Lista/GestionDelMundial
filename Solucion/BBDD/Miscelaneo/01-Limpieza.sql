@@ -25,7 +25,7 @@ IF (@@TRANCOUNT > 0)
 -- Eliminar Tablas
 
 DROP TABLE IF EXISTS Publicidad.RegistroDePiezasEmitidas;
-DROP TABLE IF EXISTS Publicidad.Tarifa;
+DROP TABLE IF EXISTS Publicidad.Tarifas;
 DROP TABLE IF EXISTS Publicidad.PaisesInteresados;
 DROP TABLE IF EXISTS Publicidad.PiezasDeContenido;
 DROP TABLE IF EXISTS Publicidad.Campañas;
@@ -76,6 +76,9 @@ DROP PROCEDURE IF EXISTS Administracion.sp_crear_sede;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_sede;
 DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_sede;
 
+DROP PROCEDURE IF EXISTS Mundial.sp_remover_habilitacion_arbitro;
+DROP PROCEDURE IF EXISTS Mundial.sp_remover_pais;
+DROP PROCEDURE IF EXISTS Mundial.sp_eliminar_mundial;
 DROP PROCEDURE IF EXISTS Mundial.sp_crear_mundial;
 DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;
 
