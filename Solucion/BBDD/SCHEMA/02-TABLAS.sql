@@ -126,7 +126,7 @@ CREATE TABLE Administracion.Reglas (
     codigo VARCHAR(100),
     valor varchar(100),
 
-    CONSTRAINT UQ_MomentoEvento UNIQUE(mundial_id, codigo) -- Solo una valor de cada regla por mundial
+    CONSTRAINT UQ_Un_Valor_Por_regla_Por_Mundial UNIQUE(mundial_id, codigo) -- Solo una valor de cada regla por mundial
 );
 END
 GO
@@ -347,22 +347,6 @@ END
 GO
 
 
-
-IF OBJECT_ID('Eventos.MomentoEvento', 'U') IS NULL
-BEGIN
-CREATE TABLE Eventos.MomentoEvento (
-    id         INT PRIMARY KEY IDENTITY(1,1),
-    minuto SMALLINT CHECK (minuto >= 0) NOT NULL,
-    tiempo char(1) CHECK (tiempo in ('1', '2', '3', '4')) NOT NULL,
-    
-    CONSTRAINT UQ_MomentoEvento UNIQUE(minuto, tiempo)
-);
-END
-GO
-
-
-
-
 --agregu[e las columnas de es_doble_amarilla y tarjeta para poder hacer los casos de expulsi[on por doble amarilla o por tarjeta roja
 IF OBJECT_ID('Eventos.Amonestaciones', 'U') IS NULL
 BEGIN
@@ -370,10 +354,14 @@ CREATE TABLE Eventos.Amonestaciones (
     id         INT PRIMARY KEY IDENTITY(1,1),
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
     jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
-    momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL,
     tarjeta CHAR(1) CHECK (tarjeta IN ('A', 'R')) NOT NULL, -- Amarilla, Roja
     es_doble_amarilla BIT DEFAULT 0 NOT NULL, -- 1 = roja generada por la segunda amarilla del partido
     motivo VARCHAR(200) NOT NULL,
+
+    minuto SMALLINT NOT NULL CHECK (minuto between 0 and 45),
+    extra SMALLINT NOT NULL DEFAULT 0,
+    tiempo SMALLINT NOT NULL CHECK (tiempo between 1 and 4),
+    
 
     CONSTRAINT CK_Doble_Amarilla_Es_Roja CHECK (es_doble_amarilla = 0 OR tarjeta = 'R')
 );
@@ -392,8 +380,11 @@ CREATE TABLE Eventos.Cambios (
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
     jugador_entra_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
     jugador_sale_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
-    momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL,
     motivo VARCHAR(10) CHECK (motivo IN ('TACTICO', 'LESION', 'PRECAUCION')) NOT NULL,
+
+    minuto SMALLINT NOT NULL CHECK (minuto between 0 and 45),
+    extra SMALLINT NOT NULL DEFAULT 0,
+    tiempo SMALLINT NOT NULL CHECK (tiempo between 1 and 4),
 
     CONSTRAINT CK_Cambio_Jugadores_Distintos CHECK (jugador_entra_id <> jugador_sale_id)
 );
@@ -410,8 +401,12 @@ CREATE TABLE Eventos.Goles (
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
     jugador_autor_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
     jugador_asistente_id INT REFERENCES Equipos.IntegranteSeleccion(id),
-    momento_id INT REFERENCES Eventos.MomentoEvento(id) NOT NULL,
     tipo CHAR(1) CHECK(tipo in ('T', 'N', 'C', 'P', 'E')) NOT NULL, -- Tiro libre, normal, cabeza, Penal (por falta en el area), En Contra
+
+
+    minuto SMALLINT NOT NULL CHECK (minuto between 0 and 45),
+    extra SMALLINT NOT NULL DEFAULT 0,
+    tiempo SMALLINT NOT NULL CHECK (tiempo between 1 and 4),
 
     CONSTRAINT CK_Gol_Asistente_Distinto_Del_Autor CHECK (jugador_asistente_id IS NULL OR jugador_asistente_id <> jugador_autor_id)
 );
