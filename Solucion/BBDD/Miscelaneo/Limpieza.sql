@@ -17,6 +17,10 @@ GO
 USE GestionDelMundial;
 GO
 
+
+IF (@@TRANCOUNT > 0)
+	ROLLBACK TRANSACTION;
+
 /* ELIMINAR */
 -- Eliminar Tablas
 
@@ -121,6 +125,14 @@ DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_impedimento;
 DROP PROCEDURE IF EXISTS Partidos.sp_generar_partidos;
 DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 
+/*************************************/
+/*            IMPORTACIÓN            */
+/*************************************/
+
+DROP PROCEDURE IF EXISTS Importacion.sp_bypass_mundiales_previos;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_formaciones;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_player_appearances_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_sedes;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_group_stadiums_csv;

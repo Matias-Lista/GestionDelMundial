@@ -1,15 +1,6 @@
 use GestionDelMundial;
 GO
 
-IF OBJECT_ID('tempdb..##Confederations') IS NOT NULL DROP TABLE ##Confederations;
-IF OBJECT_ID('tempdb..##Teams') IS NOT NULL DROP TABLE ##Teams;
-IF OBJECT_ID('tempdb..##Squads') IS NOT NULL DROP TABLE ##Squads;
-IF OBJECT_ID('tempdb..##Players') IS NOT NULL DROP TABLE ##Players;
-IF OBJECT_ID('tempdb..##Tournaments') IS NOT NULL DROP TABLE ##Tournaments;
-IF OBJECT_ID('tempdb..##GroupStandings') IS NOT NULL DROP TABLE ##GroupStandings;
-IF OBJECT_ID('tempdb..##Stadiums') IS NOT NULL DROP TABLE ##Stadiums;
-GO
-
 CREATE OR ALTER PROCEDURE Importacion.sp_upsert_confederaciones
 AS
 BEGIN
@@ -606,7 +597,8 @@ BEGIN
                     @CodigoPais = @codigoPais,
                     @Nombre = @nombre,
                     @Ciudad = @nombreCiudad,
-                    @Capacidad = @capacidad;
+                    @Capacidad = @capacidad,
+                    @ID = @idReal OUTPUT;
 
                     SET @insertadas = @insertadas + 1;
             END ELSE BEGIN
@@ -621,6 +613,10 @@ BEGIN
                     SET @actualizadas = @actualizadas + 1;
 
             END
+
+            UPDATE ##Stadiums
+                SET map_id = @idReal
+                WHERE key_id = @idActual;
             
         END TRY
         BEGIN CATCH
@@ -637,6 +633,274 @@ BEGIN
         @actualizadas as 'Sedes actualizados',
         @omitidas as 'Sedes omitidos';
 
+END
+GO
+
+
+/********/
+/* SEDE */
+/********/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_partidos
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Matches') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de Matches.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##Matches);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        DECLARE @añoMundial INT = NULL;
+        DECLARE @sedeIDCSV VARCHAR(10) = NULL;
+        DECLARE @sedeID INT = NULL;
+        DECLARE @seleccionA CHAR(3) = NULL;
+        DECLARE @seleccionAID INT = NULL;
+        DECLARE @seleccionB CHAR(3) = NULL;
+        DECLARE @seleccionBID INT = NULL;
+        DECLARE @fecha DATE = NULL;
+        DECLARE @hora varchar(10) = NULL;
+        DECLARE @faseCSV VARCHAR(20) = NULL;
+        DECLARE @fase VARCHAR(15) = NULL;
+        DECLARE @ganoSeleccionA BIT = NULL;
+        DECLARE @ganoSeleccionB BIT = NULL;
+
+        SELECT @añoMundial = tournament_id, @sedeIDCSV = stadium_id,
+               @SeleccionA = home_team_code, @SeleccionB = away_team_code,
+               @fecha = match_date, @faseCSV = stage_name , @ganoSeleccionA = home_team_win,
+               @hora = match_time, @ganoSeleccionB = away_team_win
+            FROM ##Matches
+            WHERE key_id = @idActual;
+
+        DECLARE @fechaYHora DATETIME = (SELECT CAST(CAST(@fecha AS VARCHAR(10)) + ' ' + @hora AS DATETIME));
+
+        SET @faseCSV = LOWER(LTRIM(RTRIM(@faseCSV)));
+            -- 2. Mapear (agregando las fases de grupos históricas)
+            SET @fase = CASE @faseCSV 
+                WHEN 'final' THEN 'FINAL'
+                WHEN 'final round' THEN 'FINAL'
+                WHEN 'third-place match' THEN 'TERCER_PUESTO'
+                WHEN 'match for third place' THEN 'TERCER_PUESTO'
+                WHEN 'semi-final' THEN 'SEMIFINAL'
+                WHEN 'semi-finals' THEN 'SEMIFINAL'
+                WHEN 'quarter-final' THEN 'CUARTOS'
+                WHEN 'quarter-finals' THEN 'CUARTOS'
+                WHEN 'round of 16' THEN 'OCTAVOS'
+                WHEN 'round of 32' THEN 'DECISEISAVOS'
+                WHEN 'group stage' THEN 'GRUPOS'
+                WHEN 'first group stage' THEN 'GRUPOS'
+                WHEN 'second group stage' THEN 'GRUPOS'
+                ELSE NULL END;
+
+
+        SELECT @sedeID = map_id FROM ##Stadiums WHERE stadium_id = @sedeIDCSV;
+
+        SELECT @seleccionAID = seleccion_id FROM Mundial.Paises_Participes WHERE mundial_id = @añoMundial and pais_id = @seleccionA;
+        SELECT @seleccionBID = seleccion_id FROM Mundial.Paises_Participes WHERE mundial_id = @añoMundial and pais_id = @seleccionB;
+
+        -- Partidos.sp_crear_partido
+        -- @AñoMundial INT,
+        -- @SeleccionAID INT = NULL,
+        -- @SeleccionBID INT = NULL,
+        -- @SeleccionGanadoraID INT = NULL,
+        -- @SedeID INT = NULL,
+        -- @FechaYHora DATETIME,
+        -- @Fase VARCHAR(15),
+
+        BEGIN TRY
+            
+            IF (@fase IS NULL) BEGIN
+                DECLARE @msgFase VARCHAR(200) = CONCAT('Fase no mapeada en el CASE: [', ISNULL(@faseCSV, 'NULL'), ']');
+                THROW 50001, @msgFase, 1;
+            END;
+            IF (@sedeID is null) BEGIN
+                DECLARE @msg VARCHAR(500) = CONCAT('SKIP PARTIDO SEDE INVÁLIDA O NO REGISTRADA ', @sedeIDCSV);
+                THROW 50001, @msg, 1;
+            END;
+
+            DECLARE @seleccionGanadoraID INT = NULL;
+            IF @ganoSeleccionA = 1 
+                SET @seleccionGanadoraID = @seleccionAID;
+            ELSE IF @ganoSeleccionB = 1
+                SET @seleccionGanadoraID = @seleccionBID;
+                -- Sino null
+
+            DECLARE @idInsertado INT = NULL;
+
+            EXEC Partidos.sp_crear_partido
+                @AñoMundial = @añoMundial,
+                @SeleccionAID = @seleccionAID,
+                @SeleccionBID = @seleccionBID,
+                @SeleccionGanadoraID = @seleccionGanadoraID,
+                @SedeID = @sedeID,
+                @FechaYHora = @fechaYHora,
+                @Fase = @fase,
+                @ID = @idInsertado OUTPUT;     
+
+            SET @insertadas = @insertadas + 1;
+            -- TODO: modificar partido?
+
+            UPDATE ##Matches 
+                SET map_id = @idInsertado
+                WHERE key_id = @idActual;
+
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            print ERROR_MESSAGE();
+        END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    -- TODO: DESPUÉS DE IMPORTAR LOS PARTIDOS, HAY QUE PODER OBTENER EL PARTIDO SIGUIENTE
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'PARTIDOS insertados',
+        @actualizadas as 'PARTIDOS actualizados',
+        @omitidas as 'PARTIDOS omitidos';
+
+END
+GO
+
+/****************/
+/* FORMACIONES */
+/****************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_formaciones
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##PlayerAppearances') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de PlayerAppearances.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##PlayerAppearances);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        DECLARE @añoMundial INT = NULL;
+        DECLARE @posicion CHAR(2) = NULL;
+        DECLARE @matchIDCSV CHAR(9) = NULL;
+        DECLARE @playerIDCSV CHAR(7) = NULL;
+        DECLARE @partidoId INT = NULL;
+        DECLARE @jugadorId INT = NULL;
+        DECLARE @codigoPais CHAR(3) = NULL;
+        DECLARE @jugando BIT = NULL;
+
+        SELECT @añoMundial = tournament_id, @posicion = position_code,
+                @matchIDCSV = match_id, @playerIDCSV = player_id, @codigoPais = team_code,
+                @jugando = starter
+            FROM ##PlayerAppearances
+            WHERE key_id = @idActual;
+
+        SELECT @partidoId = map_id FROM ##Matches WHERE match_id = @matchIDCSV;
+        SELECT @jugadorId = map_id FROM ##Players WHERE player_id = @playerIDCSV;
+
+        DECLARE @seleccionId INT = (SELECT seleccion_id FROM Mundial.Paises_Participes WHERE mundial_id = @añoMundial and pais_id = @codigoPais);
+
+        BEGIN TRY
+            
+            IF (@añoMundial IS NULL) BEGIN
+                THROW 50001, 'FORMACION skipeado, no se insertó', 1;
+            END;
+
+            EXEC Partidos.sp_definir_formacion_inicial 
+                @Jugando = @jugando,
+                @Posicion = @posicion,
+                @PartidoID = @partidoid,
+                @JugadorID = @jugadorId,
+                @SeleccionID = @seleccionId;
+
+            SET @insertadas = @insertadas + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            print ERROR_MESSAGE();
+            print @añoMundial;
+            -- print @codigoPais;
+            PRINT 'El código es: [' + @codigoPais + '] y su longitud es: ' + CAST(DATALENGTH(@codigoPais) AS VARCHAR);
+        END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    -- TODO: DESPUÉS DE IMPORTAR LOS PARTIDOS, HAY QUE PODER OBTENER EL PARTIDO SIGUIENTE
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'fORMACIONES insertados',
+        @actualizadas as 'fORMACIONES actualizados',
+        @omitidas as 'fORMACIONES omitidos';
+
+END
+GO
+
+CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
+AS
+BEGIN
+DECLARE @TableName NVARCHAR(256);
+DECLARE @Sql NVARCHAR(MAX);
+
+-- 1. Declarar cursor buscando en tempdb solo las tablas globales (##) que tengan el campo tournament_id
+DECLARE cur_TempTables CURSOR LOCAL FOR
+SELECT t.name
+FROM tempdb.sys.tables t
+INNER JOIN tempdb.sys.columns c ON t.object_id = c.object_id
+WHERE t.name LIKE '##%' 
+  AND c.name = 'tournament_id';
+
+OPEN cur_TempTables;
+FETCH NEXT FROM cur_TempTables INTO @TableName;
+
+-- 2. Recorrer las tablas encontradas
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    -- 3. Armar el SQL dinámico con manejo de errores interno (TRY...CATCH)
+    SET @Sql = N'
+    BEGIN TRY
+        DELETE FROM [' + @TableName + N'] 
+        WHERE tournament_id <> 2022;
+        
+        PRINT ''Limpieza exitosa en: ' + @TableName + N''';
+    END TRY
+    BEGIN CATCH
+        -- Atrapa el error y lo imprime, pero no detiene la ejecución del cursor
+        PRINT ''Ocurrió un error en la tabla ' + @TableName + N': '' + ERROR_MESSAGE();
+    END CATCH;
+    ';
+
+    -- 4. Ejecutar el código dinámico
+    EXEC sp_executesql @Sql;
+
+    FETCH NEXT FROM cur_TempTables INTO @TableName;
+END
+
+-- 5. Cerrar y liberar el cursor
+CLOSE cur_TempTables;
+DEALLOCATE cur_TempTables;
 END
 GO
 
@@ -657,9 +921,13 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaTournamentsCSV VARCHAR(255),
     @RutaGroupStandingsCSV VARCHAR(255),
     @RutaStadiumsCSV VARCHAR(255),
+    @RutaMatchesCSV VARCHAR(255),
+    @RutaPlayerAppearancesCSV VARCHAR(255),
     @MostrarDatos BIT = 0
 AS
 BEGIN
+
+    exec Importacion.sp_limpieza_tablas_temporales;
 
     -- PSEUDO:
     --  1. Crear y cargar cada tabla temporal. Hace el bulk insert a cada tabla, le crea los
@@ -675,6 +943,10 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_tournaments_csv        @Ruta = @RutaTournamentsCSV
     EXEC Importacion.sp_crear_y_cargar_group_standings_csv    @Ruta = @RutaGroupStandingsCSV
     EXEC Importacion.sp_crear_y_cargar_stadiums_csv           @Ruta = @RutaStadiumsCSV
+    EXEC Importacion.sp_crear_y_cargar_matches_csv            @Ruta = @RutaMatchesCSV
+    EXEC Importacion.sp_crear_y_cargar_player_appearances_csv @Ruta = @RutaPlayerAppearancesCSV
+
+    EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
     -- ejecutar inserción de los datos
     EXEC Importacion.sp_upsert_confederaciones;
@@ -684,10 +956,11 @@ BEGIN
     EXEC Importacion.sp_upsert_paises;
     if @MostrarDatos = 1 
         SELECT TOP 5 * FROM Administracion.Paises
+    UPDATE Administracion.Paises set nombre = 'Germany' WHERE nombre = 'West Germany';
 
-    /*EXEC Importacion.sp_upsert_jugadores;
+    EXEC Importacion.sp_upsert_jugadores;
     if @MostrarDatos = 1 
-        SELECT TOP 5 * FROM Equipos.IntegranteSeleccion;*/
+        SELECT TOP 5 * FROM Equipos.IntegranteSeleccion;
 
     EXEC Importacion.sp_upsert_mundiales;
     if @MostrarDatos = 1 
@@ -697,20 +970,45 @@ BEGIN
     if @MostrarDatos = 1 
         SELECT TOP 5 * FROM Mundial.Paises_Participes ORDER BY mundial_id DESC;
 
-    /*EXEC Importacion.sp_upsert_convocados;
+    EXEC Importacion.sp_upsert_convocados;
     if @MostrarDatos = 1 
-            SELECT TOP 5 * FROM Equipos.ConvocacionEnSeleccion*/
+            SELECT TOP 5 * FROM Equipos.ConvocacionEnSeleccion
 
     EXEC Importacion.sp_upsert_sedes;
     if @MostrarDatos = 1 
             SELECT TOP 5 * FROM Administracion.Sedes
 
+    EXEC Importacion.sp_upsert_partidos;
+    if @MostrarDatos = 1 BEGIN
+        SELECT TOP 5 * FROM Partidos.Partidos ORDER BY mundial_id DESC;
+        SELECT COUNT(*) AS 'Partidos 2022' FROM Partidos.Partidos WHERE mundial_id = 2022;
+        END
+
+    EXEC Importacion.sp_upsert_formaciones;
+    if @MostrarDatos = 1 BEGIN
+        SELECT * FROM Administracion.Paises WHERE codigo = 'CRO'
+        -- Partidos del mundial 2022 en los que jugó messi (son 7)
+        SELECT J.*, PPA.pais_id, PPB.pais_id FROM Partidos.JugadorPosicionInicial J 
+        JOIN Partidos.Partidos P ON J.partido_id = P.id
+        JOIN Mundial.Paises_Participes PPA ON PPA.seleccion_id = P.seleccion_A_id 
+        JOIN Mundial.Paises_Participes PPB ON PPB.seleccion_id = P.seleccion_B_id 
+        WHERE P.mundial_id = 2022 AND J.jugador_id = 5133
+
+        SELECT TOP 50  JPI.comienza_jugando, J.nombre, J.apellido, J.pais_id, P.seleccion_A_ID as 'seleccion a', P.seleccion_B_ID as 'seleccion b'
+            
+            FROM Partidos.JugadorPosicionInicial JPI
+            JOIN Partidos.Partidos P ON P.id = JPI.partido_id
+            JOIN Equipos.IntegranteSeleccion J ON JPI.jugador_id  = J.id
+            WHERE J.pais_id = 'ARG'
+            ORDER BY mundial_id DESC;
+        
+        END
+
 
     -- Limpieza
+    exec Importacion.sp_limpieza_tablas_temporales;
 END
 GO
-
--- DESCOMENTAR ALGUNA DE STAS LINEAS PARA IMPORTAR!
 
 exec Importacion.PoblarDB 
         @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
@@ -720,13 +1018,8 @@ exec Importacion.PoblarDB
         @RutaTournamentsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv',
         @RutaGroupStandingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv',
         @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\stadiums.csv',
+        @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
+        @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
         @MostrarDatos = 1
 
-/*exec Importacion.PoblarDB 
-    @RutaConfederationsCSV = 'C:\gits\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
-    @RutaTeamsCSV = 'C:\gits\GestionDelMundial\Solucion\BBDD\Importacion\teams.csv',
-    @RutaPlayersCSV = 'C:\gits\GestionDelMundial\Solucion\BBDD\Importacion\players.csv',
-    @RutaSquadsCSV = 'C:\gits\GestionDelMundial\Solucion\BBDD\Importacion\squads.csv',
-    @RutaTournamentsCSV = 'C:\gits\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv',
-    @RutaGroupStandingsCSV = 'C:\gits\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv',
-    @MostrarDatos = 1*/
+SELECT * FROM Mundial.mundiales
