@@ -1,6 +1,6 @@
 /* BBDD/Miscelaneo/Limpieza.sql
  * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Lista, Matías Josué.
  * Descripción: Este script elimina todos los objetos de la base de datos GestionDelMundial.
 				Deja la base de datos en un estado limpio para regenerar todos sus objetos y reimportar sus datos.
  **/
@@ -16,6 +16,10 @@ GO
 
 USE GestionDelMundial;
 GO
+
+
+IF (@@TRANCOUNT > 0)
+	ROLLBACK TRANSACTION;
 
 /* ELIMINAR */
 -- Eliminar Tablas
@@ -56,8 +60,10 @@ DROP PROCEDURE IF EXISTS Administracion.sp_registrar_regla;
 DROP PROCEDURE IF EXISTS Administracion.sp_obtener_regla;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_confederacion;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_confederacion;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_pais;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_crear_idioma;
 DROP PROCEDURE IF EXISTS Administracion.sp_modificar_idioma
 DROP PROCEDURE IF EXISTS Administracion.sp_asociar_idioma_a_pais
@@ -66,7 +72,9 @@ DROP PROCEDURE IF EXISTS Administracion.sp_modificar_club;
 DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_idioma;
 DROP PROCEDURE IF EXISTS Administracion.sp_desasociar_idioma_de_pais;
 DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_club;
-
+DROP PROCEDURE IF EXISTS Administracion.sp_crear_sede;
+DROP PROCEDURE IF EXISTS Administracion.sp_modificar_sede;
+DROP PROCEDURE IF EXISTS Administracion.sp_eliminar_sede;
 
 DROP PROCEDURE IF EXISTS Mundial.sp_crear_mundial;
 DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;
@@ -117,6 +125,42 @@ DROP PROCEDURE IF EXISTS Eventos.sp_modificar_impedimento;
 DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_impedimento;
 
 
+DROP PROCEDURE IF EXISTS Partidos.sp_generar_partidos;
+DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
+
+/*************************************/
+/*            IMPORTACIÓN            */
+/*************************************/
+
+DROP PROCEDURE IF EXISTS Importacion.sp_bypass_mundiales_previos;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_formaciones;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_player_appearances_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_sedes;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_group_stadiums_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_convocados;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_paises_participes;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_group_standings_csv;
+
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_mundiales;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_tournaments_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_jugadores;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_players_csv;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_squads_csv;
+
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_paises;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_teams_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_confederaciones;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_confederations_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.PoblarDB;
 
 
 -- Eliminar Schemas
@@ -126,6 +170,7 @@ DROP SCHEMA IF EXISTS [Partidos]
 DROP SCHEMA IF EXISTS [Equipos]
 DROP SCHEMA IF EXISTS [Mundial]
 DROP SCHEMA IF EXISTS [Arbitraje]
+DROP SCHEMA IF EXISTS [Administracion]
 
 GO
 
