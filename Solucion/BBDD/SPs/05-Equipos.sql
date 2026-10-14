@@ -150,8 +150,6 @@ BEGIN
 	if (@maxConvocados < @cantidadConvocadosActivos)
 		SET @errores = @errores + '- La selección alcanzó el máximo de convocados activos para este mundial.' + CHAR(13) + CHAR(10);
 
-
-		
 	if @errores <> ''
 		throw 50001, @errores, 1;
 
@@ -163,12 +161,9 @@ BEGIN
 END
 GO
 
-
 CREATE OR ALTER PROCEDURE Equipos.sp_convocar_staff
 	@AñoMundial INT,
-	@CodigoPais INT,
-	@Nombre VARCHAR(100),
-	@Apellido VARCHAR(100),
+	@MiembroID INT,
 	@Tipo VARCHAR(50),
 	@FConvocacion DATE
 AS
@@ -183,29 +178,56 @@ BEGIN
 	--	  Esto podría ser una vista o SP
 	-- 4. Insertar solo sí no se superó el máximo.
 	
-	DECLARE @seleccionId INT = (SELECT seleccion_id FROM Mundial.Paises_Participes WHERE pais_id = @CodigoPais and mundial_id = @AñoMundial);
+	
+	SET NOCOUNT ON
 
+	DECLARE @errores VARCHAR(500) = '';
+
+	
+	IF @AñoMundial  is null SET @errores = @errores + '- Se debe indicar un mundial' + CHAR(13) + CHAR(10)
+	IF @MiembroID  is null SET @errores = @errores + '- Se debe indicar un miembro de seleccion' + CHAR(13) + CHAR(10)
+	IF @FConvocacion  is null SET @errores = @errores + '- Se debe indicar una fecha de convocacion' + CHAR(13) + CHAR(10)
+
+	DECLARE @fechaDelMundial DATE = (SELECT f_inicio FROM Mundial.Mundiales WHERE año = @AñoMundial);
+
+	IF (@fechaDelMundial IS NULL)
+		SET @errores = @errores + '- El mundial no existe' + CHAR(13) + CHAR(10);
+	ELSE IF (@fechaDelMundial < @FConvocacion)
+		SET @errores = @errores + '- La convocacion debe suceder antes del mundial' + CHAR(13) + CHAR(10);
+
+	DECLARE @codigoPais CHAR(3) = (SELECT pais_id FROM Equipos.IntegranteSeleccion WHERE id = @MiembroID);
+
+	if @codigoPais is null
+		SET @errores = @errores + '- El miembro de seleccion indicado no existe.' + CHAR(13) + CHAR(10);
+
+	-- El país del jugador participa en este mundial?
+	
+	DECLARE @seleccionId INT = (SELECT seleccion_id FROM Mundial.Paises_Participes WHERE pais_id = @codigoPais and mundial_id = @AñoMundial);
+	if @seleccionId is null
+		SET @errores = @errores + '- El país del miembro de seleccion indicado no participa de este mundial.' + CHAR(13) + CHAR(10);
+
+	-- Las convocaciones de cada selección tienen un límite diferente para jugadores y para staff (todo lo que no sea jugador).
 	DECLARE @maxConvocados INT;
 	exec Administracion.sp_obtener_regla 
-		 @AñoMundial = @AñoMundial, @Codigo = 'MAX_CONVOCADOS_STAFF', @Valor = @maxConvocados;
+		 @AñoMundial = @AñoMundial, @Codigo = 'MAX_CONVOCADOS', @Valor = @maxConvocados;
 
 	DECLARE @cantidadConvocadosActivos INT = (SELECT count(*) 
 				FROM Equipos.ConvocacionEnSeleccion
-				WHERE tipo <> 'Jugador' AND f_fin is NULL AND seleccion_id = @seleccionId); 
+				WHERE tipo = 'Jugador' AND f_fin is NULL AND seleccion_id = @seleccionId); 
+				
+	if (@maxConvocados < @cantidadConvocadosActivos)
+		SET @errores = @errores + '- La selección alcanzó el máximo de convocados activos para este mundial.' + CHAR(13) + CHAR(10);
 
-	-- de momento para avanzar:
-	DECLARE @miembroId INT = (SELECT id FROM Equipos.IntegranteSeleccion WHERE nombre = @Nombre and apellido = @Apellido and pais_id = @CodigoPais);
 
-	if (@maxConvocados > @cantidadConvocadosActivos) BEGIN
-		INSERT INTO Equipos.ConvocacionEnSeleccion
+		
+	if @errores <> ''
+		throw 50001, @errores, 1;
+
+	INSERT INTO Equipos.ConvocacionEnSeleccion
 		(seleccion_id, miembro_id, tipo, f_convocacion)
 		VALUES
-		(@seleccionId, @miembroId, @Tipo, @FConvocacion);
-	END
-	ELSE 
-	BEGIN
-		print 'ERROR CONVOCADOS STAFF MAXIMO ALCANZADO' 
-	END
+		(@seleccionId, @MiembroId, 'Jugador', @FConvocacion);
+
 END
 GO
 

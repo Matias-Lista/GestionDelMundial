@@ -75,8 +75,8 @@ BEGIN TRANSACTION ComienzoTesteo
 
 	-- Creamos un árbitro de prueba para vincularlo al idioma 'IT'
 	DECLARE @ArbitroIDPrueba INT;
-	INSERT INTO Arbitraje.Arbitros (pais_id, nombre, apellido, es_mujer)
-	VALUES ('TTT', 'Néstor', 'Pitana', 0);
+	INSERT INTO Arbitraje.Arbitros (pais_id, nombre, apellido, es_mujer, confederacion_id)
+	VALUES ('TTT', 'Néstor', 'Pitana', 0, @confederacionID2);
 	SET @ArbitroIDPrueba = SCOPE_IDENTITY();
 
 	-- Vinculamos el árbitro con el idioma 'IT'

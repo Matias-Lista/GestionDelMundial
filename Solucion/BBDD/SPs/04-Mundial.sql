@@ -1,6 +1,6 @@
 /* BBDD/SPs/Mundial.sql
  * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Lista, Matías Josué.
  * Descripción: Crea todos los store procedures, funciones, y vistas del schema [Mundial].
  **/
  
@@ -18,23 +18,47 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 AS
 BEGIN
 	SET NOCOUNT ON
-	DECLARE @añoMundial INT = YEAR(@FInicio);
 
 	DECLARE @errores VARCHAR(500) = '';
+	
+	DECLARE @añoMundial INT = NULL;
 
-	IF EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @añoMundial) 
+	IF @FInicio is NULL 
+		SET @errores = @errores + '- Debe indicar una fecha de inicio. ' + CHAR(13) + CHAR(10);
+	ELSE
+		SET @añoMundial = YEAR(@FInicio);
+
+	IF @FFin is NULL 
+		SET @errores = @errores + '- Debe indicar una fecha de Fin. '+ CHAR(13) + CHAR(10);
+
+	IF @LimiteJugadoresConvocados is NULL 
+		SET @errores = @errores + '- Debe indicar un límite de jugadores convocados. '+ CHAR(13) + CHAR(10);
+
+	IF @LimiteStaffConvocados is NULL 
+		SET @errores = @errores + '- Debe indicar un límite de staff convocado. '+ CHAR(13) + CHAR(10);
+
+	IF @ArbitroDeVarRequerido is NULL 
+		SET @errores = @errores + '- Debe indicar si se requiere un arbitro de var. '+ CHAR(13) + CHAR(10);
+
+	IF @CantidadDeEquipos is NULL 
+		SET @errores = @errores + '- Debe indicar la cantidad de equipos que juegan. '+ CHAR(13) + CHAR(10);
+
+	IF @añoMundial IS NOT NULL AND EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @añoMundial) 
 		SET @errores = @errores + '- Ya existe un mundial en ese año. '+ CHAR(13) + CHAR(10);
 
-	IF (@FInicio >= @FFin) SET @errores = @errores + '- La fecho de inicio debe ser anterior a la fecha de fin.' + CHAR(13) + CHAR(10);
+	IF @FInicio IS NOT NULL AND @FFin IS NOT NULL AND @FInicio >= @FFin
+	   SET @errores = @errores + '- La fecha de inicio debe ser anterior a la fecha de fin.' + CHAR(13) + CHAR(10);
 
-	IF (@LimiteJugadoresConvocados <= 0) SET @errores = @errores + '- El límite de jugadores convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
+	IF @LimiteJugadoresConvocados IS NOT NULL AND @LimiteJugadoresConvocados <= 0
+		SET @errores = @errores + '- El límite de jugadores convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
 	
-	IF (@LimiteStaffConvocados <= 0) SET @errores = @errores + '- El límite de staff convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
+	IF @LimiteStaffConvocados IS NOT NULL AND @LimiteStaffConvocados <= 0
+		SET @errores = @errores + '- El límite de staff convocados debe ser un número positivo.' + CHAR(13) + CHAR(10);
 	
-	IF (@CantidadDeEquipos < 16 OR @CantidadDeEquipos % 4 <> 0) SET @errores = @errores + '- La cantidad de Equipos convocados debe ser al menos 16 y múltiplo de 4.' + CHAR(13) + CHAR(10);
+	IF @CantidadDeEquipos IS NOT NULL AND (@CantidadDeEquipos < 16 OR @CantidadDeEquipos % 4 <> 0) 
+		SET @errores = @errores + '- La cantidad de Equipos convocados debe ser al menos 16 y múltiplo de 4.' + CHAR(13) + CHAR(10);
 
-	IF (@errores <> '')
-		throw 50001, @errores, 1;
+	IF (@errores <> '') throw 50001, @errores, 1;
 
 	BEGIN TRY
 		BEGIN TRANSACTION
@@ -49,16 +73,62 @@ BEGIN
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK TRANSACTION;
-
-			throw;
+		throw;
 	END CATCH;
 END
 GO 
 
--- exec Administracion.sp_registrar_reglas @AñoMundial = 1930, @Codigo = 'ARBITRO_DE_VAR', @Valor = 1
--- exec Mundial.sp_crear_mundial @FInicio = '1935-10-06', @FFin = '1935-10-01', @LimiteJugadoresConvocados = 0, @ArbitroDeVarRequerido = 1, @CantidadDeEquipos=32
---SELECT * FROM Mundial.Mundiales
---SELECT * FROM Administracion.Reglas
+CREATE OR ALTER PROCEDURE Mundial.sp_eliminar_mundial
+	@AñoMundial INT
+AS
+BEGIN 
+	SET NOCOUNT ON
+	DECLARE @errores VARCHAR(500) = '';
+
+
+	IF @AñoMundial is NULL 
+		SET @errores = @errores + '- Debe indicar un mundial. '+ CHAR(13) + CHAR(10);
+
+
+	IF @AñoMundial IS NOT NULL BEGIN
+
+	 	IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial) 
+			SET @errores = @errores + '- No existe un mundial en ese año. '+ CHAR(13) + CHAR(10);
+
+		IF EXISTS (SELECT 1 FROM Partidos.Partidos WHERE mundial_id = @AñoMundial) 
+			SET @errores = @errores + '- Este mundial tiene partidos asignados. '+ CHAR(13) + CHAR(10);
+		
+		IF EXISTS (SELECT 1 FROM Mundial.Paises_Participes WHERE mundial_id = @AñoMundial) 
+			SET @errores = @errores + '- Este mundial tiene países asociados. '+ CHAR(13) + CHAR(10);
+
+		IF EXISTS (SELECT 1 FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @AñoMundial) 
+			SET @errores = @errores + '- Este mundial tiene arbitros asociados. '+ CHAR(13) + CHAR(10);
+
+		IF EXISTS (SELECT 1 FROM Publicidad.Tarifas WHERE mundial_id = @AñoMundial) 
+			SET @errores = @errores + '- Este mundial tiene tarifas asociadas. '+ CHAR(13) + CHAR(10);
+
+	END
+
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		DELETE FROM Administracion.Reglas WHERE mundial_id = @AñoMundial;
+		DELETE FROM Mundial.Mundiales WHERE año = @AñoMundial;
+
+		COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+
+		if @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION;
+		throw
+
+	END CATCH
+
+END
 GO
 
 -- Sobre Mundial.sp_incluir_pais
@@ -75,15 +145,21 @@ BEGIN
 	SET NOCOUNT ON
 	DECLARE @errores VARCHAR(500) = '';
 
-	IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial)
+	IF @CodigoPais is NULL 
+		SET @errores = @errores + '- Debe indicar un país.' + CHAR(13) + CHAR(10);
+
+	IF @AñoMundial is NULL 
+		SET @errores = @errores + '- Debe indicar un mundial.' + CHAR(13) + CHAR(10);
+
+	IF @AñoMundial IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial)
 		SET @errores = @errores + '- No hay mundial registrado en ese año.' + CHAR(13) + CHAR(10);
 		
-	IF NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
+	IF @CodigoPais is NOT NULL AND NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
 		SET @errores = @errores + '- El país no se encuentra registrado.' + CHAR(13) + CHAR(10);
 
-	IF EXISTS (SELECT 1 FROM Mundial.Paises_Participes WHERE mundial_id = @AñoMundial AND pais_id = @CodigoPais)
+	IF @AñoMundial IS NOT NULL AND @CodigoPais is NOT NULL 
+	   AND EXISTS (SELECT 1 FROM Mundial.Paises_Participes WHERE mundial_id = @AñoMundial AND pais_id = @CodigoPais)
 		SET @errores = @errores + '- El equipo ya está participando de ese mundial.' + CHAR(13) + CHAR(10);
-
 	
 	IF (@errores <> '')
 		throw 50001, @errores, 1;
@@ -95,7 +171,8 @@ BEGIN
 	DECLARE @cantidadDeGrupos INT = @cantidadEquipos / 4;
 
 	BEGIN TRY
-	BEGIN TRANSACTION -- Incluyo la validación del cupo y del grupo en una transacción con SERIALIZABLE.
+	BEGIN TRANSACTION  -- Incluyo la validación del cupo y del grupo en una transacción con SERIALIZABLE.
+	SAVE TRANSACTION sp_incluir_pais
 		IF ((SELECT COUNT(*) FROM Mundial.Paises_Participes WITH (UPDLOCK, SERIALIZABLE) WHERE mundial_id = @AñoMundial) = @cantidadEquipos)
 			SET @errores = @errores + '- Este mundial alcanzo su cupo de participantes.' + CHAR(13) + CHAR(10);
 
@@ -117,7 +194,7 @@ BEGIN
 			ON G.Letra = P.grupo 
 			AND P.mundial_id = @AñoMundial 
 		GROUP BY G.Letra
-		HAVING COUNT(P.id) < 4; -- Esto me da warning aunque  funciona, no sé si es relevante
+		HAVING COUNT(P.id) < 4; -- Esto me da warning aunque funciona, no sé si es relevante
 
 		IF (@Grupo IS NOT NULL AND ASCII(@Grupo) not between 65 and (65 + @cantidadDeGrupos - 1)) 
 			SET @errores = @errores + '- Si se define un grupo, debe ser válido.' + CHAR(13) + CHAR(10);
@@ -129,7 +206,7 @@ BEGIN
 
 		
 		IF (@Grupo is null)
-			SET @Grupo = (SELECT TOP 1 Letra FROM @TablaGruposPosibles); -- El primer grupo disponible, en orden
+			SET @Grupo = (SELECT TOP 1 Letra FROM @TablaGruposPosibles ORDER BY Letra ASC); -- El primer grupo disponible, en orden
 
 		INSERT INTO Mundial.Selecciones (pais_id) VALUES (@CodigoPais)
 		DECLARE @seleccionId INT = (SELECT SCOPE_IDENTITY());
@@ -142,12 +219,11 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		if @@TRANCOUNT > 0
-			ROLLBACK TRANSACTION;
+			ROLLBACK TRANSACTION sp_incluir_pais;
 		throw
 	END CATCH
 END
 GO
-
 --exec Mundial.sp_crear_mundial @FInicio = '2026-10-06', @FFin = '2026-10-09', @LimiteJugadoresConvocados = 10, @ArbitroDeVarRequerido = 1, @CantidadDeEquipos=32
 /*exec Mundial.sp_incluir_pais 'ARG', 2026, 'A'
 exec Mundial.sp_incluir_pais 'ESP', 2026, 'A'
@@ -158,40 +234,139 @@ exec Mundial.sp_incluir_pais 'RUS', 2026      -- ASIGNA AUTOMATICAMENTE EL GRUPO
 select * from Mundial.Paises_Participes
 GO*/
 
+
+CREATE OR ALTER PROCEDURE Mundial.sp_remover_pais
+	 @CodigoPais CHAR(3),
+	 @AñoMundial INT
+AS
+BEGIN
+
+	SET NOCOUNT ON
+
+	DECLARE @errores VARCHAR(500) = '';
+
+	IF @CodigoPais is NULL 
+		SET @errores = @errores + '- Debe indicar un país.' + CHAR(13) + CHAR(10);
+
+	IF @AñoMundial is NULL 
+		SET @errores = @errores + '- Debe indicar un mundial.' + CHAR(13) + CHAR(10);
+
+	IF @AñoMundial IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial)
+		SET @errores = @errores + '- No hay mundial registrado en ese año.' + CHAR(13) + CHAR(10);
+		
+	IF @CodigoPais is NOT NULL AND NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
+		SET @errores = @errores + '- El país no se encuentra registrado.' + CHAR(13) + CHAR(10);
+
+	DECLARE @seleccionId INT = NULL;
+	SELECT  @seleccionId = seleccion_id FROM Mundial.Paises_Participes WHERE mundial_id = @AñoMundial AND pais_id = @CodigoPais;
+	
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
+
+	IF @AñoMundial IS NOT NULL AND @CodigoPais is NOT NULL AND @seleccionId is null
+		SET @errores = @errores + '- El equipo NO está participando de ese mundial.' + CHAR(13) + CHAR(10);
+	
+	IF @seleccionId is not NULL and EXISTS (SELECT 1 FROM Partidos.Partidos WHERE seleccion_A_id = @seleccionId or seleccion_B_id = @seleccionId)
+		SET @errores = @errores + '- El equipo está asignado a un partido de ese mundial.' + CHAR(13) + CHAR(10);
+
+	IF @seleccionId is not NULL and EXISTS (SELECT 1 FROM Equipos.ConvocacionEnSeleccion WHERE seleccion_id = @seleccionId)
+		SET @errores = @errores + '- El equipo tiene jugadores convocados.' + CHAR(13) + CHAR(10);
+
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
+
+	BEGIN TRY
+	BEGIN TRANSACTION
+	SAVE TRANSACTION sp_remover_pais
+		
+
+		DELETE FROM Mundial.Paises_Participes 
+			WHERE pais_id = @CodigoPais and mundial_id = @AñoMundial;
+
+		DELETE FROM Mundial.Selecciones WHERE id = @seleccionId;
+
+	COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+		if @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION sp_remover_pais;
+		throw
+	END CATCH
+END
+GO
+
 CREATE OR ALTER PROCEDURE Mundial.sp_habilitar_arbitro
 	@AñoMundial INT,
-	@ArbitroID INT,
-	@ConfederacionID INT = NULL
+	@ArbitroID INT
 AS
 BEGIN
 	SET NOCOUNT ON
 
 	DECLARE @errores VARCHAR(500) = '';
 
-	-- Que el Arbitro no esté asignado a ese mundial,
-
-	IF (@ConfederacionID is not null and NOT EXISTS (SELECT 1 FROM Administracion.Confederaciones WHERE id = @ConfederacionID))
-		SET @errores = '- La confederación no existe.' + CHAR(13) + CHAR(10)
-
 	IF (@AñoMundial is null)
-		SET @errores = '- Debe indicar un mundial' + CHAR(13) + CHAR(10)
+		SET @errores = @errores + '- Debe indicar un mundial.' + CHAR(13) + CHAR(10)
 
 	IF (@ArbitroID is null)
-		SET @errores = '- Debe indicar un arbitro' + CHAR(13) + CHAR(10)
+		SET @errores = @errores + '- Debe indicar un arbitro.' + CHAR(13) + CHAR(10)
 	
 	IF (@ArbitroID is not null and NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID))
-		SET @errores = '- El arbitro no existe.' + CHAR(13) + CHAR(10)
+		SET @errores = @errores + '- El arbitro no existe.' + CHAR(13) + CHAR(10)
+	
+	IF (@AñoMundial is not null and NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial))
+		SET @errores = @errores + '- El Mundial no existe.' + CHAR(13) + CHAR(10)
 
 	-- Duda: Deberíamos hacer transacciones acá? (para no habilitar dos veces al mismo arbitro, aunque la constraint UQ lo evitaría).
+
 	IF EXISTS (SELECT 1 FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @AñoMundial and arbitro_id = @ArbitroID)
-		SET @errores = '- El arbitro ya está habilitado para ese mundial.' + CHAR(13) + CHAR(10)
+		SET @errores = @errores + '- El arbitro ya está habilitado para ese mundial.' + CHAR(13) + CHAR(10)
 		
 	IF (@errores <> '')
 		throw 50001, @errores, 1;
 
 	INSERT INTO Mundial.Habilitacion_Arbitro 
-		(mundial_id, arbitro_id, confederacion_id)
+		(mundial_id, arbitro_id)
 		VALUES
-		(@AñoMundial, @ArbitroID, @confederacionId);
+		(@AñoMundial, @ArbitroID);
+END
+GO
+
+CREATE OR ALTER PROCEDURE Mundial.sp_remover_habilitacion_arbitro
+	@AñoMundial INT,
+	@ArbitroID INT
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	DECLARE @errores VARCHAR(500) = '';
+
+	IF (@AñoMundial is null)
+		SET @errores = @errores + '- Debe indicar un mundial.' + CHAR(13) + CHAR(10)
+
+	IF (@ArbitroID is null)
+		SET @errores = @errores + '- Debe indicar un arbitro.' + CHAR(13) + CHAR(10)
+	
+	IF (@ArbitroID is not null and NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID))
+		SET @errores = @errores + '- El arbitro no existe.' + CHAR(13) + CHAR(10)
+	
+	IF (@AñoMundial is not null and NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = @AñoMundial))
+		SET @errores = @errores + '- El Mundial no existe.' + CHAR(13) + CHAR(10)
+
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
+
+
+	IF NOT EXISTS (SELECT 1 FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @AñoMundial and arbitro_id = @ArbitroID)
+		SET @errores = @errores + '- El arbitro NO está habilitado para ese mundial.' + CHAR(13) + CHAR(10)
+	ELSE IF EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido AAP 
+		JOIN Partidos.Partidos P ON P.id = AAP.partido_id
+		WHERE AAP.arbitro_id = @ArbitroID and P.mundial_id = @AñoMundial)
+		SET @errores = @errores + '- El arbitro está asignado en un partido de este mundial.' + CHAR(13) + CHAR(10)
+
+	IF (@errores <> '')
+		throw 50001, @errores, 1;
+
+	DELETE FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @AñoMundial and arbitro_id = @ArbitroID;
+
 END
 GO
