@@ -1009,7 +1009,7 @@ BEGIN
     exec Importacion.sp_limpieza_tablas_temporales;
 END
 GO
-
+/*
 exec Importacion.PoblarDB 
         @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
         @RutaTeamsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\teams.csv',
@@ -1022,4 +1022,4 @@ exec Importacion.PoblarDB
         @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
         @MostrarDatos = 1
 
-SELECT * FROM Mundial.mundiales
+SELECT * FROM Mundial.mundiales*/
