@@ -368,7 +368,8 @@ CREATE OR ALTER PROCEDURE Administracion.sp_crear_sede
     @CodigoPais CHAR(3),
     @Nombre VARCHAR(100),
     @Ciudad VARCHAR(100),
-    @Capacidad INT
+    @Capacidad INT,
+    @ID INT = NULL OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -399,6 +400,8 @@ BEGIN
 		(pais_id, ciudad, nombre, capacidad)
 		VALUES
 		(@CodigoPais, @Ciudad, @Nombre, @Capacidad);
+
+	SET @ID = SCOPE_IDENTITY();
 END
 GO
 

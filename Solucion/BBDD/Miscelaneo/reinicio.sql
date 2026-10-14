@@ -41,11 +41,14 @@ GO
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Arbitraje-Logica.sql
 GO
 
-:r $(rutaAlRepositorio)\Solucion\BBDD\SPs\10-Partidos.sql
-GO
-
 :r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Staging.sql
 GO
 
 :r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Importacion.sql
 GO
+/*
+DECLARE @seleccionid INT;
+SELECT @seleccionid = seleccion_id FROM Mundial.Paises_Participes WHERE mundial_id = 2022 and pais_id = 'FRA';
+print @seleccionid
+*/
+

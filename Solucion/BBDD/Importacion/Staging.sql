@@ -1,14 +1,31 @@
 USE GestionDelMundial;
 GO 
 
-IF OBJECT_ID('tempdb..##Confederations') IS NOT NULL DROP TABLE ##Confederations;
-IF OBJECT_ID('tempdb..##Teams') IS NOT NULL DROP TABLE ##Teams;
-IF OBJECT_ID('tempdb..##Squads') IS NOT NULL DROP TABLE ##Squads;
-IF OBJECT_ID('tempdb..##Players') IS NOT NULL DROP TABLE ##Players;
-IF OBJECT_ID('tempdb..##Tournaments') IS NOT NULL DROP TABLE ##Tournaments;
-IF OBJECT_ID('tempdb..##GroupStandings') IS NOT NULL DROP TABLE ##GroupStandings;
-IF OBJECT_ID('tempdb..##Stadiums') IS NOT NULL DROP TABLE ##Stadiums;
+CREATE OR ALTER PROCEDURE Importacion.sp_limpieza_tablas_temporales
+AS 
+BEGIN
+    SET NOCOUNT ON
+    
+	IF (@@TRANCOUNT > 0)
+		ROLLBACK TRANSACTION;
+
+    DROP TABLE if exists ##Confederations;
+
+    IF OBJECT_ID('tempdb..##Confederations') IS NOT NULL DROP TABLE ##Confederations;
+    IF OBJECT_ID('tempdb..##Teams') IS NOT NULL DROP TABLE ##Teams;
+    IF OBJECT_ID('tempdb..##Squads') IS NOT NULL DROP TABLE ##Squads;
+    IF OBJECT_ID('tempdb..##Players') IS NOT NULL DROP TABLE ##Players;
+    IF OBJECT_ID('tempdb..##Tournaments') IS NOT NULL DROP TABLE ##Tournaments;
+    IF OBJECT_ID('tempdb..##GroupStandings') IS NOT NULL DROP TABLE ##GroupStandings;
+    IF OBJECT_ID('tempdb..##Stadiums') IS NOT NULL DROP TABLE ##Stadiums;
+    IF OBJECT_ID('tempdb..##Matches') IS NOT NULL DROP TABLE ##Matches;
+    IF OBJECT_ID('tempdb..##PlayerAppearances') IS NOT NULL DROP TABLE ##PlayerAppearances;
+
+END
 GO
+
+EXEC Importacion.sp_limpieza_tablas_temporales;
+go
 
 CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_confederations_csv 
     @Ruta VARCHAR(255)
@@ -238,12 +255,10 @@ BEGIN
         THROW 50340, @ErrorBulk, 1;
         RETURN;
     END CATCH;
-
     ALTER TABLE ##Players 
         DROP COLUMN goal_keeper, defender, midfielder,
             forward, count_torunaments, list_tournaments,
             player_wikipedia_link;
-
 
     DELETE FROM ##Players WHERE female = 1; -- Dejamos solo jugadores masculinos
     ALTER TABLE ##Players DROP COLUMN female;
@@ -351,6 +366,8 @@ BEGIN
     DELETE FROM ##Tournaments WHERE count_teams = 13;
     DELETE FROM ##Tournaments WHERE count_teams = 15;
 
+    UPDATE ##Tournaments SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+
     UPDATE ##Tournaments 
         SET end_date = NULL 
         WHERE TRY_CAST(end_date AS DATE) IS NULL;
@@ -362,6 +379,7 @@ BEGIN
 
     ALTER TABLE ##Tournaments ALTER COLUMN start_date DATE;
     ALTER TABLE ##Tournaments ALTER COLUMN end_date DATE;
+
 
     DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Players);
     
@@ -381,7 +399,7 @@ BEGIN
 
     CREATE TABLE ##Stadiums (
         key_id INT PRIMARY KEY CLUSTERED,
-        tournament_id CHAR(5),
+        stadium_id CHAR(5),
         stadium_name VARCHAR(100),
         city_name VARCHAR(100),
         country_name VARCHAR(100),
@@ -418,7 +436,199 @@ BEGIN
     ALTER TABLE ##Stadiums 
         DROP COLUMN stadium_wikipedia_link,city_wikipedia_link;
 
+
+    ALTER TABLE ##Stadiums ADD map_id INT;
+    CREATE NONCLUSTERED INDEX IX_Stadium_ID_MAP_ID ON ##Stadiums (stadium_id) INCLUDE(map_id);
+
     DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Stadiums);
+    
+    -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
+
+END
+GO
+
+/**************/
+/*  PARTIDOS  */
+/**************/
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_matches_csv 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Matches') IS NOT NULL DROP TABLE ##Matches;
+
+    CREATE TABLE ##Matches (
+        key_id INT PRIMARY KEY CLUSTERED,
+        tournament_id VARCHAR(10),
+        tournament_name VARCHAR(100),
+        match_id VARCHAR(9),
+        match_name VARCHAR(100),
+        stage_name VARCHAR(100),
+        group_name VARCHAR(25),
+        group_stage BIT,
+        knockout_stage BIT,
+        replayed BIT,
+        replay BIT,
+        match_date DATE,
+        match_time CHAR(5),
+        stadium_id CHAR(5),
+        stadium_name VARCHAR(250),
+        city_name VARCHAR(250),
+        country_name VARCHAR(250),
+        home_team_id CHAR(4),
+        home_team_name VARCHAR(250),
+        home_team_code CHAR(3),
+        away_team_id CHAR(4),
+        away_team_name VARCHAR(250),
+        away_team_code CHAR(3),
+        score VARCHAR(10),
+        home_team_score INT,
+        away_team_score INT,
+        home_team_score_margin INT,
+        away_team_score_margin INT,
+        extra_time BIT,
+        penalty_shootout BIT,
+        score_penalties VARCHAR(5),
+        home_team_score_penalties INT,
+        away_team_score_penalties INT,
+        result VARCHAR(250),
+        home_team_win BIT,
+        away_team_win BIT,
+        draw BIT
+    );
+
+
+    DECLARE @importacion VARCHAR(4000);
+
+    BEGIN TRY
+        SET @importacion = '
+        SET NOCOUNT ON
+        BULK INSERT ##Matches
+        FROM '''+ @Ruta + '''
+        WITH (
+            FORMAT = ''CSV'',
+            FIELDQUOTE = ''"'',         -- Ignora las comas que estén dentro de estas comillas
+            FIELDTERMINATOR = '','', 
+            ROWTERMINATOR = ''0x0a'',
+            FIRSTROW = 2,             -- Salta los encabezados
+            CODEPAGE = ''65001''        -- UTF-8
+        );';
+
+        EXEC (@importacion);
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50340, @ErrorBulk, 1;
+        RETURN;
+    END CATCH;
+
+    DELETE FROM ##Matches WHERE tournament_name LIKE  '%Women%';
+
+    UPDATE ##Matches SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+
+    ALTER TABLE ##Matches 
+        DROP COLUMN match_name,
+        group_stage,
+        knockout_stage,
+        replayed,
+        replay,
+        stadium_name,
+        city_name,
+        country_name,
+        home_team_name,
+        away_team_name,
+        score,
+        home_team_score,
+        away_team_score,
+        home_team_score_margin,
+        away_team_score_margin,
+        score_penalties,
+        home_team_score_penalties,
+        away_team_score_penalties,
+        draw;
+
+
+    ALTER TABLE ##Matches ADD map_id INT;
+    CREATE NONCLUSTERED INDEX IX_Player_ID_MAP_ID ON ##Matches (match_id) INCLUDE(map_id);
+
+    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Matches);
+    
+    -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
+
+END
+GO
+
+
+/*****************/
+/*  FORMACIONES  */
+/****************/
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_player_appearances_csv 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##PlayerAppearances') IS NOT NULL DROP TABLE ##PlayerAppearances;
+
+    CREATE TABLE ##PlayerAppearances (
+        key_id INT PRIMARY KEY CLUSTERED,
+        tournament_id VARCHAR(MAX),
+        tournament_name VARCHAR(MAX),
+        match_id VARCHAR(MAX),
+        match_name VARCHAR(MAX),
+        match_date DATE,
+        stage_name VARCHAR(MAX),
+        group_name VARCHAR(MAX),
+        team_id VARCHAR(MAX),
+        team_name VARCHAR(MAX),
+        team_code VARCHAR(MAX),
+        home_team BIT,
+        away_team BIT,
+        player_id VARCHAR(MAX),
+        family_name VARCHAR(MAX),
+        given_name VARCHAR(MAX),
+        shirt_number INT,
+        position_name VARCHAR(MAX),
+        position_code VARCHAR(MAX),
+        starter BIT,
+        substitute BIT
+    );
+
+
+    DECLARE @importacion VARCHAR(4000);
+
+    BEGIN TRY
+        SET @importacion = '
+        SET NOCOUNT ON
+        BULK INSERT ##PlayerAppearances
+        FROM '''+ @Ruta + '''
+        WITH (
+            FORMAT = ''CSV'',
+            FIELDQUOTE = ''"'',         -- Ignora las comas que estén dentro de estas comillas
+            FIELDTERMINATOR = '','', 
+            ROWTERMINATOR = ''0x0a'',
+            FIRSTROW = 2,             -- Salta los encabezados
+            CODEPAGE = ''65001''        -- UTF-8
+        );';
+
+        EXEC (@importacion);
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50340, @ErrorBulk, 1;
+        RETURN;
+    END CATCH;
+
+    DELETE FROM ##PlayerAppearances WHERE tournament_name LIKE  '%Women%';
+
+    UPDATE ##PlayerAppearances SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+
+    ALTER TABLE ##PlayerAppearances 
+        DROP COLUMN tournament_name, match_name,
+        stage_name, team_name, home_team, away_team, family_name, given_name, position_name;
+
+    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##PlayerAppearances);
     
     -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
 
