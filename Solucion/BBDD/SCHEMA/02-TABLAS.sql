@@ -300,10 +300,14 @@ GO
 IF OBJECT_ID('Arbitraje.ArbitroAsignadoPartido', 'U') IS NULL
 BEGIN
 CREATE TABLE Arbitraje.ArbitroAsignadoPartido (
-    id         INT              PRIMARY KEY IDENTITY(1,1),
-    arbitro_id INT        REFERENCES Arbitraje.Arbitros(id) NOT NULL,
-    partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
-    rol CHAR(50) CHECK (rol in ('PRINCIPAL', 'ASISTENTE', 'CUARTO', 'VAR')) NOT NULL --TODO: ver nombres correctos
+    id         INT      PRIMARY KEY IDENTITY(1,1),
+    arbitro_id INT      REFERENCES Arbitraje.Arbitros(id) NOT NULL,
+    partido_id INT      REFERENCES Partidos.Partidos(id) NOT NULL,
+    rol        CHAR(50) CHECK (rol in ('PRINCIPAL', 'ASISTENTE1', 'ASISTENTE2', 'CUARTO', 'VAR')) NOT NULL,
+
+    CONSTRAINT UQ_Arbitro_Y_Partido_Unicos UNIQUE (arbitro_id, partido_id),
+    CONSTRAINT UQ_Un_Arbitro_Por_Rol_En_Cada_Partido UNIQUE (partido_id, rol)
+
 );
 END
 GO

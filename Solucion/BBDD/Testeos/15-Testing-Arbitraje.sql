@@ -233,7 +233,95 @@ BEGIN TRANSACTION ComienzoTesteo
 	INSERT INTO Arbitraje.InformesArbitros (arbitro_id, partido_id, f_reporte, motivo)
 	VALUES (@ArbitroConErroresID, @PartidoElimID, '2030-06-16', 'Motivo prueba de errores');
 
+	---------------------------------------------------------
+	-- Setup de datos iniciales para Arbitraje.sp_designar_arbitro
+	---------------------------------------------------------
+	-- Mundial
+	IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = 2038)
+		INSERT INTO Mundial.Mundiales (f_inicio, f_fin) VALUES ('2038-06-01', '2038-07-15');
 
+    INSERT INTO Administracion.Reglas (mundial_id, codigo, valor)
+    VALUES (2038, 'ARBITRO_DE_VAR', '1');
+
+	-- Confederación
+	DECLARE @ConfDesig2 INT;
+	INSERT INTO Administracion.Confederaciones (nombre, siglas) VALUES ('Confed Test Designacion', 'CTD');
+	SET @ConfDesig2 = SCOPE_IDENTITY();
+
+	-- Países
+	INSERT INTO Administracion.Paises (codigo, confederacion_id, nombre)
+	VALUES ('BRA', @ConfDesig2, 'Brasil'),
+           ('URU', @ConfDesig2, 'Uruguay'), ('COL', @ConfDesig2, 'Colombia'),
+           ('CHI', @ConfDesig2, 'Chile'), ('GER', @ConfDesig2, 'Alemania');
+
+	-- Selecciones
+	INSERT INTO Mundial.Selecciones (pais_id) VALUES ('ARG'), ('BRA'), ('URU'), ('COL'), ('CHI'), ('GER'), ('FRA');
+	DECLARE @SelArg INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = 'ARG');
+	DECLARE @SelBra INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = 'BRA');
+	DECLARE @SelUru INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = 'URU');
+	DECLARE @SelCol INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = 'COL');
+    DECLARE @SelChi INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = 'CHI');
+    DECLARE @SelGer INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = 'GER');
+    DECLARE @SelFra INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = 'FRA');
+
+    -- Grupos (Grupo A: ARG, BRA, URU. Grupo B: GER, FRA)
+    INSERT INTO Mundial.Paises_Participes (pais_id, mundial_id, seleccion_id, grupo)
+    VALUES ('ARG', 2038, @SelArg, 'A'), ('BRA', 2038, @SelBra, 'A'), ('URU', 2038, @SelUru, 'A'), 
+           ('GER', 2038, @SelGer, 'B'), ('FRA', 2038, @SelFra, 'B'), 
+           ('COL', 2038, @SelCol, 'C'), ('CHI', 2038, @SelChi, 'C');
+
+	-- Sede
+	DECLARE @SedeDesig2ID INT;
+	INSERT INTO Administracion.Sedes (pais_id, nombre, ciudad, capacidad)
+	VALUES ('ARG', 'Monumental', 'Buenos Aires', 85000);
+	SET @SedeDesig2ID = SCOPE_IDENTITY();
+
+    -- Partidos (Rama Knockout)
+    DECLARE @FinalDesigID INT, @Semi1DesigID INT, @Semi2DesigID INT, @Cuartos1DesigID INT;
+    
+    INSERT INTO Partidos.Partidos (mundial_id, sede_id, fecha_y_hora, fase) VALUES (2038, @SedeDesig2ID, '2038-07-15', 'FINAL');
+    SET @FinalDesigID = SCOPE_IDENTITY();
+
+    INSERT INTO Partidos.Partidos (mundial_id, sede_id, fecha_y_hora, fase, siguiente_partido_id) VALUES (2038, @SedeDesig2ID, '2038-07-10', 'SEMIFINAL', @FinalDesigID);
+    SET @Semi1DesigID = SCOPE_IDENTITY();
+    INSERT INTO Partidos.Partidos (mundial_id, sede_id, fecha_y_hora, fase, siguiente_partido_id) VALUES (2038, @SedeDesig2ID, '2038-07-11', 'SEMIFINAL', @FinalDesigID);
+    SET @Semi2DesigID = SCOPE_IDENTITY();
+
+    -- Cuartos (Juegan COL vs FRA, apuntan a Semi 1) - RAMA IZQUIERDA
+    INSERT INTO Partidos.Partidos (seleccion_A_id, seleccion_B_id, mundial_id, sede_id, fecha_y_hora, fase, siguiente_partido_id) 
+    VALUES (@SelCol, @SelFra, 2038, @SedeDesig2ID, '2038-07-05', 'CUARTOS', @Semi1DesigID);
+    SET @Cuartos1DesigID = SCOPE_IDENTITY();
+
+    -- Cuartos (Juega CHI, apunta a Semi 2) - RAMA DERECHA
+    INSERT INTO Partidos.Partidos (seleccion_A_id, seleccion_B_id, mundial_id, sede_id, fecha_y_hora, fase, siguiente_partido_id) 
+    VALUES (@SelChi, @SelArg, 2038, @SedeDesig2ID, '2038-07-06', 'CUARTOS', @Semi2DesigID);
+
+    -- Partido de Grupos (ARG vs BRA, Grupo A)
+    DECLARE @PartidoGruposDesigID INT;
+    INSERT INTO Partidos.Partidos (seleccion_A_id, seleccion_B_id, mundial_id, sede_id, fecha_y_hora, fase) 
+    VALUES (@SelArg, @SelBra, 2038, @SedeDesig2ID, '2038-06-20', 'GRUPOS');
+    SET @PartidoGruposDesigID = SCOPE_IDENTITY();
+
+    -- Árbitros para Testeos
+	DECLARE @ArbNeutralID INT; -- Alemán (Grupo B, sin ramas de knockout conflictivas)
+	INSERT INTO Arbitraje.Arbitros (pais_id, nombre, apellido, confederacion_id) VALUES ('GER', 'Felix', 'Brych', @ConfDesig2);
+	SET @ArbNeutralID = SCOPE_IDENTITY();
+
+	DECLARE @ArbLocalID INT; -- Argentino (Juega en PartidoGruposDesig)
+	INSERT INTO Arbitraje.Arbitros (pais_id, nombre, apellido, confederacion_id) VALUES ('ARG', 'Facundo', 'Tello', @ConfDesig2);
+	SET @ArbLocalID = SCOPE_IDENTITY();
+
+	DECLARE @ArbMismoGrupoID INT; -- Uruguayo (Grupo A, mismo grupo que PartidoGruposDesig)
+	INSERT INTO Arbitraje.Arbitros (pais_id, nombre, apellido, confederacion_id) VALUES ('URU', 'Andres', 'Matonte', @ConfDesig2);
+	SET @ArbMismoGrupoID = SCOPE_IDENTITY();
+
+	DECLARE @ArbMismaRamaID INT; -- Colombiano (Juega en Cuartos1Desig -> Semi1)
+	INSERT INTO Arbitraje.Arbitros (pais_id, nombre, apellido, confederacion_id) VALUES ('COL', 'Wilmar', 'Roldan', @ConfDesig2);
+	SET @ArbMismaRamaID = SCOPE_IDENTITY();
+
+	DECLARE @ArbDistintaRamaID INT; -- Chileno (Juega en Rama Derecha -> Semi2)
+	INSERT INTO Arbitraje.Arbitros (pais_id, nombre, apellido, confederacion_id) VALUES ('CHI', 'Piero', 'Maza', @ConfDesig2);
+	SET @ArbDistintaRamaID = SCOPE_IDENTITY();
 
 ------------------------------------------------------
 print ''
@@ -927,6 +1015,186 @@ print 'ARBITRAJE -------------'
 			PRINT 'Testeo exitoso: ' + @NombreTesteo;
 		ELSE
 			THROW 50001, @ErrorRecibido, 1;
+
+	END CATCH
+
+----------------------------------------------------------------------
+
+	SET @NombreTesteo = 'Designar Arbitro Rol Automatico Funciona';
+	BEGIN TRY
+
+		EXEC Arbitraje.sp_designar_arbitro 
+			@PartidoID = @PartidoGruposDesigID,
+			@ArbitroID = @ArbNeutralID;
+		
+		IF NOT EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoGruposDesigID AND arbitro_id = @ArbNeutralID AND rol = 'PRINCIPAL')
+			THROW 50001, 'No se asignó correctamente el árbitro como PRINCIPAL', 1;
+
+		PRINT 'Testeo exitoso: ' + @NombreTesteo;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @ErrorRecibido = ERROR_MESSAGE();
+		THROW 50001, @ErrorRecibido, 1;
+
+	END CATCH
+
+----------------------------------------------------------------------
+
+	SET @NombreTesteo = 'Designar Arbitro Nulos y Rol Invalido Falla';
+	SET @ErrorEsperado = '- Debe ingresar un partido. ' + CHAR(13) + CHAR(10) +
+						 '- Debe ingresar un Arbitro. ' + CHAR(13) + CHAR(10) +
+	                     '- Si ingresa un rol debe ser valido. ' + CHAR(13) + CHAR(10);
+
+	BEGIN TRY
+
+		EXEC Arbitraje.sp_designar_arbitro 
+			@PartidoID = NULL,
+			@ArbitroID = NULL,
+	        @Rol = 'AGUATERO';
+
+		THROW 50001, 'Se permitió designar con nulos o rol inválido', 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @ErrorRecibido = ERROR_MESSAGE();
+
+		IF @ErrorRecibido = @ErrorEsperado
+			PRINT 'Testeo exitoso: ' + @NombreTesteo;
+		ELSE
+			THROW 50001, @ErrorRecibido, 1;
+
+	END CATCH
+
+----------------------------------------------------------------------
+
+	SET @NombreTesteo = 'Designar Arbitro Su Propio Pais Falla';
+	SET @ErrorEsperado = '- El árbitro no puede dirigir un partido de su propio país. ' + CHAR(13) + CHAR(10) +
+						'- El árbitro no puede dirigir un partido del grupo de su selección. ' + CHAR(13) + CHAR(10);
+
+	BEGIN TRY
+
+		-- PartidoGruposDesigID es ARG vs BRA. ArbLocalID es Argentino.
+		EXEC Arbitraje.sp_designar_arbitro 
+			@PartidoID = @PartidoGruposDesigID,
+			@ArbitroID = @ArbLocalID, 
+	        @Rol = 'VAR';
+
+		THROW 50001, 'Se permitió designar a un árbitro para dirigir a su propio país', 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @ErrorRecibido = ERROR_MESSAGE();
+
+		IF @ErrorRecibido = @ErrorEsperado
+			PRINT 'Testeo exitoso: ' + @NombreTesteo;
+		ELSE
+			THROW 50001, @ErrorRecibido, 1;
+
+	END CATCH
+
+----------------------------------------------------------------------
+
+	SET @NombreTesteo = 'Designar Arbitro Duplicado Falla';
+	SET @ErrorEsperado = '- El arbitro ya se encuentra asignado al partido. ' + CHAR(13) + CHAR(10);
+
+	BEGIN TRY
+
+		-- Intentamos asignar el MISMO árbitro neutral al mismo partido donde fue asignado en el test de éxito
+		EXEC Arbitraje.sp_designar_arbitro 
+			@PartidoID = @PartidoGruposDesigID,
+			@ArbitroID = @ArbNeutralID; 
+
+		THROW 50001, 'Se permitió asignar el mismo árbitro dos veces al partido', 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @ErrorRecibido = ERROR_MESSAGE();
+
+		IF @ErrorRecibido = @ErrorEsperado
+			PRINT 'Testeo exitoso: ' + @NombreTesteo;
+		ELSE
+			THROW 50001, @ErrorRecibido, 1;
+
+	END CATCH
+
+----------------------------------------------------------------------
+
+	SET @NombreTesteo = 'Designar Arbitro Mismo Grupo Falla';
+	SET @ErrorEsperado = '- El árbitro no puede dirigir un partido del grupo de su selección. ' + CHAR(13) + CHAR(10);
+
+	BEGIN TRY
+
+		-- ArbMismoGrupoID es Uruguayo. URU comparte Grupo A con ARG y BRA (@PartidoGruposDesigID).
+		EXEC Arbitraje.sp_designar_arbitro 
+			@PartidoID = @PartidoGruposDesigID, 
+			@ArbitroID = @ArbMismoGrupoID; 
+
+		THROW 50001, 'Se permitió asignar a un árbitro que comparte grupo con los equipos', 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @ErrorRecibido = ERROR_MESSAGE();
+
+		IF @ErrorRecibido = @ErrorEsperado
+			PRINT 'Testeo exitoso: ' + @NombreTesteo;
+		ELSE
+			THROW 50001, @ErrorRecibido, 1;
+
+	END CATCH
+
+----------------------------------------------------------------------
+
+	SET @NombreTesteo = 'Designar Arbitro Misma Rama Falla';
+	SET @ErrorEsperado = '- El árbitro no puede dirigir un partido de su propio país. ' + CHAR(13) + CHAR(10) +
+						 '- El árbitro no puede dirigir un partido de un país que juegue en su misma rama. ' + CHAR(13) + CHAR(10);
+
+	BEGIN TRY
+
+		-- ArbMismaRamaID es Colombiano. COL juega en la Rama Izquierda y el @Cuartos1DesigID está en esa rama.
+		EXEC Arbitraje.sp_designar_arbitro 
+			@PartidoID = @Cuartos1DesigID,
+			@ArbitroID = @ArbMismaRamaID; 
+
+		THROW 50001, 'Se permitió asignar a un árbitro que juega en la misma rama de eliminatorias', 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @ErrorRecibido = ERROR_MESSAGE();
+
+		IF @ErrorRecibido = @ErrorEsperado
+			PRINT 'Testeo exitoso: ' + @NombreTesteo;
+		ELSE
+			THROW 50001, @ErrorRecibido, 1;
+
+	END CATCH
+
+----------------------------------------------------------------------
+
+	SET @NombreTesteo = 'Designar Arbitro Distinta Rama Funciona';
+	BEGIN TRY
+
+		-- ArbDistintaRamaID es Chileno. CHI juega en la Rama Derecha, por ende puede dirigir @Cuartos1DesigID (Rama Izquierda).
+		EXEC Arbitraje.sp_designar_arbitro 
+			@PartidoID = @Cuartos1DesigID,
+			@ArbitroID = @ArbDistintaRamaID; 
+		
+		IF NOT EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @Cuartos1DesigID AND arbitro_id = @ArbDistintaRamaID)
+			THROW 50001, 'No se asignó correctamente al árbitro proveniente de otra rama', 1;
+
+		PRINT 'Testeo exitoso: ' + @NombreTesteo;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @ErrorRecibido = ERROR_MESSAGE();
+		THROW 50001, @ErrorRecibido, 1;
 
 	END CATCH
 

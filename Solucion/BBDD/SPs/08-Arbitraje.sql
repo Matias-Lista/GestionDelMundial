@@ -323,6 +323,8 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_eliminar_informe_arbitro
 	@ID INT
 AS
 BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @errores NVARCHAR(500) = '';
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.InformesArbitros WHERE id = @ID)
@@ -336,4 +338,185 @@ BEGIN
 END
 GO
 
- 
+----------------------------------------------
+
+CREATE OR ALTER PROCEDURE Arbitraje.sp_designar_arbitro
+    @PartidoID INT,
+    @ArbitroID INT,
+    @Rol VARCHAR(15) = NULL
+AS
+BEGIN 
+
+	---- Para asignar arbitro a un partido:
+	------ .Si es un partido de Grupos: El arbitro no puede dirigir un partido del grupo de su selección.
+	------ .Si es un partido de knockout: El arbitro no puede dirigir un partido de un país que juegue en su misma rama
+	------ .Voy a asignar los roles en orden, pero sino, se tiene que validar que no haya un arbitro asignado en ese rol, para ese partido.
+
+	SET NOCOUNT ON;
+	
+	DECLARE @errores VARCHAR(5000) = '';
+
+	IF @PartidoID IS NULL
+		SET @errores = @errores + '- Debe ingresar un partido. ' + char(13) + char(10);
+
+	IF @ArbitroID IS NULL
+		SET @errores = @errores + '- Debe ingresar un Arbitro. ' + char(13) + char(10);
+
+	IF @Rol IS NOT NULL AND @Rol not in ('PRINCIPAL', 'ASISTENTE1', 'ASISTENTE2', 'CUARTO', 'VAR')
+		SET @errores = @errores + '- Si ingresa un rol debe ser valido. ' + char(13) + char(10);
+
+	DECLARE @añoMundial INT = NULL;
+    DECLARE @selA INT = NULL;
+    DECLARE @selB INT = NULL;
+    DECLARE @fase VARCHAR(15) = NULL;
+
+	IF @PartidoID IS NOT NULL BEGIN
+		SELECT @añoMundial = mundial_id, @selA = seleccion_A_id, @selB = seleccion_B_id, @fase = fase 
+        FROM Partidos.Partidos WHERE id = @PartidoID;
+
+		IF @añoMundial IS NULL 
+			SET @errores = @errores + '- No existe un Partido con ese ID. ' + char(13) + char(10);
+	END		
+
+    DECLARE @paisArbitro CHAR(3) = NULL;
+	IF @ArbitroID IS NOT NULL BEGIN
+        SELECT @paisArbitro = pais_id FROM Arbitraje.Arbitros WHERE id = @ArbitroID;
+		IF @paisArbitro IS NULL
+		    SET @errores = @errores + '- No existe un Arbitro con ese ID. ' + char(13) + char(10);
+    END
+
+	IF @PartidoID is not null and @ArbitroId is not null and 
+		EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido where partido_id = @PartidoID and arbitro_id = @ArbitroID)
+		SET @errores = @errores + '- El arbitro ya se encuentra asignado al partido. ' + char(13) + char(10);
+
+    -- Validación 1: el país del árbitro no puede ser una de las selecciones enfrentadas
+    IF @selA IS NOT NULL AND @selB IS NOT NULL AND @paisArbitro IS NOT NULL BEGIN
+        IF EXISTS (SELECT 1 FROM Mundial.Selecciones WHERE id IN (@selA, @selB) AND pais_id = @paisArbitro)
+            SET @errores = @errores + '- El árbitro no puede dirigir un partido de su propio país. ' + char(13) + char(10);
+    END
+
+    -- Validación 2: Regla de Grupos vs Regla de Knockout
+    IF @añoMundial IS NOT NULL AND @paisArbitro IS NOT NULL BEGIN
+        
+        DECLARE @selArbitro INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = @paisArbitro);
+
+        IF @fase = 'GRUPOS'
+        BEGIN
+            DECLARE @GrupoPartido CHAR(1) = (SELECT TOP 1 grupo FROM Mundial.Paises_Participes WHERE mundial_id = @añoMundial AND seleccion_id = @selA);
+            DECLARE @GrupoArbitro CHAR(1) = (SELECT TOP 1 grupo FROM Mundial.Paises_Participes WHERE mundial_id = @añoMundial AND seleccion_id = @selArbitro);
+
+            IF @GrupoPartido IS NOT NULL AND @GrupoArbitro IS NOT NULL AND @GrupoPartido = @GrupoArbitro
+                SET @errores = @errores + '- El árbitro no puede dirigir un partido del grupo de su selección. ' + char(13) + char(10);
+        END
+        ELSE IF @fase IS NOT NULL AND @selArbitro IS NOT NULL
+        BEGIN
+            -- Regla Knockout: CTE para ver si se cruzan en la misma rama (antes de la final)
+            DECLARE @MismaRama BIT = 0;
+
+            ;WITH RamaPartido AS (
+                SELECT id, siguiente_partido_id, fase FROM Partidos.Partidos WHERE id = @PartidoID
+                UNION ALL
+                SELECT P.id, P.siguiente_partido_id, P.fase
+                FROM Partidos.Partidos P
+                INNER JOIN RamaPartido RP ON P.id = RP.siguiente_partido_id
+            ),
+            PartidosArbitro AS (
+                SELECT id, siguiente_partido_id, fase FROM Partidos.Partidos 
+                WHERE mundial_id = @añoMundial AND (seleccion_A_id = @selArbitro OR seleccion_B_id = @selArbitro)
+            ),
+            RamaArbitro AS (
+                SELECT id, siguiente_partido_id, fase FROM PartidosArbitro
+                UNION ALL
+                SELECT P.id, P.siguiente_partido_id, P.fase
+                FROM Partidos.Partidos P
+                INNER JOIN RamaArbitro RA ON P.id = RA.siguiente_partido_id
+            )
+            -- FIX ACÁ: Excluimos la final del cruce, ya que TODAS las ramas coinciden en la final
+            SELECT TOP 1 @MismaRama = 1 
+            FROM RamaPartido RP 
+            INNER JOIN RamaArbitro RA ON RP.id = RA.id
+            WHERE RP.fase <> 'FINAL';
+
+            IF @MismaRama = 1
+                SET @errores = @errores + '- El árbitro no puede dirigir un partido de un país que juegue en su misma rama. ' + char(13) + char(10);
+        END
+    END
+
+	IF (@errores <> '')
+		THROW 50001, @errores, 1;
+
+    DECLARE @usaVar BIT = 0; 
+    SELECT @usaVar = CAST(valor AS BIT) FROM Administracion.Reglas WHERE mundial_id = @añoMundial AND codigo = 'ARBITRO_DE_VAR';
+
+    DECLARE @hayPrincipal  BIT = 0;
+    DECLARE @hayAsistente1 BIT = 0;
+    DECLARE @hayAsistente2 BIT = 0;
+    DECLARE @hayCuarto     BIT = 0;
+    DECLARE @hayVar        BIT = 0;
+
+	IF exists (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID and rol = 'PRINCIPAL')
+		SET @hayPrincipal = 1;
+
+	IF exists (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID and rol = 'ASISTENTE1')
+		SET @hayAsistente1 = 1;
+
+	IF exists (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID and rol = 'ASISTENTE2')
+		SET @hayAsistente2 = 1;
+
+	IF exists (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID and rol = 'CUARTO')
+		SET @hayCuarto = 1;
+
+	IF exists (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID and rol = 'VAR')
+		SET @hayVar = 1;
+
+	IF @hayPrincipal = 1 and @hayAsistente1 = 1 and @hayAsistente2 = 1 and @hayCuarto = 1 and ((@hayVar = 1 and @usaVar = 1) OR @usaVar = 0)
+		SET @errores = @errores + '- NO HAY ROLES DE ARBITRO DISPONIBLES. ' + char(13) + char(10);
+
+	IF @Rol is NULL BEGIN
+		IF @hayPrincipal = 0 
+			SET @Rol = 'PRINCIPAL'
+		ELSE IF @hayAsistente1 = 0
+			SET @Rol = 'ASISTENTE1'
+		ELSE IF @hayAsistente2 = 0
+			SET @Rol = 'ASISTENTE2'
+		ELSE IF @hayCuarto = 0
+			SET @Rol = 'CUARTO'
+		ELSE IF (@hayVar = 0 and @usaVar = 1)
+			SET @Rol = 'VAR'
+	END
+
+    IF EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID AND rol = @Rol)
+        SET @errores = @errores + '- El rol solicitado ya se encuentra ocupado en este partido. ' + char(13) + char(10);
+
+	IF (@errores <> '')
+		THROW 50001, @errores, 1;
+
+    INSERT INTO Arbitraje.ArbitroAsignadoPartido (arbitro_id, partido_id, rol)
+    VALUES (@ArbitroID, @PartidoID, @Rol);
+
+END
+GO
+
+-- CREATE OR ALTER PROCEDURE Arbitraje.sp_asginar_terna_arbitros (automatica)
+
+
+-- CREATE OR ALTER PROCEDURE Arbitraje.sp_quitar_designacion
+-- 	@PartidoID INT,
+-- 	@ArbitroID INT
+-- AS
+-- BEGIN
+-- 	DECLARE @errores NVARCHAR(500) = '';
+
+-- 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE partido_id = @PartidoID AND arbitro_id = @ArbitroID)
+-- 		SET @errores = @errores + 'El árbitro no está designado en ese partido. ';
+
+-- 	IF EXISTS (SELECT 1 FROM Arbitraje.InformesArbitros WHERE partido_id = @PartidoID AND arbitro_id = @ArbitroID)
+-- 		SET @errores = @errores + 'El árbitro tiene informes registrados sobre ese partido. ';
+
+-- 	IF (@errores <> '')
+-- 		THROW 50001, @errores, 1;
+
+-- 	DELETE FROM Arbitraje.ArbitroAsignadoPartido
+-- 		WHERE partido_id = @PartidoID AND arbitro_id = @ArbitroID;
+-- END
+-- GO

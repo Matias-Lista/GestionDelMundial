@@ -44,7 +44,7 @@ BEGIN
         END
     ELSE
         BEGIN
-            SET @cupoRol = 1;   -- paar PRINCIPAL, CUARTO o VAR, solo se permite 1 árbitr
+            SET @cupoRol = 1;   -- para PRINCIPAL, CUARTO o VAR, solo se permite 1 árbitr
         END
 
   
