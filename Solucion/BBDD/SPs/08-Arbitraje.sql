@@ -1,76 +1,92 @@
 /* BBDD/SPs/Arbitraje.sql
  * Fecha: 10/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Lista, Matías Josué.
  * Descripción: Crea todos los store procedures, funciones, y vistas del schema [Arbitraje].
  **/
 
 USE GestionDelMundial;
 GO
 
-
 CREATE OR ALTER PROCEDURE Arbitraje.sp_crear_arbitro
 	@CodigoPais CHAR(3),
 	@Nombre VARCHAR(100),
-	@Apellido VARCHAR(100)
+	@Apellido VARCHAR(100),
+	@EsMujer BIT = 1,
+	@ConfederacionID INT = NULL,
+	@ID INT = NULL OUTPUT
 AS
 BEGIN
+	SET NOCOUNT ON
 	DECLARE @errores NVARCHAR(500) = '';
 
-	IF NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
-		SET @errores = @errores + 'El país no existe. ';
+	IF (@Nombre IS NULL)
+		SET @errores = @errores + '- Debe ingresar el nombre del árbitro. ' + char(13) + char(10);
 
-	IF (@Nombre IS NULL OR TRIM(@Nombre) = '')
-		SET @errores = @errores + 'Debe ingresar el nombre del árbitro. ';
+	IF (@Apellido IS NULL)
+		SET @errores = @errores + '- Debe ingresar el apellido del árbitro. ' + char(13) + char(10);
 
-	IF (@Apellido IS NULL OR TRIM(@Apellido) = '')
-		SET @errores = @errores + 'Debe ingresar el apellido del árbitro. ';
+	IF (@CodigoPais IS NULL)
+		SET @errores = @errores + '- Debe ingresar un país. ' + char(13) + char(10);	
 
-	IF EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE nombre = @Nombre AND apellido = @Apellido AND pais_id = @CodigoPais)
-		SET @errores = @errores + 'Ya existe un árbitro con ese nombre y apellido para ese país.';
+	IF @CodigoPais IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
+		SET @errores = @errores + '- El país no existe. ' + char(13) + char(10);
+
+	IF @CodigoPais IS NOT NULL AND @Nombre IS NOT NULL AND @Apellido IS NOT NULL AND EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE nombre = @Nombre AND apellido = @Apellido AND pais_id = @CodigoPais)
+		SET @errores = @errores + '- Ya existe un árbitro con ese nombre y apellido para ese país. ' + char(13) + char(10);
+
+	IF @ConfederacionID IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Administracion.Confederaciones WHERE id = @ConfederacionID)
+		SET @errores = @errores + '- La confederacion indicada no existe. ' + char(13) + char(10);
 
 	IF (@errores <> '')
 		THROW 50001, @errores, 1;
 
 	INSERT INTO Arbitraje.Arbitros
-		(pais_id, nombre, apellido)
+		(pais_id, nombre, apellido, es_mujer, confederacion_id)
 		VALUES
-		(@CodigoPais, TRIM(@Nombre), TRIM(@Apellido)); --trim limpia los espacios en blanco al inicio y fin 
+		(@CodigoPais, @Nombre, @Apellido, @EsMujer, @ConfederacionID);
+
+	SET @ID = SCOPE_IDENTITY();
 END
 GO
 
+--  No se modifica el País porque rompe reglas de negocio:
+--  La nacionalidad de un arbitro condiciona a qué partido se asigna.
 CREATE OR ALTER PROCEDURE Arbitraje.sp_modificar_arbitro
 	@ID INT,
-	@CodigoPais CHAR(3),
 	@Nombre VARCHAR(100),
 	@Apellido VARCHAR(100)
 AS
 BEGIN
+	SET NOCOUNT ON
+
 	DECLARE @errores NVARCHAR(500) = '';
 
-	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ID)
-		SET @errores = @errores + 'No existe un árbitro con ese ID. ';
+	DECLARE @codigoPais CHAR(3) = NULL;
+	IF (@ID IS NULL)
+		SET @errores = @errores + '- Debe ingresar un arbitro. ' + char(13) + char(10);
+	ELSE 
+		SELECT @codigoPais = pais_id FROM Arbitraje.Arbitros WHERE id = @ID
 
-	IF NOT EXISTS (SELECT 1 FROM Administracion.Paises WHERE codigo = @CodigoPais)
-		SET @errores = @errores + 'El país no existe. ';
+	IF (@Nombre IS NULL)
+		SET @errores = @errores + '- Debe ingresar un nombre. ' + char(13) + char(10);
 
-	IF (@Nombre IS NULL OR TRIM(@Nombre) = '')
-		SET @errores = @errores + 'Debe indicar el nombre del árbitro. ';
+	IF (@Apellido IS NULL)
+		SET @errores = @errores + '- Debe ingresar un apellido. ' + char(13) + char(10);
 
-	IF (@Apellido IS NULL OR TRIM(@Apellido) = '')
-		SET @errores = @errores + 'Debe indicar el apellido del árbitro. ';
+	IF @codigoPais is NULL and @ID IS NOT NULL
+		SET @errores = @errores + '- No existe un árbitro con ese ID. ' + char(13) + char(10);
 
-	IF EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE nombre = @Nombre AND apellido = @Apellido AND pais_id = @CodigoPais AND id <> @ID)
-		SET @errores = @errores + 'Otro árbitro ya tiene ese nombre y apellido para ese país.';
+	IF EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE nombre = @Nombre AND apellido = @Apellido AND pais_id = @codigoPais AND id <> @ID)
+		SET @errores = @errores + '- Otro árbitro del mismo país ya tiene ese nombre y apellido. ' + char(13) + char(10);
 
 	IF (@errores <> '')
 		THROW 50001, @errores, 1;
 
 	UPDATE Arbitraje.Arbitros
-		SET pais_id = @CodigoPais, nombre = TRIM(@Nombre), apellido = TRIM(@Apellido)
+		SET nombre = @Nombre, apellido = @Apellido
 		WHERE id = @ID;
 END
 GO
-
 
 CREATE OR ALTER FUNCTION Arbitraje.fn_obtener_arbitro_id (@Nombre VARCHAR(100), @Apellido VARCHAR(100), @CodigoPais CHAR(3))
 RETURNS INT
@@ -84,22 +100,30 @@ BEGIN
 END
 GO
 
-
 CREATE OR ALTER PROCEDURE Arbitraje.sp_asociar_idioma_a_arbitro
 	@ArbitroID INT,
 	@CodigoIdioma CHAR(2)
 AS
 BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @errores NVARCHAR(500) = '';
 
-	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID)
-		SET @errores = @errores + 'El árbitro no existe. ';
+	IF @ArbitroID IS NULL
+		SET @errores = @errores + '- Debe ingresar un arbitro. ' + char(13) + char(10);
 
-	IF NOT EXISTS (SELECT 1 FROM Administracion.Idiomas WHERE codigo = @CodigoIdioma)
-		SET @errores = @errores + 'El idioma no existe. ';
+	IF @CodigoIdioma IS NULL
+		SET @errores = @errores + '- Debe ingresar un idioma. ' + char(13) + char(10);
 
-	IF EXISTS (SELECT 1 FROM Arbitraje.Arbitro_Habla WHERE arbitro_id = @ArbitroID AND idioma_id = @CodigoIdioma)
-		SET @errores = @errores + 'El árbitro ya tiene asociado ese idioma.';
+	IF @ArbitroID IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID)
+		SET @errores = @errores + '- El árbitro no existe. ' + char(13) + char(10);
+
+	IF @CodigoIdioma IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Administracion.Idiomas WHERE codigo = @CodigoIdioma)
+		SET @errores = @errores + '- El idioma no existe. ' + char(13) + char(10);
+
+	IF @ArbitroID IS NOT NULL AND @CodigoIdioma IS NOT NULL AND
+	   EXISTS (SELECT 1 FROM Arbitraje.Arbitro_Habla WHERE arbitro_id = @ArbitroID AND idioma_id = @CodigoIdioma)
+		SET @errores = @errores + '- El árbitro ya tiene asociado ese idioma.' + char(13) + char(10);
 
 	IF (@errores <> '')
 		THROW 50001, @errores, 1;
@@ -110,17 +134,27 @@ BEGIN
 		(@ArbitroID, @CodigoIdioma);
 END
 GO
-
---entiendo que en este caso no hay mas que validar 
+ 
 CREATE OR ALTER PROCEDURE Arbitraje.sp_desasociar_idioma_de_arbitro
 	@ArbitroID INT,
 	@CodigoIdioma CHAR(2)
 AS
 BEGIN
+	SET NOCOUNT ON;
+
 	DECLARE @errores NVARCHAR(500) = '';
 
-	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitro_Habla WHERE arbitro_id = @ArbitroID AND idioma_id = @CodigoIdioma)
-		SET @errores = @errores + 'El árbitro no tiene asociado ese idioma.';
+
+	IF @ArbitroID IS NULL
+		SET @errores = @errores + '- Debe ingresar un arbitro. ' + char(13) + char(10);
+
+	IF @CodigoIdioma IS NULL
+		SET @errores = @errores + '- Debe ingresar un idioma. ' + char(13) + char(10);
+
+
+	IF @ArbitroID IS NOT NULL AND @CodigoIdioma IS NOT NULL AND
+	   NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitro_Habla WHERE arbitro_id = @ArbitroID AND idioma_id = @CodigoIdioma)
+		SET @errores = @errores + '- El árbitro NO tiene asociado ese idioma.' + char(13) + char(10);
 
 	IF (@errores <> '')
 		THROW 50001, @errores, 1;
@@ -131,35 +165,36 @@ END
 GO
 
 
-
 CREATE OR ALTER PROCEDURE Arbitraje.sp_registrar_informe_arbitro
 	@ArbitroID INT,
 	@FReporte DATE,
 	@Motivo VARCHAR(250),
-	@PartidoID INT = NULL
+	@PartidoID INT = NULL,
+	@ID INT = NULL OUTPUT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @errores NVARCHAR(500) = '';
 
 	DECLARE @fechaPartido DATE = (SELECT CAST(fecha_y_hora AS DATE) FROM Partidos.Partidos WHERE id = @PartidoID);
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ArbitroID)
-		SET @errores = @errores + 'El árbitro no existe. ';
+		SET @errores = @errores + '- El árbitro no existe. ' + char(13) + char(10);
 
 	IF (@Motivo IS NULL OR TRIM(@Motivo) = '')
-		SET @errores = @errores + 'Debe indicar el motivo del informe. ';
+		SET @errores = @errores + '- Debe indicar el motivo del informe. ' + char(13) + char(10);
 
 	IF (@FReporte IS NULL OR @FReporte > CAST(GETDATE() AS DATE))
-		SET @errores = @errores + 'La fecha del informe es obligatoria y no puede ser futura. ';
+		SET @errores = @errores + '- La fecha del informe es obligatoria y no puede ser futura. ' + char(13) + char(10);
 
 	IF (@PartidoID IS NOT NULL AND @fechaPartido IS NULL)
-		SET @errores = @errores + 'El partido no existe. ';
+		SET @errores = @errores + '- El partido no existe. ' + char(13) + char(10);
 
 	IF (@PartidoID IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE arbitro_id = @ArbitroID AND partido_id = @PartidoID))
-		SET @errores = @errores + 'El árbitro no estuvo designado en ese partido. ';
+		SET @errores = @errores + '- El árbitro no estuvo designado en ese partido. ' + char(13) + char(10);
 
 	IF (@FReporte < @fechaPartido)
-		SET @errores = @errores + 'El informe no puede ser anterior al partido.';
+		SET @errores = @errores + '- El informe no puede ser anterior al partido. ' + char(13) + char(10);
 
 	IF (@errores <> '')
 		THROW 50001, @errores, 1;
@@ -168,11 +203,10 @@ BEGIN
 		(arbitro_id, partido_id, f_reporte, motivo)
 		VALUES
 		(@ArbitroID, @PartidoID, @FReporte, @Motivo);
+		
+	SET @ID = SCOPE_IDENTITY();
 END
 GO
-
-
-
 
 CREATE OR ALTER PROCEDURE Arbitraje.sp_modificar_informe_arbitro
 	@ID INT,
@@ -180,6 +214,7 @@ CREATE OR ALTER PROCEDURE Arbitraje.sp_modificar_informe_arbitro
 	@Motivo VARCHAR(250)
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DECLARE @errores NVARCHAR(500) = '';
 
 	DECLARE @fechaPartido DATE = (SELECT CAST(P.fecha_y_hora AS DATE)
@@ -188,16 +223,16 @@ BEGIN
 									WHERE I.id = @ID);
 
 	IF NOT EXISTS (SELECT 1 FROM Arbitraje.InformesArbitros WHERE id = @ID)
-		SET @errores = @errores + 'No existe un informe con ese ID. ';
+		SET @errores = @errores + '- No existe un informe con ese ID. ' + char(13) + char(10);
 
 	IF (@Motivo IS NULL OR TRIM(@Motivo) = '')
-		SET @errores = @errores + 'Debe indicar el motivo del informe. ';
+		SET @errores = @errores + '- Debe indicar el motivo del informe. ' + char(13) + char(10);
 
 	IF (@FReporte IS NULL OR @FReporte > CAST(GETDATE() AS DATE))
-		SET @errores = @errores + 'La fecha del informe es obligatoria y no puede ser futura. ';
+		SET @errores = @errores + '- La fecha del informe es obligatoria y no puede ser futura. ' + char(13) + char(10);
 
 	IF (@FReporte < @fechaPartido)
-		SET @errores = @errores + 'El informe no puede ser anterior al partido. ';
+		SET @errores = @errores + '- El informe no puede ser anterior al partido. ' + char(13) + char(10);
 
 	IF (@errores <> '')
 		THROW 50001, @errores, 1;
@@ -207,6 +242,7 @@ BEGIN
 		WHERE id = @ID;
 END
 GO
+
 
 CREATE OR ALTER FUNCTION Arbitraje.fn_historial_arbitro (@ArbitroID INT)
 RETURNS TABLE
@@ -240,26 +276,44 @@ AS
 BEGIN
 	DECLARE @errores NVARCHAR(500) = '';
 
-	IF NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ID)
-		SET @errores = @errores + 'No existe un árbitro con ese ID. ';
+	IF @ID IS NULL
+		SET @errores = @errores + '- Debe ingresar un arbitro. ' + char(13) + char(10);
+
+
+	IF @ID IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Arbitraje.Arbitros WHERE id = @ID)
+		SET @errores = @errores + '- No existe un árbitro con ese ID. ' + char(13) + char(10);
 
 	IF EXISTS (SELECT 1 FROM Arbitraje.ArbitroAsignadoPartido WHERE arbitro_id = @ID)
-		SET @errores = @errores + 'El árbitro tiene partidos designados. ';
+		SET @errores = @errores + '- El árbitro tiene partidos designados. ' + char(13) + char(10);
 
 	IF EXISTS (SELECT 1 FROM Arbitraje.InformesArbitros WHERE arbitro_id = @ID)
-		SET @errores = @errores + 'El árbitro tiene informes registrados. ';
+		SET @errores = @errores + '- El árbitro tiene informes registrados. ' + char(13) + char(10);
 
 	IF EXISTS (SELECT 1 FROM Mundial.Habilitacion_Arbitro WHERE arbitro_id = @ID)
-		SET @errores = @errores + 'El árbitro está habilitado en uno o más mundiales. ';
-
-	IF EXISTS (SELECT 1 FROM Arbitraje.Arbitro_Habla WHERE arbitro_id = @ID)
-		SET @errores = @errores + 'El árbitro tiene idiomas asociados.';
+		SET @errores = @errores + '- El árbitro está habilitado en uno o más mundiales. ' + char(13) + char(10);
 
 	IF (@errores <> '')
 		THROW 50001, @errores, 1;
 
-	DELETE FROM Arbitraje.Arbitros
-		WHERE id = @ID;
+	BEGIN TRY
+		BEGIN TRANSACTION
+		SAVE TRANSACTION sp_eliminar_arbitro
+
+		DELETE FROM Arbitraje.Arbitro_Habla WHERE arbitro_id = @ID;
+
+		DELETE FROM Arbitraje.Arbitros
+			WHERE id = @ID;
+		
+		COMMIT TRANSACTION
+
+	END TRY
+	BEGIN CATCH
+
+		if @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION sp_eliminar_arbitro;
+		throw
+
+	END CATCH
 END
 GO
 
