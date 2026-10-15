@@ -194,7 +194,10 @@ CREATE TABLE Arbitraje.Arbitros (
     nombre           VARCHAR(100),
     apellido         VARCHAR(100),
     es_mujer         BIT,
-    confederacion_id INT REFERENCES Administracion.Confederaciones(id) NOT NULL
+    confederacion_id INT REFERENCES Administracion.Confederaciones(id),
+
+    CONSTRAINT UQ_Nombre_Apellido_Pais_Arbitro UNIQUE (pais_id, nombre, apellido)
+
 );
 END
 GO
