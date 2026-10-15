@@ -19,12 +19,11 @@ PRINT '[*] Creando tablas y SPs ...'
 -- :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\08-Arbitraje.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Publicidad.sql
--- :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\100-Arbitraje-Logica.sql
 
 PRINT '[*] Testeando ...'
 :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\10-Testing-Administracion.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\11-Testing-Mundial.sql
-:r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\15-Testing-Mundial.sql
+:r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\15-Testing-Arbitraje.sql
 GO
 
 PRINT '[*] Limpiando y reconstruyendo objetos ...'
