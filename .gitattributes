@@ -4,3 +4,6 @@
 ## Evitar que nos cuenten como lineas de codigo archivos que no son scripts!
 *.csv linguist-generated
 *.pdf linguist-generated
+
+## Evitar que me modifique el fin de los archivos CSV, que causa que la importación falle
+*.csv text eol=crlf
