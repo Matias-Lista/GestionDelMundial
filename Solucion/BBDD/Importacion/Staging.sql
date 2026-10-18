@@ -20,6 +20,7 @@ BEGIN
     IF OBJECT_ID('tempdb..##Stadiums') IS NOT NULL DROP TABLE ##Stadiums;
     IF OBJECT_ID('tempdb..##Matches') IS NOT NULL DROP TABLE ##Matches;
     IF OBJECT_ID('tempdb..##PlayerAppearances') IS NOT NULL DROP TABLE ##PlayerAppearances;
+    IF OBJECT_ID('tempdb..##Referees') IS NOT NULL DROP TABLE ##Referees;
 
 END
 GO
@@ -634,3 +635,69 @@ BEGIN
 
 END
 GO
+
+
+/**************/
+/*  ARBITROS  */
+/**************/
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_referees_csv 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Referees') IS NOT NULL DROP TABLE ##Referees;
+
+    CREATE TABLE ##Referees (
+        key_id INT PRIMARY KEY CLUSTERED,
+        referee_id CHAR(5),
+        family_name VARCHAR(100),
+        given_name VARCHAR(100),
+        female BIT,
+        country_name VARCHAR(100),
+        confederation_id CHAR(4),
+        confederation_name VARCHAR(100),
+        confederation_code VARCHAR(20),
+        referee_wikipedia_link VARCHAR(100)
+    );
+
+
+    DECLARE @importacion VARCHAR(4000);
+
+    BEGIN TRY
+        SET @importacion = '
+        SET NOCOUNT ON
+        BULK INSERT ##Referees
+        FROM '''+ @Ruta + '''
+        WITH (
+            FORMAT = ''CSV'',
+            FIELDQUOTE = ''"'',         -- Ignora las comas que estén dentro de estas comillas
+            FIELDTERMINATOR = '','', 
+            ROWTERMINATOR = ''0x0a'',
+            FIRSTROW = 2,             -- Salta los encabezados
+            CODEPAGE = ''65001''        -- UTF-8
+        );';
+
+        EXEC (@importacion);
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50340, @ErrorBulk, 1;
+        RETURN;
+    END CATCH;
+
+    ALTER TABLE ##Referees 
+        DROP COLUMN referee_wikipedia_link, 
+        confederation_id, confederation_name;
+
+
+    ALTER TABLE ##Referees ADD map_id INT;
+    CREATE NONCLUSTERED INDEX IX_Referee_ID_MAP_ID ON ##Referees (referee_id) INCLUDE(map_id);
+
+    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Matches);
+    
+    -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
+
+END
+GO
+

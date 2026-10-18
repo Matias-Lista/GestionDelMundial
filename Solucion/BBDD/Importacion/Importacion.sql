@@ -858,6 +858,93 @@ BEGIN
 END
 GO
 
+
+/****************/
+/*   ARBITROS   */
+/****************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_arbitros
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Referees') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de Referees.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##Referees);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- necesito: Pais, nombre, apellido, confederacion, esMujer
+        DECLARE @nombrePais VARCHAR(100) = NULL;
+        DECLARE @nombre VARCHAR(100) = NULL;
+        DECLARE @apellido VARCHAR(100) = NULL;
+        DECLARE @confederacionCodigo VARCHAR(100) = NULL;
+        DECLARE @esMujer BIT = NULL;
+
+        DECLARE @confederacionId INT = NULL;
+        DECLARE @codigoPais CHAR(3) = NULL;
+
+        SELECT @nombrePais = country_name, @nombre = given_name,
+                @apellido = family_name, @confederacionCodigo = confederation_code, @esMujer = female
+            FROM ##Referees
+            WHERE key_id = @idActual;
+
+        SELECT @codigoPais = codigo FROM Administracion.Paises WHERE nombre = @nombrePais;
+        SELECT @confederacionId = id FROM Administracion.Confederaciones WHERE siglas = @confederacionCodigo;
+
+        DECLARE @arbitroID INT;
+        
+        BEGIN TRY
+            
+            IF (@nombre IS NULL) BEGIN
+                THROW 50001, 'ARBITRO skipeado, no se insertó', 1;
+            END;
+
+            IF (@confederacionId IS NULL OR @codigoPais IS NULL) BEGIN
+                THROW 50001, 'ARBITRO erroneo, no se insertó', 1;
+            END;
+
+            EXEC Arbitraje.sp_crear_arbitro
+                @CodigoPais = @codigoPais,
+                @Nombre = @nombre,
+                @Apellido = @apellido,
+                @EsMujer = @esMujer,
+                @ConfederacionID = @confederacionId,
+                @ID = @arbitroID OUTPUT 
+
+            UPDATE ##Referees 
+                SET map_id = @arbitroID WHERE key_id = @idActual; -- Mapeo.
+
+            SET @insertadas = @insertadas + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            print ERROR_MESSAGE();
+       END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'Arbitros insertados',
+        @actualizadas as 'Arbitros actualizados',
+        @omitidas as 'Arbitros omitidos';
+
+END
+GO
+
 CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
 AS
 BEGIN
@@ -923,7 +1010,9 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaStadiumsCSV VARCHAR(255),
     @RutaMatchesCSV VARCHAR(255),
     @RutaPlayerAppearancesCSV VARCHAR(255),
-    @MostrarDatos BIT = 0
+    @RutaRefereesCSV VARCHAR(255),
+    @MostrarDatos BIT = 0,
+    @UnicoMundial INT = NULL 
 AS
 BEGIN
 
@@ -945,6 +1034,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_stadiums_csv           @Ruta = @RutaStadiumsCSV
     EXEC Importacion.sp_crear_y_cargar_matches_csv            @Ruta = @RutaMatchesCSV
     EXEC Importacion.sp_crear_y_cargar_player_appearances_csv @Ruta = @RutaPlayerAppearancesCSV
+    EXEC Importacion.sp_crear_y_cargar_referees_csv           @Ruta = @RutaRefereesCSV
 
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
@@ -977,6 +1067,10 @@ BEGIN
     EXEC Importacion.sp_upsert_sedes;
     if @MostrarDatos = 1 
             SELECT TOP 5 * FROM Administracion.Sedes
+
+    EXEC Importacion.sp_upsert_arbitros;
+    if @MostrarDatos = 1
+        SELECT TOP 5 * FROM Arbitraje.Arbitros;
 
     EXEC Importacion.sp_upsert_partidos;
     if @MostrarDatos = 1 BEGIN
@@ -1020,6 +1114,7 @@ exec Importacion.PoblarDB
         @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\stadiums.csv',
         @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
         @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
-        @MostrarDatos = 1
+        @MostrarDatos = 1,
+        @UnicoMundial = 2022
 
 SELECT * FROM Mundial.mundiales*/
