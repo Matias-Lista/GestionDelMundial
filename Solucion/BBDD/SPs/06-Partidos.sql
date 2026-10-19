@@ -1,12 +1,73 @@
 /* BBDD/SPs/Partidos.sql
- * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Fecha: 18/10/2026
+ * Lista, Matías Josué.
  * Descripción: Crea todos los store procedures, funciones, y vistas del schema [Partidos].
  **/
  
 USE GestionDelMundial;
 GO
 
+CREATE OR ALTER FUNCTION Partidos.fn_jugadores_en_cancha (
+    @PartidoID INT, 
+    @Minuto SMALLINT, 
+    @Extra SMALLINT, 
+    @Tiempo SMALLINT
+)
+RETURNS TABLE
+AS
+RETURN (
+    SELECT JPI.jugador_id, JPI.posicion, JPI.seleccion_id, JPI.comienza_jugando
+    FROM Partidos.JugadorPosicionInicial JPI
+    WHERE JPI.partido_id = @PartidoID
+      AND (
+          -- Arrancó de titular y TODAVÍA NO SALIÓ
+          (
+              JPI.comienza_jugando = 1 
+              AND NOT EXISTS (
+                  SELECT 1 
+                  FROM Eventos.Cambios C 
+                  WHERE C.partido_id = @PartidoID 
+                    AND C.jugador_sale_id = JPI.jugador_id
+                    -- Condición de tiempo: el cambio ocurrió antes o en el mismo momento que se evalúa
+                    AND (
+                        C.tiempo < @Tiempo 
+                        OR (C.tiempo = @Tiempo AND C.minuto < @Minuto)
+                        OR (C.tiempo = @Tiempo AND C.minuto = @Minuto AND C.extra <= @Extra)
+                    )
+              )
+          )
+          OR
+          -- Arrancó en el banco, YA ENTRÓ, y no volvió a salir
+          (
+              JPI.comienza_jugando = 0
+              -- Ya entró
+              AND EXISTS (
+                  SELECT 1 
+                  FROM Eventos.Cambios C 
+                  WHERE C.partido_id = @PartidoID 
+                    AND C.jugador_entra_id = JPI.jugador_id
+                    AND (
+                        C.tiempo < @Tiempo 
+                        OR (C.tiempo = @Tiempo AND C.minuto < @Minuto)
+                        OR (C.tiempo = @Tiempo AND C.minuto = @Minuto AND C.extra <= @Extra)
+                    )
+              )
+              -- Empezó en el banco, entró, y salió.
+              AND NOT EXISTS (
+                  SELECT 1 
+                  FROM Eventos.Cambios C2
+                  WHERE C2.partido_id = @PartidoID 
+                    AND C2.jugador_sale_id = JPI.jugador_id
+                    AND (
+                        C2.tiempo < @Tiempo 
+                        OR (C2.tiempo = @Tiempo AND C2.minuto < @Minuto)
+                        OR (C2.tiempo = @Tiempo AND C2.minuto = @Minuto AND C2.extra <= @Extra)
+                    )
+              )
+          )
+      )
+);
+GO
 
  
 CREATE OR ALTER PROCEDURE Partidos.sp_definir_formacion_inicial 
