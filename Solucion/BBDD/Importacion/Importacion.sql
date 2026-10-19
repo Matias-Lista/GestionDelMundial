@@ -837,10 +837,10 @@ BEGIN
         END TRY
         BEGIN CATCH
             SET @omitidas = @omitidas + 1;
-            print ERROR_MESSAGE();
-            print @añoMundial;
+            -- print ERROR_MESSAGE();
+            -- print @añoMundial;
             -- print @codigoPais;
-            PRINT 'El código es: [' + @codigoPais + '] y su longitud es: ' + CAST(DATALENGTH(@codigoPais) AS VARCHAR);
+            -- PRINT 'El código es: [' + @codigoPais + '] y su longitud es: ' + CAST(DATALENGTH(@codigoPais) AS VARCHAR);
         END CATCH
 
         SET @idActual = @idActual + 1;
@@ -945,6 +945,91 @@ BEGIN
 END
 GO
 
+
+/********************************/
+/*    ARBITROS ASIGNACIONES     */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_asignaciones_arbitros
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##RefereeAppearances') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de Referees.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##RefereeAppearances);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito: AñoMundial, ID Arbitro, Partido ID,
+        DECLARE @añoMundial INT = NULL;
+        DECLARE @arbitroIDCSV VARCHAR(100) = NULL;
+        DECLARE @partidoIDCSV VARCHAR(100) = NULL;
+
+        DECLARE @arbitroID INT = NULL;
+        DECLARE @partidoID INT = NULL;
+
+        SELECT @añoMundial = tournament_id, @arbitroIDCSV = referee_id,
+                @partidoIDCSV = match_id
+            FROM ##RefereeAppearances
+            WHERE key_id = @idActual;
+
+        SELECT @partidoId = map_id FROM ##Matches WHERE match_id = @partidoIDCSV;
+        SELECT @arbitroID = map_id FROM ##Referees WHERE referee_id = @arbitroIDCSV;
+        
+        BEGIN TRY
+            
+            IF (@añoMundial IS NULL) BEGIN
+                THROW 50001, 'Asignacion de ARBITRO skipeado, no se insertó', 1;
+            END;
+
+            IF (@partidoId IS NULL OR @arbitroID IS NULL) BEGIN
+                THROW 50001, 'Asignacion de ARBITRO erronea, no se insertó', 1;
+            END;
+
+            -- Habilitamos al arbitro para ese mundial si no está habilitado
+            IF NOT EXISTS (SELECT 1 FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @añoMundial and arbitro_id = @arbitroID)
+                EXEC Mundial.sp_habilitar_arbitro
+                    @AñoMundial = @añoMundial,
+                    @ArbitroID = @arbitroID;
+
+            -- Asignamos el árbitro al partido.
+
+            EXEC Arbitraje.sp_designar_arbitro
+                @PartidoID = @partidoId,
+                @ArbitroID = @arbitroID;
+
+            SET @insertadas = @insertadas + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%'
+                print ERROR_MESSAGE();
+       END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'Asignacion de Arbitros insertados',
+        @actualizadas as 'Asignacion de Arbitros Arbitros actualizados',
+        @omitidas as 'Asignacion de Arbitros Arbitros omitidos';
+
+END
+GO
+
 CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
 AS
 BEGIN
@@ -1011,6 +1096,7 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaMatchesCSV VARCHAR(255),
     @RutaPlayerAppearancesCSV VARCHAR(255),
     @RutaRefereesCSV VARCHAR(255),
+    @RutaRefereeAppearancesCSV VARCHAR(255),
     @MostrarDatos BIT = 0,
     @UnicoMundial INT = NULL 
 AS
@@ -1025,16 +1111,17 @@ BEGIN
     --  3. Limpieza. Eliminar las #tablas.
 
     -- crear tablas temporales y cargarlas
-    EXEC Importacion.sp_crear_y_cargar_confederations_csv     @Ruta = @RutaConfederationsCSV
-    EXEC Importacion.sp_crear_y_cargar_teams_csv              @Ruta = @RutaTeamsCSV
-    EXEC Importacion.sp_crear_y_cargar_squads_csv             @Ruta = @RutaSquadsCSV
-    EXEC Importacion.sp_crear_y_cargar_players_csv            @Ruta = @RutaPlayersCSV
-    EXEC Importacion.sp_crear_y_cargar_tournaments_csv        @Ruta = @RutaTournamentsCSV
-    EXEC Importacion.sp_crear_y_cargar_group_standings_csv    @Ruta = @RutaGroupStandingsCSV
-    EXEC Importacion.sp_crear_y_cargar_stadiums_csv           @Ruta = @RutaStadiumsCSV
-    EXEC Importacion.sp_crear_y_cargar_matches_csv            @Ruta = @RutaMatchesCSV
-    EXEC Importacion.sp_crear_y_cargar_player_appearances_csv @Ruta = @RutaPlayerAppearancesCSV
-    EXEC Importacion.sp_crear_y_cargar_referees_csv           @Ruta = @RutaRefereesCSV
+    EXEC Importacion.sp_crear_y_cargar_confederations_csv      @Ruta = @RutaConfederationsCSV
+    EXEC Importacion.sp_crear_y_cargar_teams_csv               @Ruta = @RutaTeamsCSV
+    EXEC Importacion.sp_crear_y_cargar_squads_csv              @Ruta = @RutaSquadsCSV
+    EXEC Importacion.sp_crear_y_cargar_players_csv             @Ruta = @RutaPlayersCSV
+    EXEC Importacion.sp_crear_y_cargar_tournaments_csv         @Ruta = @RutaTournamentsCSV
+    EXEC Importacion.sp_crear_y_cargar_group_standings_csv     @Ruta = @RutaGroupStandingsCSV
+    EXEC Importacion.sp_crear_y_cargar_stadiums_csv            @Ruta = @RutaStadiumsCSV
+    EXEC Importacion.sp_crear_y_cargar_matches_csv             @Ruta = @RutaMatchesCSV
+    EXEC Importacion.sp_crear_y_cargar_player_appearances_csv  @Ruta = @RutaPlayerAppearancesCSV
+    EXEC Importacion.sp_crear_y_cargar_referees_csv            @Ruta = @RutaRefereesCSV
+    EXEC Importacion.sp_crear_y_cargar_referee_appearances_csv @Ruta = @RutaRefereeAppearancesCSV
 
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
@@ -1077,6 +1164,12 @@ BEGIN
         SELECT TOP 5 * FROM Partidos.Partidos ORDER BY mundial_id DESC;
         SELECT COUNT(*) AS 'Partidos 2022' FROM Partidos.Partidos WHERE mundial_id = 2022;
         END
+
+    EXEC Importacion.sp_upsert_asignaciones_arbitros;
+    if @MostrarDatos = 1
+        SELECT TOP 5 * FROM Mundial.Habilitacion_Arbitro;
+    if @MostrarDatos = 1
+        SELECT TOP 5 * FROM Arbitraje.ArbitroAsignadoPartido;
 
     EXEC Importacion.sp_upsert_formaciones;
     if @MostrarDatos = 1 BEGIN
