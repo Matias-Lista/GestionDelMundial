@@ -21,6 +21,7 @@ BEGIN
     IF OBJECT_ID('tempdb..##Matches') IS NOT NULL DROP TABLE ##Matches;
     IF OBJECT_ID('tempdb..##PlayerAppearances') IS NOT NULL DROP TABLE ##PlayerAppearances;
     IF OBJECT_ID('tempdb..##Referees') IS NOT NULL DROP TABLE ##Referees;
+    IF OBJECT_ID('tempdb..##RefereeAppearances') IS NOT NULL DROP TABLE ##RefereeAppearances;
 
 END
 GO
@@ -694,7 +695,76 @@ BEGIN
     ALTER TABLE ##Referees ADD map_id INT;
     CREATE NONCLUSTERED INDEX IX_Referee_ID_MAP_ID ON ##Referees (referee_id) INCLUDE(map_id);
 
-    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Matches);
+    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Referees);
+    
+    -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
+
+END
+GO
+
+/****************************/
+/*    RefereeAppearances    */
+/****************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_referee_appearances_csv 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##RefereeAppearances') IS NOT NULL DROP TABLE ##RefereeAppearances;
+
+    CREATE TABLE ##RefereeAppearances (
+        key_id INT PRIMARY KEY CLUSTERED,
+        tournament_id CHAR(7),
+        tournament_name VARCHAR(100),
+        match_id VARCHAR(9),
+        match_name VARCHAR(100),
+        match_date DATE,
+        stage_name VARCHAR(100),
+        group_name VARCHAR(25),
+        referee_id CHAR(5),
+        family_name VARCHAR(100),
+        given_name VARCHAR(100),
+        country_name VARCHAR(100),
+        confederation_id CHAR(4),
+        confederation_name VARCHAR(100),
+        confederation_code VARCHAR(20),
+    );
+
+
+    DECLARE @importacion VARCHAR(4000);
+
+    BEGIN TRY
+        SET @importacion = '
+        SET NOCOUNT ON
+        BULK INSERT ##RefereeAppearances
+        FROM '''+ @Ruta + '''
+        WITH (
+            FORMAT = ''CSV'',
+            FIELDQUOTE = ''"'',         -- Ignora las comas que estén dentro de estas comillas
+            FIELDTERMINATOR = '','', 
+            ROWTERMINATOR = ''0x0a'',
+            FIRSTROW = 2,             -- Salta los encabezados
+            CODEPAGE = ''65001''        -- UTF-8
+        );';
+
+        EXEC (@importacion);
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50340, @ErrorBulk, 1;
+        RETURN;
+    END CATCH;
+
+    ALTER TABLE ##RefereeAppearances 
+        DROP COLUMN confederation_code, 
+        confederation_id, confederation_name, country_name, 
+        given_name, family_name, match_name,
+        match_date, stage_name, group_name, tournament_name;
+
+    UPDATE ##RefereeAppearances SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+
+    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##RefereeAppearances);
     
     -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
 

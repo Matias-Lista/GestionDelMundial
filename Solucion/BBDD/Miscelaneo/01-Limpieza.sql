@@ -137,6 +137,9 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_bypass_mundiales_previos;
 
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_asignaciones_arbitros;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_referee_appearances_csv;
+
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_arbitros;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_referees_csv;
 

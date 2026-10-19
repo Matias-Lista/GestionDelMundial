@@ -70,5 +70,6 @@ BEGIN
             @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
             @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
             @RutaRefereesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referees.csv',
+            @RutaRefereeAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referee_appearances.csv',
             @MostrarDatos = 1
 END
