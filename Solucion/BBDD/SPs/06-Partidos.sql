@@ -16,8 +16,9 @@ CREATE OR ALTER FUNCTION Partidos.fn_jugadores_en_cancha (
 RETURNS TABLE
 AS
 RETURN (
-    SELECT JPI.jugador_id, JPI.posicion, JPI.seleccion_id, JPI.comienza_jugando
+    SELECT JPI.jugador_id, JPI.posicion, JPI.seleccion_id, JPI.comienza_jugando, PP.pais_id
     FROM Partidos.JugadorPosicionInicial JPI
+    JOIN Mundial.Paises_Participes PP ON PP.seleccion_id = JPI.seleccion_id
     WHERE JPI.partido_id = @PartidoID
       AND (
           -- Arrancó de titular y TODAVÍA NO SALIÓ
