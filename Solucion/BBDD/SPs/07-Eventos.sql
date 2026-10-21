@@ -108,8 +108,11 @@ BEGIN
 
 	if @Extra is null
 		SET @errores = @errores + '- Debe indicar extra' + CHAR(13) + CHAR(10);
-	else if @Extra > 0 and @Minuto is not null and @Minuto < 45
-		SET @errores = @errores + '- No puede haber extra si no es minuto 45' + CHAR(13) + CHAR(10);
+	else if @Extra > 0 and 
+			((@Minuto is not null and @Minuto < 45 and @Tiempo is not null and @Tiempo <= 2) OR
+			 (@Minuto is not null and @Minuto < 15 and @Tiempo is not null and @Tiempo >= 3)
+			 )
+		SET @errores = @errores + '- No puede haber extra si no termino el tiempo actual' + CHAR(13) + CHAR(10);
 
 	if @Tiempo is null
 		SET @errores = @errores + '- Debe indicar tiempo' + CHAR(13) + CHAR(10);
@@ -155,12 +158,12 @@ BEGIN
 	-- El que entra, no debe haber entrado ni salido ANTES. Y DEBE estar en la formacion inicial (si tenia una roja, no entra)
 
 	IF @JugadorEntraID is not null and NOT EXISTS (SELECT 1 
-					FROM Equipos.JugadorFormacionInicial 
+					FROM Partidos.JugadorPosicionInicial 
 					WHERE partido_id = @PartidoID and jugador_id = @JugadorEntraID)
 		SET @errores = @errores + '- El jugador que debería entrar, no participó del partido' + CHAR(13) + CHAR(10);
 
 	IF @JugadorEntraID is not null and NOT EXISTS (SELECT 1 
-					FROM Equipos.JugadorFormacionInicial 
+					FROM Partidos.JugadorPosicionInicial 
 					WHERE partido_id = @PartidoID and jugador_id = @JugadorEntraID)
 		SET @errores = @errores + '- El jugador que debería entrar, no participó del partido' + CHAR(13) + CHAR(10);
 

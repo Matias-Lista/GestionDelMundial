@@ -1030,6 +1030,125 @@ BEGIN
 END
 GO
 
+
+/********************************/
+/*            CAMBIOS           */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_cambios
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Substitutions') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de Substitutions.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##Substitutions);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito: JugadorID, Minuto, Extra, Tiempo, PartidoID, MOTIVO = DEFAULT,
+
+        DECLARE @minuto SMALLINT = NULL
+        DECLARE @extra SMALLINT  = NULL;
+        DECLARE @periodo VARCHAR(100) = NULL;
+        DECLARE @playerIDCSV varchar(20) = NULL;
+        DECLARE @saliendo BIT = NULL;
+        DECLARE @partidoIDCSV VARCHAR(100) = NULL;
+
+
+        DECLARE @jugadorID INT = NULL;
+        DECLARE @partidoID INT = NULL;
+
+        SELECT @minuto = minute_regulation, @extra = minute_stoppage,
+                @partidoIDCSV = match_id, @playerIDCSV = player_id,
+                @periodo = match_period, @saliendo = going_off
+            FROM ##Substitutions
+            WHERE key_id = @idActual;
+
+        SELECT @partidoID = map_id FROM ##Matches WHERE match_id = @partidoIDCSV;
+        SELECT @jugadorID = map_id FROM ##Players WHERE player_id = @playerIDCSV;
+        
+        BEGIN TRY
+            
+            IF (@minuto IS NULL) BEGIN
+                THROW 50001, 'Cambio skipeado, no se insertó', 1;
+            END;
+
+            IF (@jugadorID IS NULL OR @partidoID IS NULL) BEGIN
+                THROW 50001, 'Cambio erroneo, no se insertó', 1;
+            END;
+
+            DECLARE @minutoCorrecto SMALLINT = CASE 
+                WHEN @periodo = 'extra time, first half' THEN @minuto - 90
+                WHEN @periodo = 'extra time, first half, stoppage time' THEN 15
+                WHEN @periodo = 'extra time, second half' THEN @minuto - 105
+                WHEN @periodo = 'extra time, second half, stoppage time' THEN 15
+                WHEN @periodo = 'first half' THEN @minuto
+                WHEN @periodo = 'first half, stoppage time' THEN 45
+                WHEN @periodo = 'second half' THEN @minuto - 45
+                WHEN @periodo = 'second half, stoppage time' THEN 45
+            END
+
+            DECLARE @tiempoCorrecto SMALLINT = CASE 
+                WHEN @periodo = 'extra time, first half' THEN 3
+                WHEN @periodo = 'extra time, first half, stoppage time' THEN 3
+                WHEN @periodo = 'extra time, second half' THEN 4
+                WHEN @periodo = 'extra time, second half, stoppage time' THEN 4
+                WHEN @periodo = 'first half' THEN 1
+                WHEN @periodo = 'first half, stoppage time' THEN 1
+                WHEN @periodo = 'second half' THEN 2
+                WHEN @periodo = 'second half, stoppage time' THEN 2
+            END
+
+            IF @saliendo = 1
+                EXEC Eventos.sp_registrar_cambio
+                    @Minuto = @minutoCorrecto,
+                    @Extra  = @extra,
+                    @Tiempo = @tiempoCorrecto,
+                    @PartidoID = @partidoID,
+                    @Motivo = 'TACTICO', -- HARDCODEADO PORQUE NO ESTA EN EL DATASET
+                    @JugadorSaleID = @jugadorID;
+            ELSE
+                EXEC Eventos.sp_registrar_cambio
+                    @Minuto = @minutoCorrecto,
+                    @Extra  = @extra,
+                    @Tiempo = @tiempoCorrecto,
+                    @PartidoID = @partidoID,
+                    @Motivo = 'TACTICO', -- HARDCODEADO PORQUE NO ESTA EN EL DATASET
+                    @JugadorEntraID = @jugadorID;
+
+
+            SET @insertadas = @insertadas + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%'
+                print ERROR_MESSAGE();
+       END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'Cambios insertados',
+        @actualizadas as 'Cambios actualizados',
+        @omitidas as 'Cambios omitidos';
+
+END
+GO
+
 CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
 AS
 BEGIN
@@ -1097,6 +1216,7 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaPlayerAppearancesCSV VARCHAR(255),
     @RutaRefereesCSV VARCHAR(255),
     @RutaRefereeAppearancesCSV VARCHAR(255),
+    @RutaSubstitutionsCSV VARCHAR(255),
     @MostrarDatos BIT = 0,
     @UnicoMundial INT = NULL 
 AS
@@ -1122,6 +1242,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_player_appearances_csv  @Ruta = @RutaPlayerAppearancesCSV
     EXEC Importacion.sp_crear_y_cargar_referees_csv            @Ruta = @RutaRefereesCSV
     EXEC Importacion.sp_crear_y_cargar_referee_appearances_csv @Ruta = @RutaRefereeAppearancesCSV
+    EXEC Importacion.sp_crear_y_cargar_substitutions_csv       @Ruta = @RutaSubstitutionsCSV
 
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
@@ -1191,26 +1312,47 @@ BEGIN
         
         END
 
+    EXEC Importacion.sp_upsert_cambios;
+    if @MostrarDatos = 1 BEGIN
+        SELECT TOP 10 * FROM Eventos.Cambios
 
+        DECLARE @partidoID INT = (SELECT id FROM Partidos.Partidos WHERE mundial_id = 2022 and fase = 'FINAL');
+        
+        --- CAMBIOS DE JUGADORES EN LA FINAL DEL MUNDIAL 2022
+        SELECT J.nombre, J.apellido, C.minuto, C.extra, C.tiempo, J.pais_id, 
+            (CASE 
+                WHEN C.jugador_entra_id is not null THEN 'ENTRO'
+                WHEN C.jugador_sale_id  is not null THEN 'SALE'
+             END) AS que_paso
+        FROM Eventos.Cambios C
+        JOIN Equipos.IntegranteSeleccion J ON J.id = C.jugador_entra_id OR J.id = C.jugador_sale_id
+        JOIN Partidos.Partidos P ON P.id = C.partido_id
+        WHERE P.id = @partidoID
+        ORDER BY tiempo, extra, minuto
+        
+        SELECT J.nombre, J.apellido, J.pais_id
+        FROM Partidos.fn_jugadores_en_cancha (@partidoID, 15, 15, 4 ) JEC
+        JOIN Equipos.IntegranteSeleccion J ON J.id = JEC.jugador_id;
     -- Limpieza
     exec Importacion.sp_limpieza_tablas_temporales;
 END
 GO
-/*
-exec Importacion.PoblarDB 
-        @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
-        @RutaTeamsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\teams.csv',
-        @RutaPlayersCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\players.csv',
-        @RutaSquadsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\squads.csv',
-        @RutaTournamentsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv',
-        @RutaGroupStandingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv',
-        @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\stadiums.csv',
-        @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
-        @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
-        @MostrarDatos = 1,
-        @UnicoMundial = 2022
 
-SELECT * FROM Mundial.mundiales*/
+-- exec Importacion.PoblarDB 
+--         @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
+--         @RutaTeamsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\teams.csv',
+--         @RutaPlayersCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\players.csv',
+--         @RutaSquadsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\squads.csv',
+--         @RutaTournamentsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv',
+--         @RutaGroupStandingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv',
+--         @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\stadiums.csv',
+--         @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
+--         @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
+--         @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
+--         @MostrarDatos = 1,
+--         @UnicoMundial = 2022
+
+-- SELECT * FROM Mundial.mundiales
 
 /*SELECT * FROM Partidos.JugadorPosicionInicial WHERE partido_id = 1
 SELECT * 

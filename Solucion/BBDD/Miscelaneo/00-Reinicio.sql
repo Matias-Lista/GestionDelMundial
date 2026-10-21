@@ -12,7 +12,7 @@
 
 :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
-:setvar ImportarDatos   0
+:setvar ImportarDatos   1
 :setvar EjecutarTesteos 0
 
 PRINT '[*] Limpiando ...'
@@ -24,7 +24,7 @@ PRINT '[*] Creando tablas y SPs ...'
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\04-Mundial.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\05-Equipos.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\06-Partidos.sql
--- :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
+:r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\08-Arbitraje.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Publicidad.sql
 
@@ -43,7 +43,7 @@ GO
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\04-Mundial.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\05-Equipos.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\06-Partidos.sql
-    -- :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\08-Arbitraje.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Publicidad.sql
 
@@ -71,5 +71,6 @@ BEGIN
             @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
             @RutaRefereesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referees.csv',
             @RutaRefereeAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referee_appearances.csv',
+            @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
             @MostrarDatos = 1
 END
