@@ -1211,3 +1211,7 @@ exec Importacion.PoblarDB
         @UnicoMundial = 2022
 
 SELECT * FROM Mundial.mundiales*/
+
+/*SELECT * FROM Partidos.JugadorPosicionInicial WHERE partido_id = 1
+SELECT * 
+FROM Partidos.fn_jugadores_en_cancha(1, 15, 0, 2);*/

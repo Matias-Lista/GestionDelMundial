@@ -16,7 +16,7 @@ GO
 
 USE GestionDelMundial;
 GO
-
+SET NOCOUNT ON
 
 IF (@@TRANCOUNT > 0)
 	ROLLBACK TRANSACTION;
@@ -119,9 +119,11 @@ DROP PROCEDURE IF EXISTS Publicidad.sp_crear_pieza_de_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
 
+DROP FUNCTION IF EXISTS  Partidos.fn_jugadores_en_cancha;
 DROP PROCEDURE IF EXISTS Partidos.sp_definir_formacion_inicial;
 
-
+DROP PROCEDURE IF EXISTS Eventos.sp_registrar_cambio;
+DROP PROCEDURE IF EXISTS Eventos.sp_registrar_gol;
 DROP PROCEDURE IF EXISTS Eventos.sp_eliminar_amonestacion;
 DROP PROCEDURE IF EXISTS Eventos.sp_registrar_impedimento;
 DROP PROCEDURE IF EXISTS Eventos.sp_modificar_impedimento;

@@ -385,15 +385,16 @@ BEGIN
 CREATE TABLE Eventos.Cambios (
     id         INT PRIMARY KEY IDENTITY(1,1),
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
-    jugador_entra_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
-    jugador_sale_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
+    jugador_entra_id INT REFERENCES Equipos.IntegranteSeleccion(id),
+    jugador_sale_id INT REFERENCES Equipos.IntegranteSeleccion(id),
     motivo VARCHAR(10) CHECK (motivo IN ('TACTICO', 'LESION', 'PRECAUCION')) NOT NULL,
 
     minuto SMALLINT NOT NULL CHECK (minuto between 0 and 45),
     extra SMALLINT NOT NULL DEFAULT 0,
     tiempo SMALLINT NOT NULL CHECK (tiempo between 1 and 4),
 
-    CONSTRAINT CK_Cambio_Jugadores_Distintos CHECK (jugador_entra_id <> jugador_sale_id)
+    CONSTRAINT CK_Cambio_Jugadores_Distintos CHECK (jugador_entra_id <> jugador_sale_id),
+    CONSTRAINT CK_Al_Menos_Un_Jugador_En_Un_Cambio CHECK (jugador_entra_id is not null OR jugador_sale_id is not null)
 );
 END
 GO
@@ -414,6 +415,8 @@ CREATE TABLE Eventos.Goles (
     minuto SMALLINT NOT NULL CHECK (minuto between 0 and 45),
     extra SMALLINT NOT NULL DEFAULT 0,
     tiempo SMALLINT NOT NULL CHECK (tiempo between 1 and 4),
+
+    en_contra BIT DEFAULT 0,
 
     CONSTRAINT CK_Gol_Asistente_Distinto_Del_Autor CHECK (jugador_asistente_id IS NULL OR jugador_asistente_id <> jugador_autor_id)
 );
