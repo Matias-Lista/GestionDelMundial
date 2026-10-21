@@ -1277,6 +1277,84 @@ BEGIN
 END
 GO
 
+/********************************/
+/*            GOLES           */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_penales_de_tanda
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##PenaltyKicks') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de PenaltyKicks.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##PenaltyKicks);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito: JugadorID, PartidoID, Convirtio.
+
+        DECLARE @playerIDCSV varchar(20) = NULL;
+        DECLARE @partidoIDCSV VARCHAR(100) = NULL;
+        DECLARE @convirtio BIT = NULL;
+
+        DECLARE @jugadorID INT = NULL;
+        DECLARE @partidoID INT = NULL;
+
+        SELECT @partidoIDCSV = match_id, @playerIDCSV = player_id,
+                @convirtio = converted
+            FROM ##PenaltyKicks
+            WHERE key_id = @idActual;
+
+        SELECT @partidoID = map_id FROM ##Matches WHERE match_id = @partidoIDCSV;
+        SELECT @jugadorID = map_id FROM ##Players WHERE player_id = @playerIDCSV;
+        
+        BEGIN TRY
+            
+            IF (@convirtio IS NULL) BEGIN
+                THROW 50001, 'PENAL DE TANDA skipeado, no se insertó', 1;
+            END;
+
+            IF (@jugadorID IS NULL OR @partidoID IS NULL) BEGIN
+                THROW 50001, 'PENAL DE TANDA erroneo, no se insertó', 1;
+            END;
+
+            exec Eventos.sp_registrar_penal_de_tanda
+                    @PartidoID = @partidoID,
+                    @JugadorID = @jugadorID,
+                    @Convirtio = @convirtio
+            
+            SET @insertadas = @insertadas + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%'
+                print ERROR_MESSAGE();
+       END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'Penales de tanda insertados',
+        @actualizadas as 'Penales de tanda actualizados',
+        @omitidas as 'Penales de tanda omitidos';
+
+END
+GO
+
 CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
 AS
 BEGIN
@@ -1346,6 +1424,7 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaRefereeAppearancesCSV VARCHAR(255),
     @RutaSubstitutionsCSV VARCHAR(255),
     @RutaGoalsCSV VARCHAR(255),
+    @RutaPenaltyKicksCSV VARCHAR(255),
     @MostrarDatos BIT = 0,
     @UnicoMundial INT = NULL 
 AS
@@ -1373,6 +1452,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_referee_appearances_csv @Ruta = @RutaRefereeAppearancesCSV
     EXEC Importacion.sp_crear_y_cargar_substitutions_csv       @Ruta = @RutaSubstitutionsCSV
     EXEC Importacion.sp_crear_y_cargar_goals_csv               @Ruta = @RutaGoalsCSV
+    EXEC Importacion.sp_crear_y_cargar_penalty_kicks_csv       @Ruta = @RutaPenaltyKicksCSV
 
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
@@ -1471,13 +1551,26 @@ BEGIN
         -- DECLARE @partidoID INT = (SELECT id FROM Partidos.Partidos WHERE mundial_id = 2022 and fase = 'FINAL');
         
         --- GOLES DE LA FINAL
-        SELECT J.nombre, J.apellido, G.minuto, G.extra, G.tiempo, J.pais_id
+        SELECT J.nombre, J.apellido, G.minuto, G.extra, G.tiempo, J.pais_id, G.tipo
         FROM Eventos.Goles G
         JOIN Equipos.IntegranteSeleccion J ON J.id = G.jugador_autor_id
         JOIN Partidos.Partidos P ON P.id = G.partido_id
         WHERE P.id = @partidoID
         ORDER BY tiempo, extra, minuto
 
+    END
+
+    EXEC Importacion.sp_upsert_penales_de_tanda;
+    if @MostrarDatos = 1 BEGIN
+        SELECT TOP 10 * FROM Eventos.PenalesDeTanda
+        -- DECLARE @partidoID INT = (SELECT id FROM Partidos.Partidos WHERE mundial_id = 2022 and fase = 'FINAL');
+        
+        --- PENALES DE LA FINAL
+        SELECT J.nombre, J.apellido, J.pais_id, PDT.convirtio
+            FROM Eventos.PenalesDeTanda PDT
+            JOIN Equipos.IntegranteSeleccion J ON J.id = PDT.jugador_id
+            JOIN Partidos.Partidos P ON P.id = PDT.partido_id
+            WHERE P.id = @partidoID
     END
 
     
@@ -1499,6 +1592,7 @@ GO
 --         @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
 --         @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
 --         @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\goals.csv',
+--         @RutaPenaltyKicksCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\penalty_kicks.csv',
 --         @MostrarDatos = 1,
 --         @UnicoMundial = 2022
 
