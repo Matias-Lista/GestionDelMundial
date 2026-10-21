@@ -14,7 +14,8 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 	 @LimiteJugadoresConvocados INT,
 	 @LimiteStaffConvocados INT,
 	 @ArbitroDeVarRequerido BIT,
-	 @CantidadDeEquipos INT
+	 @CantidadDeEquipos INT,
+	 @CantidadDeCambios INT = 5
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -68,6 +69,7 @@ BEGIN
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_CONVOCADOS', @Valor = @LimiteJugadoresConvocados;
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'CANTIDAD_EQUIPOS', @Valor = @CantidadDeEquipos;
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_STAFF_CONVOCADOS', @Valor = @LimiteStaffConvocados;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'CANTIDAD_DE_CAMBIOS', @Valor = @CantidadDeCambios;
 		COMMIT TRANSACTION
 	END TRY
 	BEGIN CATCH

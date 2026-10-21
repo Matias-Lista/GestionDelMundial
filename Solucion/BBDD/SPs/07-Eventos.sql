@@ -1,11 +1,196 @@
 /* BBDD/SPs/Eventos.sql
- * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Fecha: 18/10/2026
+ * Lista, Matías Josué.
  * Descripción: Crea todos los store procedures, funciones, y vistas del schema [Eventos].
  **/
  
 USE GestionDelMundial;
 GO
+
+
+CREATE OR ALTER PROCEDURE Eventos.sp_registrar_gol
+	@Minuto SMALLINT,
+	@Extra SMALLINT,
+	@Tiempo SMALLINT,
+	@PartidoID SMALLINT,
+	@Tipo CHAR(1),
+	@JugadorID SMALLINT,
+	@JugadorAsistenteID SMALLINT = NULL,
+	@EnContra BIT = 0
+AS	
+BEGIN
+	SET NOCOUNT ON;
+	
+	DECLARE @errores VARCHAR(4000) = '';
+
+	if @Minuto is null
+		SET @errores = @errores + '- Debe indicar minuto' + CHAR(13) + CHAR(10);
+	else if @Minuto not between 0 and 45
+		SET @errores = @errores + '- El minuto debe estar entre 0 y 45' + CHAR(13) + CHAR(10);
+
+	if @Extra is null
+		SET @errores = @errores + '- Debe indicar extra' + CHAR(13) + CHAR(10);
+	else if @Extra > 0 and @Minuto is not null and @Minuto < 45
+		SET @errores = @errores + '- No puede haber extra si no es minuto 45' + CHAR(13) + CHAR(10);
+
+	if @Tiempo is null
+		SET @errores = @errores + '- Debe indicar tiempo' + CHAR(13) + CHAR(10);
+	else if @Tiempo not between 1 and 4
+		SET @errores = @errores + '- Solo hay 4 tiempos en un partido.' + CHAR(13) + CHAR(10);
+
+	if @JugadorID is null
+		SET @errores = @errores + '- Debe indicar jugador' + CHAR(13) + CHAR(10);
+	else IF NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorID)
+		SET @errores = @errores + '- El jugador no existe' + CHAR(13) + CHAR(10);
+
+	IF @JugadorAsistenteID is not null AND NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorAsistenteID)
+		SET @errores = @errores + '- El jugador asistente no existe' + CHAR(13) + CHAR(10);
+
+	if @PartidoID is null
+		SET @errores = @errores + '- Debe indicar partido' + CHAR(13) + CHAR(10);
+
+	DECLARE @añoMundial INT = (SELECT mundial_id FROM Partidos.Partidos WHERE id = @PartidoID);
+
+	IF @añoMundial is null 
+		SET @errores = @errores + '- El partido no existe' + CHAR(13) + CHAR(10);
+
+	IF @JugadorID is not null and @JugadorAsistenteID is not null and @JugadorID = @JugadorAsistenteID
+		SET @errores = @errores + '- El jugador no puede asistirse a sí mismo' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+	-- Lo siguiente es validar si esos jugadores estaban o no en la cancha en ese minuto, extra y tiempo
+
+	IF NOT EXISTS (SELECT 1 
+				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, @Minuto, @Extra, @Tiempo) 
+				WHERE jugador_id = @JugadorID) 
+		SET @errores = @errores + '- El jugador principal no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
+
+	IF NOT EXISTS (SELECT 1 
+				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, @Minuto, @Extra, @Tiempo) 
+				WHERE jugador_id = @JugadorAsistenteID)  
+		SET @errores = @errores + '- El jugador asistente no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+	INSERT INTO Eventos.Goles 
+		(partido_id, jugador_autor_id, jugador_asistente_id, tipo,
+	    minuto, extra, tiempo, en_contra)
+	    VALUES
+		(@PartidoID, @JugadorID, @JugadorAsistenteID, @Tipo,
+	    @Minuto, @Extra, @Tiempo, @EnContra);
+
+END
+GO
+
+-- Primero, se diseñó la tabla pensando que siempre que alguien salga, entra otro jugador
+-- Eso en realidad no pasa. A veces salen o entran jugadores sin que tenga una operacion contraria asociada
+-- Asique el SP permite ambas cosas: Atribuir un ingreso a una salida, o hacerlo por separado.
+
+CREATE OR ALTER PROCEDURE Eventos.sp_registrar_cambio
+	@Minuto SMALLINT,
+	@Extra SMALLINT,
+	@Tiempo SMALLINT,
+	@PartidoID SMALLINT,
+	@Motivo VARCHAR(10),
+	@JugadorEntraID SMALLINT = NULL,
+	@JugadorSaleID SMALLINT = NULL
+AS	
+BEGIN
+	SET NOCOUNT ON;
+	
+	DECLARE @errores VARCHAR(4000) = '';
+
+	if @Minuto is null
+		SET @errores = @errores + '- Debe indicar minuto' + CHAR(13) + CHAR(10);
+	else if @Minuto not between 0 and 45
+		SET @errores = @errores + '- El minuto debe estar entre 0 y 45' + CHAR(13) + CHAR(10);
+
+	if @Extra is null
+		SET @errores = @errores + '- Debe indicar extra' + CHAR(13) + CHAR(10);
+	else if @Extra > 0 and @Minuto is not null and @Minuto < 45
+		SET @errores = @errores + '- No puede haber extra si no es minuto 45' + CHAR(13) + CHAR(10);
+
+	if @Tiempo is null
+		SET @errores = @errores + '- Debe indicar tiempo' + CHAR(13) + CHAR(10);
+	else if @Tiempo not between 1 and 4
+		SET @errores = @errores + '- Solo hay 4 tiempos en un partido.' + CHAR(13) + CHAR(10);
+
+	IF @JugadorEntraID is NOT null IF NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorEntraID)
+		SET @errores = @errores + '- El jugador que entra no existe' + CHAR(13) + CHAR(10);
+
+	IF @JugadorSaleID is not null and @JugadorSaleID is not null AND NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorSaleID)
+		SET @errores = @errores + '- El jugador que sale no existe' + CHAR(13) + CHAR(10);
+
+	IF @JugadorSaleID is null and @JugadorEntraID is null
+		SET @errores = @errores + '- Se debe definir al menos un jugador que entre o salga' + CHAR(13) + CHAR(10);
+
+	if @PartidoID is null
+		SET @errores = @errores + '- Debe indicar partido' + CHAR(13) + CHAR(10);
+
+	DECLARE @añoMundial INT = (SELECT mundial_id FROM Partidos.Partidos WHERE id = @PartidoID);
+
+	IF @añoMundial is null 
+		SET @errores = @errores + '- El partido no existe' + CHAR(13) + CHAR(10);
+
+	IF @Motivo is null 
+		SET @errores = @errores + '- Debe indicar un motivo' + CHAR(13) + CHAR(10);
+	ELSE IF @Motivo not in ('TACTICO', 'LESION', 'PRECAUCION')
+		SET @errores = @errores + '- El motivo no es válido' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+	-- Lo siguiente es validar si esos jugadores estaban o no en la cancha en ese minuto, extra y tiempo
+
+	IF @JugadorSaleID is not null and NOT EXISTS (SELECT 1 
+				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, @Minuto, @Extra, @Tiempo) 
+				WHERE jugador_id = @JugadorSaleID) 
+		SET @errores = @errores + '- El jugador que debería salir no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
+
+	IF @JugadorEntraID is not null and EXISTS (SELECT 1 
+				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, @Minuto, @Extra, @Tiempo) 
+				WHERE jugador_id = @JugadorEntraID)  
+		SET @errores = @errores + '- El jugador que debería entrar, ya estaba en la cancha' + CHAR(13) + CHAR(10);
+
+	-- El que entra, no debe haber entrado ni salido ANTES. Y DEBE estar en la formacion inicial (si tenia una roja, no entra)
+
+	IF @JugadorEntraID is not null and NOT EXISTS (SELECT 1 
+					FROM Equipos.JugadorFormacionInicial 
+					WHERE partido_id = @PartidoID and jugador_id = @JugadorEntraID)
+		SET @errores = @errores + '- El jugador que debería entrar, no participó del partido' + CHAR(13) + CHAR(10);
+
+	IF @JugadorEntraID is not null and NOT EXISTS (SELECT 1 
+					FROM Equipos.JugadorFormacionInicial 
+					WHERE partido_id = @PartidoID and jugador_id = @JugadorEntraID)
+		SET @errores = @errores + '- El jugador que debería entrar, no participó del partido' + CHAR(13) + CHAR(10);
+
+	IF EXISTS (SELECT 1 
+				FROM Eventos.Cambios 
+				WHERE (jugador_entra_id = @JugadorEntraID or jugador_sale_id = @JugadorEntraID)
+					and partido_id = @PartidoID)
+		SET @errores = @errores + '- El jugador que debería entrar, ya participó del partido' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+
+	INSERT INTO Eventos.Cambios 
+		(partido_id, jugador_entra_id, jugador_sale_id, motivo,
+	    minuto, extra, tiempo)
+	    VALUES
+		(@PartidoID, @JugadorEntraID, @JugadorSaleID, @Motivo,
+	    @Minuto, @Extra, @Tiempo);
+
+	--- TODO: DEBERÍA VALIDAR TAMBIÉN SI LOS JUGADORES SON DE LA MISMA SELECCIÓN!
+	--- TODO: debería validar la cantidad de cambios con la regla CANTIDAD_DE_CAMBIOS
+	--- TODO: debería validar la cantidad de JUGADORES QUE QUEDAN EN LA CANCHA
+
+END
+GO
+
+
+
+
+
 
 
 --Le asigno un numero a cada fase para poder ordenar o comparar facilmente las fases en conusultas
@@ -24,9 +209,6 @@ BEGIN
 	END;
 END
 GO
-
-
-
 
 ---VALIDA que un evento sucesa en un minuto y tiempo coherente de un partido
 CREATE OR ALTER FUNCTION Eventos.fn_validar_momento (@PartidoID INT, @Minuto SMALLINT, @Tiempo CHAR(1)) --le paso el tiempo (primer tiempo, seg, suplementario1 0 2)
