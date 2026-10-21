@@ -72,5 +72,6 @@ BEGIN
             @RutaRefereesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referees.csv',
             @RutaRefereeAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referee_appearances.csv',
             @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
+            @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\goals.csv',
             @MostrarDatos = 1
 END

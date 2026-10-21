@@ -1149,6 +1149,134 @@ BEGIN
 END
 GO
 
+
+/********************************/
+/*            GOLES           */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_goles
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Goals') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de Goles.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##Goals);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito: JugadorID, Minuto, Extra, Tiempo, PartidoID, MOTIVO = DEFAULT,
+
+        DECLARE @minuto SMALLINT = NULL
+        DECLARE @extra SMALLINT  = NULL;
+        DECLARE @periodo VARCHAR(100) = NULL;
+        DECLARE @playerIDCSV varchar(20) = NULL;
+        DECLARE @partidoIDCSV VARCHAR(100) = NULL;
+        DECLARE @penal BIT = NULL;
+        DECLARE @enContra BIT = NULL;
+
+
+        DECLARE @jugadorID INT = NULL;
+        DECLARE @partidoID INT = NULL;
+
+        SELECT @minuto = minute_regulation, @extra = minute_stoppage,
+                @partidoIDCSV = match_id, @playerIDCSV = player_id,
+                @periodo = match_period, @penal = penalty, @enContra = own_goal
+            FROM ##Goals
+            WHERE key_id = @idActual;
+
+        SELECT @partidoID = map_id FROM ##Matches WHERE match_id = @partidoIDCSV;
+        SELECT @jugadorID = map_id FROM ##Players WHERE player_id = @playerIDCSV;
+        
+        BEGIN TRY
+            
+            IF (@minuto IS NULL) BEGIN
+                THROW 50001, 'Gol skipeado, no se insertó', 1;
+            END;
+
+            IF (@jugadorID IS NULL OR @partidoID IS NULL) BEGIN
+                THROW 50001, 'GOL erroneo, no se insertó', 1;
+            END;
+
+            DECLARE @minutoCorrecto SMALLINT = CASE 
+                WHEN @periodo = 'extra time, first half' THEN @minuto - 90
+                WHEN @periodo = 'extra time, first half, stoppage time' THEN 15
+                WHEN @periodo = 'extra time, second half' THEN @minuto - 105
+                WHEN @periodo = 'extra time, second half, stoppage time' THEN 15
+                WHEN @periodo = 'first half' THEN @minuto
+                WHEN @periodo = 'first half, stoppage time' THEN 45
+                WHEN @periodo = 'second half' THEN @minuto - 45
+                WHEN @periodo = 'second half, stoppage time' THEN 45
+            END
+
+            DECLARE @tiempoCorrecto SMALLINT = CASE 
+                WHEN @periodo = 'extra time, first half' THEN 3
+                WHEN @periodo = 'extra time, first half, stoppage time' THEN 3
+                WHEN @periodo = 'extra time, second half' THEN 4
+                WHEN @periodo = 'extra time, second half, stoppage time' THEN 4
+                WHEN @periodo = 'first half' THEN 1
+                WHEN @periodo = 'first half, stoppage time' THEN 1
+                WHEN @periodo = 'second half' THEN 2
+                WHEN @periodo = 'second half, stoppage time' THEN 2
+            END
+
+            IF @penal = 1
+                EXEC Eventos.sp_registrar_gol
+                        @Minuto = @minutoCorrecto,
+                        @Extra  = @extra,
+                        @Tiempo = @tiempoCorrecto,
+                        @PartidoID = @partidoID,
+                        @JugadorID = @jugadorID,
+                        -- @JugadorAsistenteID = NULL, -- NO ESTA EN EL DATASET
+                        @Tipo = 'P';
+            ELSE IF @enContra = 1
+                EXEC Eventos.sp_registrar_gol
+                        @Minuto = @minutoCorrecto,
+                        @Extra  = @extra,
+                        @Tiempo = @tiempoCorrecto,
+                        @PartidoID = @partidoID,
+                        @JugadorID = @jugadorID,
+                        @Tipo = 'E';
+            ELSE 
+                EXEC Eventos.sp_registrar_gol
+                        @Minuto = @minutoCorrecto,
+                        @Extra  = @extra,
+                        @Tiempo = @tiempoCorrecto,
+                        @PartidoID = @partidoID,
+                        @JugadorID = @jugadorID,
+                        @Tipo = 'N'; -- NORMAL: El dataset no muestra más detalles
+
+            SET @insertadas = @insertadas + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%'
+                print ERROR_MESSAGE();
+       END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'GOLES insertados',
+        @actualizadas as 'GOLES actualizados',
+        @omitidas as 'GOLES omitidos';
+
+END
+GO
+
 CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
 AS
 BEGIN
@@ -1217,6 +1345,7 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaRefereesCSV VARCHAR(255),
     @RutaRefereeAppearancesCSV VARCHAR(255),
     @RutaSubstitutionsCSV VARCHAR(255),
+    @RutaGoalsCSV VARCHAR(255),
     @MostrarDatos BIT = 0,
     @UnicoMundial INT = NULL 
 AS
@@ -1243,6 +1372,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_referees_csv            @Ruta = @RutaRefereesCSV
     EXEC Importacion.sp_crear_y_cargar_referee_appearances_csv @Ruta = @RutaRefereeAppearancesCSV
     EXEC Importacion.sp_crear_y_cargar_substitutions_csv       @Ruta = @RutaSubstitutionsCSV
+    EXEC Importacion.sp_crear_y_cargar_goals_csv               @Ruta = @RutaGoalsCSV
 
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
@@ -1333,6 +1463,25 @@ BEGIN
         SELECT J.nombre, J.apellido, J.pais_id
         FROM Partidos.fn_jugadores_en_cancha (@partidoID, 15, 15, 4 ) JEC
         JOIN Equipos.IntegranteSeleccion J ON J.id = JEC.jugador_id;
+    END
+
+    EXEC Importacion.sp_upsert_goles;
+    if @MostrarDatos = 1 BEGIN
+        SELECT TOP 10 * FROM Eventos.Goles
+        -- DECLARE @partidoID INT = (SELECT id FROM Partidos.Partidos WHERE mundial_id = 2022 and fase = 'FINAL');
+        
+        --- GOLES DE LA FINAL
+        SELECT J.nombre, J.apellido, G.minuto, G.extra, G.tiempo, J.pais_id
+        FROM Eventos.Goles G
+        JOIN Equipos.IntegranteSeleccion J ON J.id = G.jugador_autor_id
+        JOIN Partidos.Partidos P ON P.id = G.partido_id
+        WHERE P.id = @partidoID
+        ORDER BY tiempo, extra, minuto
+
+    END
+
+    
+
     -- Limpieza
     exec Importacion.sp_limpieza_tablas_temporales;
 END
@@ -1349,6 +1498,7 @@ GO
 --         @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
 --         @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
 --         @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
+--         @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\goals.csv',
 --         @MostrarDatos = 1,
 --         @UnicoMundial = 2022
 
