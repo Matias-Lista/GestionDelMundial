@@ -424,6 +424,23 @@ CREATE TABLE Eventos.Goles (
 END
 GO
 
+IF OBJECT_ID('Eventos.PenalesDeTanda', 'U') IS NULL
+BEGIN
+CREATE TABLE Eventos.PenalesDeTanda (
+    id         INT PRIMARY KEY IDENTITY(1,1),
+    partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
+    jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
+    convirtio   BIT NOT NULL,
+
+    -- NOTA: Las reglas preveen la siguiente situación:
+    -- Si patearon todos los jugadores, recién ahí, se puede volver a patear.
+    -- JAMÁS ocurrió en un mundial. Por eso simplifico esa regla.
+    CONSTRAINT UQ_Un_Penal_Por_Jugador UNIQUE (partido_id, jugador_id)
+
+);
+END
+GO
+
 -- TODO: La parte de penales no la entendí
 
 IF OBJECT_ID('Publicidad.Anunciantes', 'U') IS NULL

@@ -22,6 +22,7 @@ BEGIN
     IF OBJECT_ID('tempdb..##RefereeAppearances') IS NOT NULL DROP TABLE ##RefereeAppearances;
     IF OBJECT_ID('tempdb..##Substitutions') IS NOT NULL DROP TABLE ##Substitutions;
     IF OBJECT_ID('tempdb..##Goals') IS NOT NULL DROP TABLE ##Goals;
+    IF OBJECT_ID('tempdb..##PenaltyKicks') IS NOT NULL DROP TABLE ##PenaltyKicks;
 
 END
 GO
@@ -929,6 +930,80 @@ BEGIN
         DROP COLUMN tournament_name;        
 
     DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##Goals);
+    
+    -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
+
+END
+GO
+
+/****************************/
+/*       PenaltyKicks      */
+/****************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_penalty_kicks_csv 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##PenaltyKicks') IS NOT NULL DROP TABLE ##PenaltyKicks;
+
+    CREATE TABLE ##PenaltyKicks (
+        key_id INT PRIMARY KEY CLUSTERED,
+        penalty_kick_id CHAR(6),
+        tournament_id CHAR(7),
+        tournament_name VARCHAR(100),
+        match_id VARCHAR(9),
+        match_name VARCHAR(100),
+        match_date DATE,
+        stage_name VARCHAR(100),
+        group_name VARCHAR(25),
+        team_id VARCHAR(MAX),
+        team_name VARCHAR(MAX),
+        team_code VARCHAR(MAX),
+        home_team BIT,
+        away_team BIT,
+        player_id VARCHAR(MAX),
+        family_name VARCHAR(MAX),
+        given_name VARCHAR(MAX),
+        shirt_number INT,
+        converted BIT
+    );
+
+    DECLARE @importacion VARCHAR(4000);
+
+    BEGIN TRY
+        SET @importacion = '
+        SET NOCOUNT ON
+        BULK INSERT ##PenaltyKicks
+        FROM '''+ @Ruta + '''
+        WITH (
+            FORMAT = ''CSV'',
+            FIELDQUOTE = ''"'',         -- Ignora las comas que estén dentro de estas comillas
+            FIELDTERMINATOR = '','', 
+            ROWTERMINATOR = ''0x0a'',
+            FIRSTROW = 2,             -- Salta los encabezados
+            CODEPAGE = ''65001''        -- UTF-8
+        );';
+
+        EXEC (@importacion);
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50340, @ErrorBulk, 1;
+        RETURN;
+    END CATCH;
+
+    ALTER TABLE ##PenaltyKicks 
+        DROP COLUMN match_name, match_date, stage_name, group_name, team_name, 
+        home_team, away_team, family_name, given_name, shirt_number;
+
+    DELETE FROM ##PenaltyKicks WHERE tournament_name LIKE  '%Women%';
+    UPDATE ##PenaltyKicks SET tournament_id = REPLACE(tournament_id, 'WC-', '');
+    
+    ALTER TABLE ##PenaltyKicks 
+        DROP COLUMN tournament_name;        
+
+    DECLARE @cantidadRegistrosCrudos INT = (SELECT count(*) FROM ##PenaltyKicks);
     
     -- print 'Cargados en #Confederations de CSV: ' + CAST (@cantidadRegistrosCrudos AS VARCHAR(5));
 

@@ -7,6 +7,54 @@
 USE GestionDelMundial;
 GO
 
+-- Las reglas establecen que solo pueden patear penales una vez cada uno de los jugadores presentes en el ultimo minuto del partido.
+-- Por otro lado, establece que puede repetirse el tiro de un jugador, si ya patearon los ONCE jugadores.
+-- EN el mundial de futbol masculino no pasó nunca, por lo tanto, de momento, solo voy a comprobar que no se repitan.
+CREATE OR ALTER PROCEDURE Eventos.sp_registrar_penal_de_tanda
+	@PartidoID INT,
+	@JugadorID INT,
+	@Convirtio INT
+AS 
+BEGIN
+
+	SET NOCOUNT ON;
+	
+	DECLARE @errores VARCHAR(4000) = '';
+
+	if @JugadorID is null
+		SET @errores = @errores + '- Debe indicar jugador' + CHAR(13) + CHAR(10);
+	else IF NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorID)
+		SET @errores = @errores + '- El jugador no existe' + CHAR(13) + CHAR(10);
+
+	if @PartidoID is null
+		SET @errores = @errores + '- Debe indicar partido' + CHAR(13) + CHAR(10);
+	else IF NOT EXISTS (SELECT 1 FROM Partidos.Partidos WHERE id = @PartidoID)
+		SET @errores = @errores + '- El partido no existe' + CHAR(13) + CHAR(10);
+
+	IF @Convirtio IS NULL 
+		SET @errores = @errores + '- Debe indicar si convirtio' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+	IF EXISTS (SELECT 1 FROM Eventos.PenalesDeTanda WHERE jugador_id = @JugadorID AND partido_id = @PartidoID) 
+		SET @errores = @errores + '- El jugador ya pateó un penal en ese partido' + CHAR(13) + CHAR(10);
+
+	IF NOT EXISTS (SELECT 1 
+				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, 15, 45, 4) -- Máximo  
+				WHERE jugador_id = @JugadorID) 
+		SET @errores = @errores + '- El jugador no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+	-- TODO: Se debería validar de alguna forma si el partido terminó o si los penales terminaron
+
+	INSERT INTO Eventos.PenalesDeTanda 
+		(partido_id, jugador_id, convirtio)
+		VALUES
+		(@PartidoID, @JugadorID, @Convirtio);
+
+END
+GO
 
 CREATE OR ALTER PROCEDURE Eventos.sp_registrar_gol
 	@Minuto SMALLINT,

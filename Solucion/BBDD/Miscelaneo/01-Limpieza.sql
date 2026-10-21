@@ -30,6 +30,7 @@ DROP TABLE IF EXISTS Publicidad.PaisesInteresados;
 DROP TABLE IF EXISTS Publicidad.PiezasDeContenido;
 DROP TABLE IF EXISTS Publicidad.Campañas;
 DROP TABLE IF EXISTS Publicidad.Anunciantes;
+DROP TABLE IF EXISTS Eventos.PenalesDeTanda;
 DROP TABLE IF EXISTS Eventos.Goles;
 DROP TABLE IF EXISTS Eventos.Cambios;
 DROP TABLE IF EXISTS Eventos.Amonestaciones;
@@ -136,6 +137,9 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 /*************************************/
 /*            IMPORTACIÓN            */
 /*************************************/
+
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_penales_de_tanda;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_penalty_kicks_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_goles;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_goals_csv;
