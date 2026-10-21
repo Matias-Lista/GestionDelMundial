@@ -15,8 +15,7 @@ CREATE OR ALTER PROCEDURE Eventos.sp_registrar_gol
 	@PartidoID SMALLINT,
 	@Tipo CHAR(1),
 	@JugadorID SMALLINT,
-	@JugadorAsistenteID SMALLINT = NULL,
-	@EnContra BIT = 0
+	@JugadorAsistenteID SMALLINT = NULL
 AS	
 BEGIN
 	SET NOCOUNT ON;
@@ -30,8 +29,11 @@ BEGIN
 
 	if @Extra is null
 		SET @errores = @errores + '- Debe indicar extra' + CHAR(13) + CHAR(10);
-	else if @Extra > 0 and @Minuto is not null and @Minuto < 45
-		SET @errores = @errores + '- No puede haber extra si no es minuto 45' + CHAR(13) + CHAR(10);
+	else if @Extra > 0 and 
+			((@Minuto is not null and @Minuto < 45 and @Tiempo is not null and @Tiempo <= 2) OR
+			 (@Minuto is not null and @Minuto < 15 and @Tiempo is not null and @Tiempo >= 3)
+			 )
+		SET @errores = @errores + '- No puede haber extra si no termino el tiempo actual' + CHAR(13) + CHAR(10);
 
 	if @Tiempo is null
 		SET @errores = @errores + '- Debe indicar tiempo' + CHAR(13) + CHAR(10);
@@ -66,7 +68,8 @@ BEGIN
 				WHERE jugador_id = @JugadorID) 
 		SET @errores = @errores + '- El jugador principal no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
 
-	IF NOT EXISTS (SELECT 1 
+	IF @JugadorAsistenteID IS NOT NULL 
+	   AND NOT EXISTS (SELECT 1 
 				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, @Minuto, @Extra, @Tiempo) 
 				WHERE jugador_id = @JugadorAsistenteID)  
 		SET @errores = @errores + '- El jugador asistente no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
@@ -75,10 +78,10 @@ BEGIN
 
 	INSERT INTO Eventos.Goles 
 		(partido_id, jugador_autor_id, jugador_asistente_id, tipo,
-	    minuto, extra, tiempo, en_contra)
+	    minuto, extra, tiempo)
 	    VALUES
 		(@PartidoID, @JugadorID, @JugadorAsistenteID, @Tipo,
-	    @Minuto, @Extra, @Tiempo, @EnContra);
+	    @Minuto, @Extra, @Tiempo);
 
 END
 GO

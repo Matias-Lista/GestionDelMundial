@@ -416,7 +416,8 @@ CREATE TABLE Eventos.Goles (
     extra SMALLINT NOT NULL DEFAULT 0,
     tiempo SMALLINT NOT NULL CHECK (tiempo between 1 and 4),
 
-    en_contra BIT DEFAULT 0,
+    -- en_contra BIT DEFAULT 0,
+    -- de_penal  BIT DEFAULT 0,
 
     CONSTRAINT CK_Gol_Asistente_Distinto_Del_Autor CHECK (jugador_asistente_id IS NULL OR jugador_asistente_id <> jugador_autor_id)
 );
