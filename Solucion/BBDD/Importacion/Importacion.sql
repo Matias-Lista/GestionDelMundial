@@ -240,7 +240,8 @@ BEGIN
         END TRY
         BEGIN CATCH
             SET @omitidas = @omitidas + 1;
-            print ERROR_MESSAGE();
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%'
+                print ERROR_MESSAGE();
         end CATCH
 
     SET @idActual = @idActual + 1;
@@ -455,7 +456,10 @@ BEGIN
         END TRY
         BEGIN CATCH
             SET @omitidas = @omitidas + 1;
-            print ERROR_MESSAGE();
+
+            IF ERROR_MESSAGE() NOT LIKE '%skippeada%'
+                print ERROR_MESSAGE();
+
         END CATCH
 
         SET @idActual = @idActual + 1;
@@ -510,12 +514,17 @@ BEGIN
         
         SET @IDJugador = (SELECT map_id FROM ##Players WHERE player_id = @PlayerCode);
 
-
-
         BEGIN TRY
 
+            IF @añoMundial IS NULL 
+                THROW 50001, 'Convocacion skipeada', 1;
+
             IF (@IDJugador is null) BEGIN
-                THROW 50001, 'SKIP ID NOT MAPPED', 1;
+                print '-----'
+                print @dorsal;
+                print @añoMundial;
+                print @PlayerCode;
+                THROW 50001, 'Convocacion erronea', 1;
             END;
  
             EXEC Equipos.sp_convocar_jugador @AñoMundial = @añoMundial, @MiembroID = @IDJugador, @FConvocacion = '01-01-1900', @Dorsal = @dorsal, @ClubId = null
@@ -524,7 +533,10 @@ BEGIN
         END TRY
         BEGIN CATCH
             SET @omitidas = @omitidas + 1;
-            print ERROR_MESSAGE();
+
+            IF ERROR_MESSAGE() NOT LIKE '%skipeada%'
+                print ERROR_MESSAGE();
+
         END CATCH
 
         SET @idActual = @idActual + 1;
@@ -718,6 +730,10 @@ BEGIN
         -- @Fase VARCHAR(15),
 
         BEGIN TRY
+
+            IF @añoMundial is NULL BEGIN
+                throw 50001, 'Partido skipeado', 1;
+            END
             
             IF (@fase IS NULL) BEGIN
                 DECLARE @msgFase VARCHAR(200) = CONCAT('Fase no mapeada en el CASE: [', ISNULL(@faseCSV, 'NULL'), ']');
@@ -757,7 +773,10 @@ BEGIN
         END TRY
         BEGIN CATCH
             SET @omitidas = @omitidas + 1;
-            print ERROR_MESSAGE();
+
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%'
+                print ERROR_MESSAGE();
+
         END CATCH
 
         SET @idActual = @idActual + 1;
@@ -825,6 +844,10 @@ BEGIN
                 THROW 50001, 'FORMACION skipeado, no se insertó', 1;
             END;
 
+            IF (@seleccionId IS NULL) BEGIN
+                THROW 50001, 'FORMACION erronea, no se insertó', 1;
+            END
+
             EXEC Partidos.sp_definir_formacion_inicial 
                 @Jugando = @jugando,
                 @Posicion = @posicion,
@@ -837,6 +860,9 @@ BEGIN
         END TRY
         BEGIN CATCH
             SET @omitidas = @omitidas + 1;
+
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%'
+                print ERROR_MESSAGE();
             -- print ERROR_MESSAGE();
             -- print @añoMundial;
             -- print @codigoPais;
@@ -1355,49 +1381,183 @@ BEGIN
 END
 GO
 
+/********************************/
+/*         AMONESTACIONES        */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_amonestaciones
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Bookings') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún CSV de Bookings.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(key_id) FROM ##Bookings);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertadas   INT = 0;
+    DECLARE @actualizadas INT = 0;
+    DECLARE @omitidas     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito: Minuto, Extra, Tiempo, Partido (mapeado), Jugador (mapeado), Tarjeta
+        DECLARE @minuto SMALLINT = NULL
+        DECLARE @extra SMALLINT  = NULL;
+        DECLARE @periodo VARCHAR(100) = NULL;
+        DECLARE @fueAmarilla BIT = NULL;
+        DECLARE @fueDobleAmarilla BIT = NULL;
+
+        DECLARE @playerIDCSV varchar(20) = NULL;
+        DECLARE @partidoIDCSV VARCHAR(100) = NULL;
+
+        DECLARE @jugadorID INT = NULL;
+        DECLARE @partidoID INT = NULL;
+
+        SELECT @minuto = minute_regulation, @extra = minute_stoppage,
+                @partidoIDCSV = match_id, @playerIDCSV = player_id,
+                @periodo = match_period, @fueAmarilla = yellow_card, @fueDobleAmarilla = second_yellow_card
+            FROM ##Bookings
+            WHERE key_id = @idActual;
+
+        SELECT @partidoID = map_id FROM ##Matches WHERE match_id = @partidoIDCSV;
+        SELECT @jugadorID = map_id FROM ##Players WHERE player_id = @playerIDCSV;
+        
+        BEGIN TRY
+            
+            IF (@minuto IS NULL) BEGIN
+                THROW 50001, 'falta skipeada, no se insertó', 1;
+            END;
+
+            IF (@jugadorID IS NULL OR @partidoID IS NULL) BEGIN
+                THROW 50001, 'falta erronea, no se insertó', 1;
+            END;
+
+            DECLARE @minutoCorrecto SMALLINT = CASE 
+                WHEN @periodo = 'extra time, first half' THEN @minuto - 90
+                WHEN @periodo = 'extra time, first half, stoppage time' THEN 15
+                WHEN @periodo = 'extra time, second half' THEN @minuto - 105
+                WHEN @periodo = 'extra time, second half, stoppage time' THEN 15
+                WHEN @periodo = 'first half' THEN @minuto
+                WHEN @periodo = 'first half, stoppage time' THEN 45
+                WHEN @periodo = 'second half' THEN @minuto - 45
+                WHEN @periodo = 'second half, stoppage time' THEN 45
+            END
+
+            DECLARE @tiempoCorrecto SMALLINT = CASE 
+                WHEN @periodo = 'extra time, first half' THEN 3
+                WHEN @periodo = 'extra time, first half, stoppage time' THEN 3
+                WHEN @periodo = 'extra time, second half' THEN 4
+                WHEN @periodo = 'extra time, second half, stoppage time' THEN 4
+                WHEN @periodo = 'first half' THEN 1
+                WHEN @periodo = 'first half, stoppage time' THEN 1
+                WHEN @periodo = 'second half' THEN 2
+                WHEN @periodo = 'second half, stoppage time' THEN 2
+            END
+
+            -- NOTA: El DATASET guarda las dobles amarillas como una sola. Por lo tanto, en ese caso,
+            --       voy a ejecutar el stored procedure dos veces.
+            DECLARE @tarjeta CHAR(1) = CASE 
+                WHEN @fueAmarilla = 1 THEN 'A'
+                ELSE 'R'
+            END;
+
+            EXEC Eventos.sp_registrar_amonestacion 
+                    @Minuto = @minutoCorrecto,
+                    @Extra = @extra,
+                    @Tiempo = @tiempoCorrecto,
+                    @PartidoID = @partidoID,
+                    @JugadorID = @JugadorID,
+                    @Tarjeta = @tarjeta;
+
+            IF @fueDobleAmarilla = 1 BEGIN 
+                SET @insertadas = @insertadas + 1
+                EXEC Eventos.sp_registrar_amonestacion 
+                        @Minuto = @minutoCorrecto,
+                        @Extra = @extra,
+                        @Tiempo = @tiempoCorrecto,
+                        @PartidoID = @partidoID,
+                        @JugadorID = @JugadorID,
+                        @Tarjeta = @tarjeta,
+                        @Motivo = 'DOBLE AMARILLA. DATASET';
+            END 
+            
+            SET @insertadas = @insertadas + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidas = @omitidas + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeada%' BEGIN
+                print ERROR_MESSAGE();
+                PRINT '--- DEBUG AMONESTACIÓN FALLIDA ---'
+                PRINT 'ID Partido: ' + ISNULL(CAST(@partidoID AS VARCHAR), 'NULL') + ' | ID Jugador: ' + ISNULL(CAST(@jugadorID AS VARCHAR), 'NULL')
+                PRINT 'Tiempo Tarjeta: ' + ISNULL(CAST(@tiempoCorrecto AS VARCHAR), 'NULL') 
+                      + ' | Minuto: ' + ISNULL(CAST(@minutoCorrecto AS VARCHAR), 'NULL') 
+                      + ' | Extra: ' + ISNULL(CAST(@extra AS VARCHAR), '0')
+                PRINT '----------------------------------'
+            END
+       END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertadas as 'Amonestaciones insertados',
+        @actualizadas as 'Amonestaciones actualizados',
+        @omitidas as 'Amonestaciones omitidos';
+
+END
+GO
+
 CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
 AS
 BEGIN
-DECLARE @TableName NVARCHAR(256);
-DECLARE @Sql NVARCHAR(MAX);
+    DECLARE @TableName NVARCHAR(256);
+    DECLARE @Sql NVARCHAR(MAX);
 
--- 1. Declarar cursor buscando en tempdb solo las tablas globales (##) que tengan el campo tournament_id
-DECLARE cur_TempTables CURSOR LOCAL FOR
-SELECT t.name
-FROM tempdb.sys.tables t
-INNER JOIN tempdb.sys.columns c ON t.object_id = c.object_id
-WHERE t.name LIKE '##%' 
-  AND c.name = 'tournament_id';
+    -- 1. Declarar cursor buscando en tempdb solo las tablas globales (##) que tengan el campo tournament_id
+    DECLARE cur_TempTables CURSOR LOCAL FOR
+    SELECT t.name
+    FROM tempdb.sys.tables t
+    INNER JOIN tempdb.sys.columns c ON t.object_id = c.object_id
+    WHERE t.name LIKE '##%' 
+      AND c.name = 'tournament_id';
 
-OPEN cur_TempTables;
-FETCH NEXT FROM cur_TempTables INTO @TableName;
-
--- 2. Recorrer las tablas encontradas
-WHILE @@FETCH_STATUS = 0
-BEGIN
-    -- 3. Armar el SQL dinámico con manejo de errores interno (TRY...CATCH)
-    SET @Sql = N'
-    BEGIN TRY
-        DELETE FROM [' + @TableName + N'] 
-        WHERE tournament_id <> 2022;
-        
-        PRINT ''Limpieza exitosa en: ' + @TableName + N''';
-    END TRY
-    BEGIN CATCH
-        -- Atrapa el error y lo imprime, pero no detiene la ejecución del cursor
-        PRINT ''Ocurrió un error en la tabla ' + @TableName + N': '' + ERROR_MESSAGE();
-    END CATCH;
-    ';
-
-    -- 4. Ejecutar el código dinámico
-    EXEC sp_executesql @Sql;
-
+    OPEN cur_TempTables;
     FETCH NEXT FROM cur_TempTables INTO @TableName;
-END
 
--- 5. Cerrar y liberar el cursor
-CLOSE cur_TempTables;
-DEALLOCATE cur_TempTables;
+    -- 2. Recorrer las tablas encontradas
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- 3. Armar el SQL dinámico con manejo de errores interno (TRY...CATCH)
+        SET @Sql = N'
+        BEGIN TRY
+            DELETE FROM [' + @TableName + N'] 
+            WHERE tournament_id <> 2022;
+            
+            --PRINT ''Limpieza exitosa en: ' + @TableName + N''';
+        END TRY
+        BEGIN CATCH
+            -- Atrapa el error y lo imprime, pero no detiene la ejecución del cursor
+            PRINT ''Ocurrió un error en la tabla ' + @TableName + N': '' + ERROR_MESSAGE();
+        END CATCH;
+        ';
+
+        -- 4. Ejecutar el código dinámico
+        EXEC sp_executesql @Sql;
+
+        FETCH NEXT FROM cur_TempTables INTO @TableName;
+    END
+
+    -- 5. Cerrar y liberar el cursor
+    CLOSE cur_TempTables;
+    DEALLOCATE cur_TempTables;
 END
 GO
 
@@ -1425,6 +1585,7 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaSubstitutionsCSV VARCHAR(255),
     @RutaGoalsCSV VARCHAR(255),
     @RutaPenaltyKicksCSV VARCHAR(255),
+    @RutaBookingsCSV VARCHAR(255),
     @MostrarDatos BIT = 0,
     @UnicoMundial INT = NULL 
 AS
@@ -1453,6 +1614,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_substitutions_csv       @Ruta = @RutaSubstitutionsCSV
     EXEC Importacion.sp_crear_y_cargar_goals_csv               @Ruta = @RutaGoalsCSV
     EXEC Importacion.sp_crear_y_cargar_penalty_kicks_csv       @Ruta = @RutaPenaltyKicksCSV
+    EXEC Importacion.sp_crear_y_cargar_bookings_csv            @Ruta = @RutaBookingsCSV
 
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
@@ -1573,6 +1735,17 @@ BEGIN
             WHERE P.id = @partidoID
     END
 
+    --- ERRORES CONOCIDOS:
+    --- hay una amonestacion del mundial de argentina que no se inserta porque se vinculo al jugador RicardoGiusti, que no jugo el 2022.
+    --- hay una amonestacion de Luka Jović que no se aplica por que el partido del dataset es incorrecta (es el de serbia camerun en el dataset y en realidad es serbia suiza)
+    --- hay una amonestacion de predrag rajkovic que no se aplica por que el partido del dataset es incorrecto
+    EXEC Importacion.sp_upsert_amonestaciones;
+    if @MostrarDatos = 1 BEGIN
+        SELECT TOP 10 * FROM Eventos.Amonestaciones;
+        SELECT TOP 10 * FROM Eventos.Amonestaciones WHERE motivo is not null;
+        SELECT TOP 10 * FROM Eventos.Cambios WHERE motivo = 'EXPULSION';
+    END
+
     
 
     -- Limpieza
@@ -1593,6 +1766,7 @@ GO
 --         @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
 --         @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\goals.csv',
 --         @RutaPenaltyKicksCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\penalty_kicks.csv',
+--         @RutaBookingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\bookings.csv',
 --         @MostrarDatos = 1,
 --         @UnicoMundial = 2022
 

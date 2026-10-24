@@ -139,6 +139,9 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 /*            IMPORTACIÓN            */
 /*************************************/
 
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_amonestaciones;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_bookings_csv;
+
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_penales_de_tanda;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_penalty_kicks_csv;
 

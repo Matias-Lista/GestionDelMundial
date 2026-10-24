@@ -116,9 +116,15 @@ BEGIN
 
 	-- Valido que no esté baneado
 
-	-- TODO: Esto está mal.
-	if exists (SELECT partidos_restantes FROM Eventos.Impedimentos WHERE jugador_id = @JugadorID)
-		SET @errores = @errores + '- El jugador tiene una roja activa' + CHAR(13) + CHAR(10);
+	DECLARE @añoMundial INT = (SELECT mundial_id FROM Partidos.Partidos WHERE id = @PartidoID);
+
+	IF @añoMundial IS NULL
+		SET @errores = @errores + '- El partido no existe' + CHAR(13) + CHAR(10);
+
+	-- if (SELECT I.cantidad_restante FROM Eventos.Impedimentos  I
+	-- 		INNER JOIN Partidos.Partidos P ON P.id = I.partido_origen_id
+	-- 		WHERE I.jugador_id = @JugadorID and P.mundial_id = @añoMundial) > 0
+	-- 	SET @errores = @errores + '- El jugador tiene un impedimento activo' + CHAR(13) + CHAR(10);
 	
 	if EXISTS (SELECT 1 FROM Partidos.JugadorPosicionInicial WHERE jugador_id = @JugadorID and partido_id = @PartidoID) 
 		SET @errores = @errores + '- El jugador ya está en este partido' + CHAR(13) + CHAR(10);

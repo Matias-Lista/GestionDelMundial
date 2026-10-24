@@ -310,7 +310,7 @@ BEGIN
 	else if @Tiempo not between 1 and 4
 		SET @errores = @errores + '- Solo hay 4 tiempos en un partido.' + CHAR(13) + CHAR(10);
 
-	IF @JugadorID is NOT null and IF NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorID)
+	IF @JugadorID is NOT null and NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorID)
 		SET @errores = @errores + '- El jugador que entra no existe' + CHAR(13) + CHAR(10);
 
 	if @PartidoID is null
@@ -326,10 +326,12 @@ BEGIN
 
 	IF @errores <> '' THROW 50001, @errores, 1;
 
-	IF @JugadorID is not null and NOT EXISTS (SELECT 1 
-				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, @Minuto, @Extra, @Tiempo) 
-				WHERE jugador_id = @JugadorID) 
-		SET @errores = @errores + '- El jugador que debería ser amonestado no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
+	-- No es necesario qeu esté en cancha, pero sí que esté en el partido.
+	IF NOT EXISTS (SELECT 1 
+				FROM Partidos.JugadorPosicionInicial
+				WHERE partido_id = @PartidoID AND jugador_id = @JugadorID
+		) 
+		SET @errores = @errores + '- El jugador que debería ser amonestado no estaba en ese partido' + CHAR(13) + CHAR(10);
 
 	IF @errores <> '' THROW 50001, @errores, 1;
 
