@@ -16,7 +16,7 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 	 @ArbitroDeVarRequerido BIT,
 	 @CantidadDeEquipos INT,
 	 @CantidadDeCambios INT = 5,
-	 @AmarillasParaExpulsion INT = 5,
+	 @AmarillasParaExpulsion INT = 2,
 	 @ReiniciaAmarillasEnFaseDeGrupos BIT = 0,
 	 @ReiniciaAmarillasEnSemifinal BIT = 1
 AS

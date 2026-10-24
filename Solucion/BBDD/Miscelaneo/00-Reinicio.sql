@@ -12,7 +12,7 @@
 
 :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
-:setvar ImportarDatos   0
+:setvar ImportarDatos   1
 :setvar EjecutarTesteos 0
 
 PRINT '[*] Limpiando ...'
@@ -74,5 +74,26 @@ BEGIN
             @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
             @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\goals.csv',
             @RutaPenaltyKicksCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\penalty_kicks.csv',
+            @RutaBookingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\bookings.csv',
             @MostrarDatos = 1
 END
+
+/*
+DECLARE @DebugPartido INT = 48; 
+DECLARE @DebugJugador INT = 6406;
+
+SELECT * FROM equipos.IntegranteSeleccion WHERE id = @DebugJugador
+
+SELECT * FROM Partidos.Partidos P
+JOIN Mundial.Selecciones S ON S.id = P.seleccion_B_id
+WHERE P.id = @DebugPartido;
+
+-- Ver si fue titular o suplente
+SELECT * FROM Partidos.JugadorPosicionInicial
+WHERE partido_id = @DebugPartido AND jugador_id = @DebugJugador;*/
+/*
+-- Ver en qué momento entró o salió
+SELECT motivo, tiempo, minuto, extra 
+FROM Cambios 
+WHERE id_partido = @DebugPartido 
+  AND (id_jugador_entra = @DebugJugador OR id_jugador_sale = @DebugJugador);*/
