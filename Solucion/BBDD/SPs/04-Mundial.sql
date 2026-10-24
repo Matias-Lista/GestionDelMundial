@@ -15,7 +15,10 @@ CREATE OR ALTER PROCEDURE Mundial.sp_crear_mundial
 	 @LimiteStaffConvocados INT,
 	 @ArbitroDeVarRequerido BIT,
 	 @CantidadDeEquipos INT,
-	 @CantidadDeCambios INT = 5
+	 @CantidadDeCambios INT = 5,
+	 @AmarillasParaExpulsion INT = 5,
+	 @ReiniciaAmarillasEnFaseDeGrupos BIT = 0,
+	 @ReiniciaAmarillasEnSemifinal BIT = 1
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -70,6 +73,9 @@ BEGIN
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'CANTIDAD_EQUIPOS', @Valor = @CantidadDeEquipos;
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'MAX_STAFF_CONVOCADOS', @Valor = @LimiteStaffConvocados;
 			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'CANTIDAD_DE_CAMBIOS', @Valor = @CantidadDeCambios;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'AMARILLAS_PARA_EXPULSION', @Valor = @AmarillasParaExpulsion;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'REINICIA_AMARILLAS_EN_FASE_DE_GRUPOS', @Valor = @ReiniciaAmarillasEnFaseDeGrupos;
+			exec Administracion.sp_registrar_regla @AñoMundial = @añoMundial, @Codigo = 'REINICIA_AMARILLAS_EN_SEMIFINAL', @Valor = @ReiniciaAmarillasEnSemifinal;
 		COMMIT TRANSACTION
 	END TRY
 	BEGIN CATCH

@@ -7,6 +7,24 @@
 USE GestionDelMundial;
 GO
 
+
+CREATE OR ALTER FUNCTION Eventos.fn_mapear_fase (
+	@fase VARCHAR(25)
+)
+RETURNS INT
+AS
+BEGIN RETURN CASE 
+		WHEN @fase = 'FINAL'         THEN 1
+		WHEN @fase = 'SEMIFINAL'     THEN 2
+		WHEN @fase = 'TERCER_PUESTO' THEN 2
+		WHEN @fase = 'CUARTOS'       THEN 3
+		WHEN @fase = 'OCTAVOS'       THEN 4
+		WHEN @fase = 'DIECISEISAVOS' THEN 5
+		WHEN @fase = 'GRUPOS'        THEN 6
+	END
+END
+GO
+
 -- Las reglas establecen que solo pueden patear penales una vez cada uno de los jugadores presentes en el ultimo minuto del partido.
 -- Por otro lado, establece que puede repetirse el tiro de un jugador, si ya patearon los ONCE jugadores.
 -- EN el mundial de futbol masculino no pasó nunca, por lo tanto, de momento, solo voy a comprobar que no se repitan.
@@ -189,7 +207,7 @@ BEGIN
 
 	IF @Motivo is null 
 		SET @errores = @errores + '- Debe indicar un motivo' + CHAR(13) + CHAR(10);
-	ELSE IF @Motivo not in ('TACTICO', 'LESION', 'PRECAUCION')
+	ELSE IF @Motivo not in ('TACTICO', 'LESION', 'PRECAUCION', 'EXPULSION')
 		SET @errores = @errores + '- El motivo no es válido' + CHAR(13) + CHAR(10);
 
 	IF @errores <> '' THROW 50001, @errores, 1;
@@ -242,193 +260,187 @@ END
 GO
 
 
+-- Reglas de negocio:
+--  *  Dos amarillas en un partido: Expulsión del jugador en el partido actual (un evento de cambio sin entrada),
+--     y suspensión para el proximo partido.
+--  *  Dos amarillas entre dos partidos: continúa jugando el partido, pero se registra un impedimento para el próximo partido
+--  *  La cantidad de amarillas acumuladas se reinicia en distintas fases, en cada mundial. Por ejemplo, el 2022, es solo en semifinal, y en el 2026, fue mundial y grupos.
+---    Por lo tanto sumo reglas en la creacion del mundial (REINICIA_AMARILLAS_EN_FASE_DE_GRUPOS, REINICIA_AMARILLAS_EN_SEMIFINAL)
+--  *  El TP solicita que se pueda parametrizar el criterio de expulsión. Voy a hacer una regla "AMARILLAS_PARA_EXPULSION"
 
-
-
-
-
---Le asigno un numero a cada fase para poder ordenar o comparar facilmente las fases en conusultas
-CREATE OR ALTER FUNCTION Eventos.fn_orden_fase (@Fase VARCHAR(15))
-RETURNS INT
-AS
-BEGIN
-	RETURN CASE @Fase
-		WHEN 'GRUPOS'        THEN 1
-		WHEN 'DIECISEISAVOS' THEN 2
-		WHEN 'OCTAVOS'       THEN 3
-		WHEN 'CUARTOS'       THEN 4
-		WHEN 'SEMIFINAL'     THEN 5
-		WHEN 'TERCER_PUESTO' THEN 6
-		WHEN 'FINAL'         THEN 6
-	END;
-END
-GO
-
----VALIDA que un evento sucesa en un minuto y tiempo coherente de un partido
-CREATE OR ALTER FUNCTION Eventos.fn_validar_momento (@PartidoID INT, @Minuto SMALLINT, @Tiempo CHAR(1)) --le paso el tiempo (primer tiempo, seg, suplementario1 0 2)
-RETURNS NVARCHAR(300)
-AS
-BEGIN
-	-- Los minutos son ABSOLUTOS un gol a los 45+2 se carga como minuto 47 DEL TIEMPO 1
-	-- (en caso de no cargarse el tiempo adicional se pone una tolerancia de 10 min)
-	DECLARE @errores NVARCHAR(300) = '';
-	DECLARE @fase VARCHAR(15);
-	DECLARE @adicional SMALLINT;
-
-	SELECT @fase = fase,
-		   @adicional = CASE @Tiempo
-							WHEN '1' THEN tiempo_adicional_1
-							WHEN '2' THEN tiempo_adicional_2
-							WHEN '3' THEN tiempo_adicional_3
-							WHEN '4' THEN tiempo_adicional_4
-						END
-		FROM Partidos.Partidos
-		WHERE id = @PartidoID;
-
-	DECLARE @inicio SMALLINT = CASE @Tiempo WHEN '1' THEN 0  WHEN '2' THEN 45 WHEN '3' THEN 90  WHEN '4' THEN 105 END;
-	DECLARE @fin SMALLINT    = CASE @Tiempo WHEN '1' THEN 45 WHEN '2' THEN 90 WHEN '3' THEN 105 WHEN '4' THEN 120 END + ISNULL(@adicional, 10);
-
-	IF (@Tiempo IS NULL OR @Tiempo NOT IN ('1', '2', '3', '4'))
-		SET @errores = @errores + 'El tiempo debe ser 1, 2, 3 o 4 (3 y 4 son el suplementario). ';
-	ELSE IF (@Minuto IS NULL OR @Minuto NOT BETWEEN @inicio AND @fin)
-		SET @errores = @errores + CONCAT('Para el tiempo ', @Tiempo, ' el minuto debe estar entre ', @inicio, ' y ', @fin, '. ');
-
-	IF (@Tiempo IN ('3', '4') AND @fase = 'GRUPOS')
-		SET @errores = @errores + 'En fase de grupos no hay tiempo suplementario. ';
-
-	RETURN @errores;
-END
-GO
-
-
-
-
-CREATE OR ALTER FUNCTION Eventos.fn_resultado_partido (@PartidoID INT)
-RETURNS TABLE
-AS
-RETURN (
-	SELECT
-		P.id AS partido_id,
-		P.seleccion_A_id,
-		SUM(CASE WHEN (J.seleccion_id = P.seleccion_A_id AND G.tipo <> 'E')
-				   OR (J.seleccion_id = P.seleccion_B_id AND G.tipo = 'E') THEN 1 ELSE 0 END) AS goles_A,
-		P.seleccion_B_id,
-		SUM(CASE WHEN (J.seleccion_id = P.seleccion_B_id AND G.tipo <> 'E')
-				   OR (J.seleccion_id = P.seleccion_A_id AND G.tipo = 'E') THEN 1 ELSE 0 END) AS goles_B
-	FROM Partidos.Partidos P
-	LEFT JOIN Eventos.Goles G ON G.partido_id = P.id
-	LEFT JOIN Partidos.JugadorPosicionInicial J ON J.partido_id = G.partido_id AND J.jugador_id = G.jugador_autor_id
-	WHERE P.id = @PartidoID
-	GROUP BY P.id, P.seleccion_A_id, P.seleccion_B_id
-);
-GO
-
-----------------------------------------------------------------------SP-------------------------------------------------------------------------------
-
-CREATE OR ALTER PROCEDURE Eventos.sp_eliminar_amonestacion
-	@ID INT
-AS
-BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
-
-	DECLARE @partidoId INT;
-	DECLARE @jugadorId INT;
-	DECLARE @tarjeta CHAR(1);
-
-	SELECT @partidoId = partido_id, @jugadorId = jugador_id, @tarjeta = tarjeta
-		FROM Eventos.Amonestaciones
-		WHERE id = @ID;
-
-	IF (@partidoId IS NULL)
-		SET @errores = @errores + 'No existe una amonestación con ese ID. ';
-
-	IF (@tarjeta = 'A' AND EXISTS (SELECT 1 FROM Eventos.Amonestaciones WHERE partido_id = @partidoId AND jugador_id = @jugadorId AND es_doble_amarilla = 1))
-		SET @errores = @errores + 'La amarilla forma parte de una expulsión por doble amarilla: elimine primero la roja. ';
-
-	IF EXISTS (SELECT 1 FROM Eventos.Impedimentos WHERE partido_origen_id = @partidoId AND jugador_id = @jugadorId)
-		SET @errores = @errores + 'El jugador tiene una suspensión generada en este partido: elimínela primero.';
-
-	IF (@errores <> '')
-		THROW 50001, @errores, 1;
-
-	DELETE FROM Eventos.Amonestaciones
-		WHERE id = @ID;
-END
-GO
-
-
-
-
-
-CREATE OR ALTER PROCEDURE Eventos.sp_registrar_impedimento
+CREATE OR ALTER PROCEDURE Eventos.sp_registrar_amonestacion 
+	@Minuto SMALLINT,
+	@Extra SMALLINT,
+	@Tiempo SMALLINT,
+	@PartidoID INT,
 	@JugadorID INT,
-	@PartidoOrigenID INT,
-	@PartidosRestantes SMALLINT,
-	@Motivo CHAR(1) = 'D'
-AS
+	@Tarjeta CHAR(1),
+	@Motivo VARCHAR(200) = NULL,
+	@PartidosSuspendidos INT = 1
+AS 
 BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
 
-	IF NOT EXISTS (SELECT 1 FROM Partidos.JugadorPosicionInicial WHERE partido_id = @PartidoOrigenID AND jugador_id = @JugadorID)
-		SET @errores = @errores + 'El jugador no participó de ese partido. ';
+	SET NOCOUNT ON;
+	
+	DECLARE @errores VARCHAR(4000) = '';
 
-	IF (@PartidosRestantes IS NULL OR @PartidosRestantes <= 0)
-		SET @errores = @errores + 'La sanción debe ser de al menos un partido. ';
+	IF @PartidosSuspendidos is not null and @PartidosSuspendidos <= 0
+		SET @errores = @errores + '- La suspensión debe ser mayor a 0.' + CHAR(13) + CHAR(10);
 
-	IF (@Motivo IS NULL OR @Motivo NOT IN ('A', 'R', 'D'))
-		SET @errores = @errores + 'El motivo debe ser A (amarillas), R (roja) o D (disciplinario). ';
+	IF @Tarjeta is null
+		SET @errores = @errores + '- Se debe indicar una tarjeta' + CHAR(13) + CHAR(10);
+	ELSE IF @Tarjeta not in ('A', 'R')
+		SET @errores = @errores + '- La tarjeta solo puede ser amarilla (A) o roja (R)' + CHAR(13) + CHAR(10);
 
-	IF EXISTS (SELECT 1 FROM Eventos.Impedimentos WHERE jugador_id = @JugadorID AND partido_origen_id = @PartidoOrigenID AND motivo = @Motivo)
-		SET @errores = @errores + 'El jugador ya tiene una sanción con ese motivo originada en ese partido.';
+	if @Minuto is null
+		SET @errores = @errores + '- Debe indicar minuto' + CHAR(13) + CHAR(10);
+	else if @Minuto not between 0 and 45
+		SET @errores = @errores + '- El minuto debe estar entre 0 y 45' + CHAR(13) + CHAR(10);
 
-	IF (@errores <> '')
-		THROW 50001, @errores, 1;
+	if @Extra is null
+		SET @errores = @errores + '- Debe indicar extra' + CHAR(13) + CHAR(10);
+	else if @Extra > 0 and 
+			((@Minuto is not null and @Minuto < 45 and @Tiempo is not null and @Tiempo <= 2) OR
+			 (@Minuto is not null and @Minuto < 15 and @Tiempo is not null and @Tiempo >= 3)
+			 )
+		SET @errores = @errores + '- No puede haber extra si no termino el tiempo actual' + CHAR(13) + CHAR(10);
 
-	INSERT INTO Eventos.Impedimentos
-		(jugador_id, partido_origen_id, motivo, partidos_restantes)
-		VALUES
-		(@JugadorID, @PartidoOrigenID, @Motivo, @PartidosRestantes);
+	if @Tiempo is null
+		SET @errores = @errores + '- Debe indicar tiempo' + CHAR(13) + CHAR(10);
+	else if @Tiempo not between 1 and 4
+		SET @errores = @errores + '- Solo hay 4 tiempos en un partido.' + CHAR(13) + CHAR(10);
+
+	IF @JugadorID is NOT null and IF NOT EXISTS (SELECT 1 FROM Equipos.IntegranteSeleccion WHERE id = @JugadorID)
+		SET @errores = @errores + '- El jugador que entra no existe' + CHAR(13) + CHAR(10);
+
+	if @PartidoID is null
+		SET @errores = @errores + '- Debe indicar partido' + CHAR(13) + CHAR(10);
+
+	DECLARE @añoMundial INT = NULL;
+	DECLARE @fase VARCHAR(25) = NULL;
+
+	SELECT @añoMundial = mundial_id, @fase = fase FROM Partidos.Partidos WHERE id = @PartidoID;
+
+	IF @añoMundial is null 
+		SET @errores = @errores + '- El partido no existe' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+	IF @JugadorID is not null and NOT EXISTS (SELECT 1 
+				FROM Partidos.fn_jugadores_en_cancha(@PartidoID, @Minuto, @Extra, @Tiempo) 
+				WHERE jugador_id = @JugadorID) 
+		SET @errores = @errores + '- El jugador que debería ser amonestado no estaba en la cancha en ese momento' + CHAR(13) + CHAR(10);
+
+	IF @errores <> '' THROW 50001, @errores, 1;
+
+	--- Para este punto, ya determinamos que ES POSIBLE asignarle una amonestación a este jugador.
+	-- ahora evalúo si amerita expulsión o no.
+	DECLARE @ameritaExpulsion BIT = 0;
+	DECLARE @alcanzaLimiteAmarillas BIT = 0;
+	DECLARE @ameritaImpedimento BIT = 0;
+	
+	IF @Tarjeta = 'R' BEGIN
+		SET @ameritaExpulsion  = 1;
+		SET @ameritaImpedimento = 1;
+	END ELSE IF @Tarjeta = 'A' BEGIN
+		-- hay que ver si llegó al limite de amarillas en un mismo partido.
+		DECLARE @limiteDeAmarillas INT;
+		
+		EXEC Administracion.sp_obtener_regla
+			 @AñoMundial = @añoMundial,
+			 @Codigo = 'AMARILLAS_PARA_EXPULSION',
+			 @Valor = @limiteDeAmarillas OUTPUT;
+
+		IF (SELECT count(*) 
+			FROM Eventos.Amonestaciones 
+			WHERE tarjeta = 'A' and partido_id = @PartidoID 
+			      and jugador_id = @JugadorID) + 1 = @limiteDeAmarillas
+		BEGIN
+			SET @ameritaExpulsion = 1;
+			SET @alcanzaLimiteAmarillas = 1;
+		END ELSE BEGIN
+			-- Si no alcanza el límite de amarillas en ese partido, hay que ver, la cantidad de amarillas, en el mundial.
+
+			-- Mapear fases:
+
+			DECLARE @faseMinimaAConsiderar VARCHAR(25) = 'GRUPOS'; -- Por defecto, todo el mundial
+
+			-- Si es después de LA SEMIFINAL
+			IF Eventos.fn_mapear_fase(@fase) <= Eventos.fn_mapear_fase('SEMIFINAL') BEGIN
+				
+				DECLARE @reiniciaEnSemifinal BIT;
+				EXEC Administracion.sp_obtener_regla
+					 @AñoMundial = @añoMundial,
+					 @Codigo = 'REINICIA_AMARILLAS_EN_SEMIFINAL',
+					 @Valor = @reiniciaEnSemifinal OUTPUT;
+
+				IF @reiniciaEnSemifinal = 1 
+					SET @faseMinimaAConsiderar = 'SEMIFINAL';
+
+			-- Si está entre GRUPOS y SEMIFINAL
+			END ELSE IF Eventos.fn_mapear_fase(@fase) <= Eventos.fn_mapear_fase('GRUPOS') BEGIN
+
+				DECLARE @reiniciaEnGrupos BIT;
+				EXEC Administracion.sp_obtener_regla
+					 @AñoMundial = @añoMundial,
+					 @Codigo = 'REINICIA_AMARILLAS_EN_FASE_DE_GRUPOS',
+					 @Valor = @reiniciaEnGrupos OUTPUT;
+
+				IF @reiniciaEnGrupos = 1 
+					SET @faseMinimaAConsiderar = 'DIECISEISAVOS'; -- POST GRUPOS
+
+			END
+
+			IF (SELECT count(1) 
+				FROM Eventos.Amonestaciones A
+				INNER JOIN Partidos.Partidos P ON P.id = A.partido_id 
+				WHERE A.tarjeta = 'A' and eventos.fn_mapear_fase(P.fase) <= Eventos.fn_mapear_fase(@faseMinimaAConsiderar)
+				      and A.jugador_id = @JugadorID and P.mundial_id = @añoMundial) + 1 = @limiteDeAmarillas
+			BEGIN
+				set @ameritaImpedimento = 1;
+			END
+
+		END
+
+	END -- End @Tarjeta = 'A'
+
+	-- En este punto tenemos que falta es, si amerita impedimento, y si amerita expulsion.
+
+
+	BEGIN TRY
+	BEGIN TRANSACTION 
+	SAVE TRANSACTION sp_registrar_amonestacion
+	
+		INSERT INTO Eventos.Amonestaciones
+			(partido_id, jugador_id, tarjeta, 
+			 alcanza_acumulacion_amarillas,
+			 motivo, minuto, extra, tiempo)
+			VALUES 
+			(@PartidoID, @JugadorID, @Tarjeta, 
+			 @alcanzaLimiteAmarillas, 
+			 @Motivo, @Minuto, @Extra, @Tiempo);
+
+		IF @ameritaExpulsion = 1
+			EXEC Eventos.sp_registrar_cambio
+				 @Minuto = @Minuto,
+				 @Extra  = @Extra,
+				 @Tiempo = @Tiempo,
+				 @PartidoID = @PartidoID,
+				 @Motivo = 'EXPULSION',
+				 @JugadorSaleID = @JugadorID;
+
+		IF @ameritaImpedimento = 1
+			INSERT INTO Eventos.Impedimentos 
+				(jugador_id, partido_origen_id, cantidad_de_partidos, cantidad_restante)
+				VALUES
+				(@JugadorID, @PartidoID, @PartidosSuspendidos, @PartidosSuspendidos);
+
+	COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+		if @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION sp_registrar_amonestacion;
+		throw
+	END CATCH
 END
 GO
-
-CREATE OR ALTER PROCEDURE Eventos.sp_modificar_impedimento
-	@ID INT,
-	@PartidosRestantes SMALLINT
-AS
-BEGIN
-	-- Corrección manual de los partidos que le quedan (0 = sanción cumplida).
-	DECLARE @errores NVARCHAR(500) = '';
-
-	IF NOT EXISTS (SELECT 1 FROM Eventos.Impedimentos WHERE id = @ID)
-		SET @errores = @errores + 'No existe un impedimento con ese ID. ';
-
-	IF (@PartidosRestantes IS NULL OR @PartidosRestantes < 0)
-		SET @errores = @errores + 'Los partidos restantes no pueden ser negativos.';
-
-	IF (@errores <> '')
-		THROW 50001, @errores, 1;
-
-	UPDATE Eventos.Impedimentos
-		SET partidos_restantes = @PartidosRestantes
-		WHERE id = @ID;
-END
-GO
-
-CREATE OR ALTER PROCEDURE Eventos.sp_eliminar_impedimento
-	@ID INT
-AS
-BEGIN
-	DECLARE @errores NVARCHAR(500) = '';
-
-	IF NOT EXISTS (SELECT 1 FROM Eventos.Impedimentos WHERE id = @ID)
-		SET @errores = @errores + 'No existe un impedimento con ese ID.';
-
-	IF (@errores <> '')
-		THROW 50001, @errores, 1;
-
-	DELETE FROM Eventos.Impedimentos
-		WHERE id = @ID;
-END
-GO
-
-

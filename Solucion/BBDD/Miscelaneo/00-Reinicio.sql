@@ -12,7 +12,7 @@
 
 :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
-:setvar ImportarDatos   1
+:setvar ImportarDatos   0
 :setvar EjecutarTesteos 0
 
 PRINT '[*] Limpiando ...'

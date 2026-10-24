@@ -1,12 +1,11 @@
 /* BBDD/SCHEMA/Tablas.sql
- * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Fecha: 24/10/2026
+ * Lista, Matías Josué.
  * Descripción: Contiene todos los archivos necesarios para crear la base de datos, sus schemas, sus tablas, y sus restricciones.
  **/
 
 
 --TODO: Hay que poner las FKs semánticas!
---TODO: Hay que sumar la tabla de penal
 --TODO: Hay que confirmar qué hacemos con los husos horarios (Me parece que lo mejor es usar una API)
 
 --CREACION BASE DE DATOS
@@ -347,14 +346,12 @@ CREATE TABLE Eventos.Impedimentos (
     id         INT PRIMARY KEY IDENTITY(1,1),
     jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
     partido_origen_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
-    motivo CHAR(1) CHECK (motivo IN ('A', 'R', 'D')) NOT NULL, -- Acumulación de amarillas, Roja, Disciplinaria
-    partidos_restantes SMALLINT CHECK (partidos_restantes >= 0) NOT NULL
+    cantidad_de_partidos SMALLINT CHECK (cantidad_de_partidos > 0) NOT NULL,
+    cantidad_restante SMALLINT
 );
 END
 GO
 
-
---agregu[e las columnas de es_doble_amarilla y tarjeta para poder hacer los casos de expulsi[on por doble amarilla o por tarjeta roja
 IF OBJECT_ID('Eventos.Amonestaciones', 'U') IS NULL
 BEGIN
 CREATE TABLE Eventos.Amonestaciones (
@@ -362,15 +359,15 @@ CREATE TABLE Eventos.Amonestaciones (
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
     jugador_id INT REFERENCES Equipos.IntegranteSeleccion(id) NOT NULL,
     tarjeta CHAR(1) CHECK (tarjeta IN ('A', 'R')) NOT NULL, -- Amarilla, Roja
-    es_doble_amarilla BIT DEFAULT 0 NOT NULL, -- 1 = roja generada por la segunda amarilla del partido
-    motivo VARCHAR(200) NOT NULL,
+    
+    alcanza_acumulacion_amarillas BIT DEFAULT 0, -- Doble Amarilla (o la cantidad parametrizada)
+    
+    motivo VARCHAR(200),
 
     minuto SMALLINT NOT NULL CHECK (minuto between 0 and 45),
     extra SMALLINT NOT NULL DEFAULT 0,
     tiempo SMALLINT NOT NULL CHECK (tiempo between 1 and 4),
     
-
-    CONSTRAINT CK_Doble_Amarilla_Es_Roja CHECK (es_doble_amarilla = 0 OR tarjeta = 'R')
 );
 END
 GO
@@ -387,7 +384,7 @@ CREATE TABLE Eventos.Cambios (
     partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL,
     jugador_entra_id INT REFERENCES Equipos.IntegranteSeleccion(id),
     jugador_sale_id INT REFERENCES Equipos.IntegranteSeleccion(id),
-    motivo VARCHAR(10) CHECK (motivo IN ('TACTICO', 'LESION', 'PRECAUCION')) NOT NULL,
+    motivo VARCHAR(10) CHECK (motivo IN ('TACTICO', 'LESION', 'PRECAUCION', 'EXPULSION')) NOT NULL,
 
     minuto SMALLINT NOT NULL CHECK (minuto between 0 and 45),
     extra SMALLINT NOT NULL DEFAULT 0,
