@@ -1,6 +1,6 @@
-/* BBDD/SPs/Publicidad.sql
+/* BBDD/SPs/09-Publicidad.sql
  * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Lista, Matías Josué.
  * Descripción: Crea todos los store procedures, funciones, y vistas del schema [Publicidad].
  **/
  

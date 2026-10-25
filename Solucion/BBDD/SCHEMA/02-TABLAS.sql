@@ -438,7 +438,6 @@ CREATE TABLE Eventos.PenalesDeTanda (
 END
 GO
 
--- TODO: La parte de penales no la entendí
 
 IF OBJECT_ID('Publicidad.Anunciantes', 'U') IS NULL
 BEGIN
@@ -452,13 +451,13 @@ GO
 IF OBJECT_ID('Publicidad.Campañas', 'U') IS NULL
 BEGIN
 CREATE TABLE Publicidad.Campañas (
-    id         INT PRIMARY KEY IDENTITY(1,1),
-    anunciante_id INT REFERENCES Publicidad.Anunciantes(id) NOT NULL,
-    mundial_id SMALLINT REFERENCES Mundial.Mundiales(año) NOT NULL,
-    nombre VARCHAR(150) NOT NULL UNIQUE,
-    descripcion VARCHAR(300),
-    horario_minimo SMALLINT check(horario_minimo between 0 AND 24),
-    horario_maximo SMALLINT check(horario_maximo between 0 AND 24)
+    id             INT          PRIMARY KEY IDENTITY(1,1),
+    anunciante_id  INT          REFERENCES Publicidad.Anunciantes(id) NOT NULL,
+    mundial_id     SMALLINT     REFERENCES Mundial.Mundiales(año) NOT NULL,
+    nombre         VARCHAR(150) NOT NULL UNIQUE,
+    descripcion    VARCHAR(300) ,
+    horario_minimo SMALLINT     check(horario_minimo between 0 AND 24),
+    horario_maximo SMALLINT     check(horario_maximo between 0 AND 24)
 );
 END
 GO
@@ -487,11 +486,11 @@ GO
 IF OBJECT_ID('Publicidad.Tarifas', 'U') IS NULL
 BEGIN
 CREATE TABLE Publicidad.Tarifas (
-    id         INT PRIMARY KEY IDENTITY(1,1),
-    franja CHAR(1) CHECK (franja in ('P', 'N')) NOT NULL, -- Primer Time, Normal
-    fase CHAR(25) CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
-    costo DECIMAL(10,2) NOT NULL,
-    mundial_id SMALLINT  REFERENCES Mundial.Mundiales(año) NOT NULL,
+    id         INT           PRIMARY KEY IDENTITY(1,1),
+    franja     CHAR(1)       CHECK (franja in ('P', 'N')) NOT NULL, -- Prime Time, Normal
+    fase       CHAR(25)      CHECK (fase in ('GRUPOS', 'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'TERCER_PUESTO', 'FINAL')) NOT NULL,
+    costo      DECIMAL(10,2) NOT NULL,
+    mundial_id SMALLINT      REFERENCES Mundial.Mundiales(año) NOT NULL,
 
     CONSTRAINT UQ_Tarifa_Unica_Para_Cada_Franja_Y_Fase_En_un_Mundial UNIQUE(franja, fase, mundial_id)
 );
@@ -501,12 +500,11 @@ GO
 IF OBJECT_ID('Publicidad.RegistroDePiezasEmitidas', 'U') IS NULL
 BEGIN
 CREATE TABLE Publicidad.RegistroDePiezasEmitidas (
-    id         INT PRIMARY KEY IDENTITY(1,1),
-    pieza_de_contenido_id INT REFERENCES Publicidad.PiezasDeContenido(id) NOT NULL,
-    descripcion VARCHAR(200), 
-    costo DECIMAL(10,2) NOT NULL,
-    partido_id INT REFERENCES Partidos.Partidos(id) NOT NULL
-
+    id                    INT           PRIMARY KEY IDENTITY(1,1),
+    pieza_de_contenido_id INT           REFERENCES Publicidad.PiezasDeContenido(id) NOT NULL,
+    descripcion           VARCHAR(200)  , 
+    costo                 DECIMAL(10,2) NOT NULL,
+    partido_id            INT           REFERENCES Partidos.Partidos(id) NOT NULL
 );
 END
 GO

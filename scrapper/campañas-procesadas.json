@@ -1,0 +1,1454 @@
+{
+    "Ala": {
+        "campañas": [
+            {
+                "nombre": "Paralelismo",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Paralelismo",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Answer Seguros": {
+        "campañas": [
+            {
+                "nombre": "Cuidadores del PI PI PI PI PI Argentino",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Cuidadores del PI PI PI PI PI Argentino",
+                        "descripcion": "Durante cada Mundial hay un sonido que une a los argentinos incluso antes de que ruede la pelota: el bocinazo del festejo. Ese “PI PI PI PI PI” que aparece en calles, caravanas y semáforos de todo el país inspiró la nueva campaña de Answer, canal digital de Galicia Seguros: “Cuidadores del PI PI PI PI PI Argentino”.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "AXA Assistance": {
+        "campañas": [
+            {
+                "nombre": "Los que prometen y cumplen",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Los que prometen y cumplen",
+                        "descripcion": "AXA celebra las promesas mundialistas de los argentinos y acompaña a los hinchas cerca suyo, donde los lleve el corazón",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Banco Galicia": {
+        "campañas": [
+            {
+                "nombre": "La mano de Galicia",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "La mano de Galicia",
+                        "descripcion": "La iniciativa toma como punto de partida el aniversario de la célebre jugada conocida como “La mano de Dios” para construir una propuesta creativa vinculada a los beneficios de la tarjeta Galicia. A través de imágenes generadas con inteligencia artificial, la campaña rememora aquel momento histórico desde una nueva interpretación y lo conecta con una promoción, que “da una mano” a sus clientes cuando juega Argentina y ofrece descuentos del 25% en delivery y traslados a quienes abonan con las tarjetas Galicia.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Banco Macro": {
+        "campañas": [
+            {
+                "nombre": "Soñá en grande",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Soñá en grande",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "BetWarrior": {
+        "campañas": [
+            {
+                "nombre": "Gente con Pelotas",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Gente con Pelotas",
+                        "descripcion": "La pieza recupera la voz de Diego Maradona para construir una arenga potente, emotiva y popular: un pedido para seguir alentando a la Selección como solo Argentina sabe hacerlo.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "BGH": {
+        "campañas": [
+            {
+                "nombre": "Vamos por otra vuelta",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Vamos por otra vuelta",
+                        "descripcion": "BGH presenta “Vamos por otra vuelta”, su nueva campaña inspirada en la pasión que atraviesa a los argentinos cada vez que juega la Selección. Fiel a su ADN innovador, la campaña inspirada en la pasión mundialista de los argentinos, presenta contenidos protagonizados por productos de su ecosistema para el hogar, como la heladera Side by Side (SBS) Dark Inox y el lavarropas Silver de 9 kg con tecnología Inverter.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "bplay": {
+        "campañas": [
+            {
+                "nombre": "Silencio",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Silencio",
+                        "descripcion": "Después de años habiendo ganado todas las finales jugadas, la campaña parte de una idea simple: Argentina ya habló demasiado. Los hinchas ya cantaron, alentaron, sufrieron, festejaron y dijeron todo lo que había que decir. Ahora es momento de que hablen ellos, los jugadores, dentro de la cancha.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Buscapina": {
+        "campañas": [
+            {
+                "nombre": "Las 11 panzas de Argentina",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Las 11 panzas de Argentina",
+                        "descripcion": "Tras su retiro de la selección nacional, el campeón del mundo y uno de los grandes referentes del fútbol argentino, Ángel Di María vuelve esta vez para armar su propio equipo: uno que no lo deja todo en la cancha, sino en la tribuna. Con Di María como DT y la voz de  Pablo Giralt, Buscapina, el antiespasmódico número uno del mundo, lanza una campaña integrada para encontrar a las 11 panzas que más sienten el fútbol en Argentina.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Cabify": {
+        "campañas": [
+            {
+                "nombre": "Macaya",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Macaya",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Cetrogar": {
+        "campañas": [
+            {
+                "nombre": "El tamaño de tu envidia",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "El tamaño de tu envidia",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "CIF": {
+        "campañas": [
+            {
+                "nombre": "ANTIMUFA",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "ANTIMUFA",
+                        "descripcion": "Para que todos los argentinos estemos preparados en este gran momento, CIF, la reconocida marca líder en limpieza, en conjunto con Becoming, la agencia liderada por Nicolas Pimentel, y Nro 3, la productora integral creada por Sonia Caputo, presentan esta innovación de producto con sándalo y palo santo que le permite a la marca meterse por primera vez en un mundo de limpieza totalmente nuevo: El de limpiar, además de la suciedad, todo eso que no se ve pero que es muy relevante en nuestro folclore futbolero:  La “mufa” y las “malas vibras”.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Coca-Cola": {
+        "campañas": [
+            {
+                "nombre": "Conferencia",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Conferencia",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "JUMP",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "JUMP",
+                        "descripcion": "El nuevo y audaz himno de Coca-Cola para la Copa Mundial de la FIFA 202 es una versión reinventada del icónico éxito de los años 80 “Jump” de Van Halen, interpretada por J Balvin y Amber Mark, junto con el legendario guitarrista Steve Vai y el reconocido baterista y productor Travis Barker. La canción fue lanzada a través de Real Thing Records en alianza con Capitol Records.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Dermaglós": {
+        "campañas": [
+            {
+                "nombre": "En la cancha, cada detalle cuenta",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "En la cancha, cada detalle cuenta",
+                        "descripcion": "Dermaglós, referente en el cuidado de la piel en Argentina, presenta su nueva campaña publicitaria protagonizada por el futbolista de la Selección Argentina, Enzo Fernández . Bajo el lema “Porque cuando jugamos todos, tu piel también juega”, la marca pone el foco en la importancia del cuidado en los distintos momentos del día, promoviendo la protección solar y la incorporación de una rutina diaria con productos adecuados como pilares fundamentales del bienestar integral.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Despegar": {
+        "campañas": [
+            {
+                "nombre": "Temporada de OOO",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Temporada de OOO",
+                        "descripcion": "Bajo el concepto “Temporada de OOO”, la agencia tomó un código profundamente argentino -las “ooo” del himno que todos cantan aunque no sepan la letra completa- y lo vinculó con el clásico Out Of Office (OOO): el momento exacto en que se deja de pensar en reuniones y se empieza a pensar en viajes.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "DGO": {
+        "campañas": [
+            {
+                "nombre": "Cada cual, desde su lugar, en un mismo lugar",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Cada cual, desde su lugar, en un mismo lugar",
+                        "descripcion": "La plataforma de TV en vivo y streaming DGO lanzó al mercado hispanoamericano “Cada cual, desde su lugar, en un mismo lugar”, su campaña de marketing para destacar que transmitirá los 104 partidos de la próxima Copa Mundial FIFA 2026 a través de la señal DSPORTS.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Dove Men +Care": {
+        "campañas": [
+            {
+                "nombre": "Todos tenemos una parte sensible",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Todos tenemos una parte sensible",
+                        "descripcion": "Dove Men +Care llevó al frente su desodorante para partes sensibles a través de una campaña integral para el mundial. La campaña se basa en la naturalización de que el único espacio seguro para que lloren los hombres, es el fútbol. Para abordar la sensibilidad masculina en el contexto del fútbol, los spots se apoyan en una de las figuras más sensibles del ambiente: el relator Pablo Giralt.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "DSports": {
+        "campañas": [
+            {
+                "nombre": "Locos",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Locos",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Easy": {
+        "campañas": [
+            {
+                "nombre": "Leo Paredes lee paredes",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Leo Paredes lee paredes",
+                        "descripcion": "Leer una pared y saber lo que necesita, no es fácil... A menos que tu nombre lo diga. El concepto de campaña nace desde algo simple y efectivo: un meme. El comentario “A ver Leo, leé esta pared” recurrente en redes sociales fue el disparador para unir al jugador con la marca. Las imágenes fueron creadas con inteligencia artificial, bajo la supervisión del jugador. Porque además de jugar bien a la pelota, tiene buen gusto: cada recomendación también cuenta con su aprobación",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "El Cronista": {
+        "campañas": [
+            {
+                "nombre": "La deuda impagable",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "La deuda impagable",
+                        "descripcion": "",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "ESPN": {
+        "campañas": [
+            {
+                "nombre": "Himno",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Himno",
+                        "descripcion": "ESPN lanzó en Argentina un spot publicitario para anunciar la transmisión de 30 partidos del torneo a través de Disney+ Plan Premium, con relatos de las voces más destacadas del país y la emisión de los encuentros de la selección nacional.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Fernet Branca": {
+        "campañas": [
+            {
+                "nombre": "Manual para festejar como un argentino",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Manual para festejar como un argentino",
+                        "descripcion": "Como parte de la plataforma creativa que Fernet Branca viene desarrollando durante el Mundial, la marca presenta una serie de animaciones que explican cómo se celebra un triunfo al mejor estilo argentino. \nLos tutoriales toman los insights más representativos de nuestra manera de vivir el fútbol y los convierten en un manual de instrucciones para cualquiera que quiera entender por qué los argentinos festejamos como festejamos.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Somos Insoportables",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Somos Insoportables",
+                        "descripcion": "Hay algo que nos caracteriza a los argentinos ante la llegada del Mundial y es la intensidad. Esto nos hace únicos. Desde ese lugar nace “Somos Insoportables”, que logra llevar más allá el posicionamiento de la marca como orgullo argentino. Aquí ese orgullo se plasma en la intensidad con la que vivimos el Mundial y cómo impacta en el resto del mundo.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Somos Insoportables nuevos spots",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Somos Insoportables nuevos spots",
+                        "descripcion": "Luego del lanzamiento de “Somos Insoportables”, la campaña mundialista de Fernet Branca presenta ahora una nueva serie de TVCs que expanden el universo creativo de la campaña. Las nuevas piezas funcionan como micro historias que suman al hero film original y vuelven a reunir a Brian Caruso (Gamuza), Angelo Valdes (Will), Allan Jones (Allan Brazuca), Miguel Bedean (Mike Máquina del Mal) y Luquitas Rodríguez, profundizando distintos aspectos de esa intensidad argentina que el resto del mundo no logra entender… pero tampoco puede dejar de mirar.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "GAFA": {
+        "campañas": [
+            {
+                "nombre": "Congelada histórica",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Congelada histórica",
+                        "descripcion": "Entre las cábalas para el Mundial, una ganó cada vez más protagonismo en los últimos años: \"congelar\" simbólicamente al rival antes de un partido importante. A partir de ese insight cultural, NINCH Creative Communication Company desarrolló para Gafa \"La Congelada más grande de la historia\", una campaña que tomó una tradición instalada entre los fanáticos y la transformó en una activación abierta al público, con amplificación digital, participación en tiempo real y generación de contenido junto a creadores, streamings y distintos medios.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Gancia": {
+        "campañas": [
+            {
+                "nombre": "Camuflado",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Camuflado",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "GUM": {
+        "campañas": [
+            {
+                "nombre": "Aliento",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Aliento",
+                        "descripcion": "Con el objetivo de encontrar una forma relevante de conectar la categoría de enjuagues bucales con la conversación cultural del momento, el equipo identificó un insight claro: vincular el hábito del enjuague con una de las emociones más movilizantes para los argentinos, el aliento y el acto de alentar.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "JetSMART": {
+        "campañas": [
+            {
+                "nombre": "De Buenos Aires a Nuevos Aires",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "De Buenos Aires a Nuevos Aires",
+                        "descripcion": "Super  desarrolló una social activation para JetSMART denominada “De Buenos Aires a Nuevos Aires”, una acción que transforma el aliento al equipo argentino en kilometros de vuelo. La iniciativa parte de una historia real de aliento y perseverancia que encuentra su recompensa en una experiencia de viaje junto a JetSMART.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Life Seguros": {
+        "campañas": [
+            {
+                "nombre": "Live is life",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Live is life",
+                        "descripcion": "Life Seguros lanzó una nueva campaña desarrollada por Almacén que busca reforzar el posicionamiento de la marca desde un territorio más humano, cultural y emocional, poniendo el foco en esas pasiones que aparecen automáticamente y forman parte de la manera de vivir de las personas.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Tu forma de vivir esta pasión",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Tu forma de vivir esta pasión",
+                        "descripcion": "En el contexto de la fiesta máxima del fútbol, Life Seguros presenta \"Tu forma de vivir esta pasión\", una campaña que se aleja de las fórmulas tradicionales asociadas al fútbol para poner el foco en algo más profundo: aquello que esta pasión despierta en la vida cotidiana de las personas.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Lotería de la Ciudad": {
+        "campañas": [
+            {
+                "nombre": "Lo sentís, lo jugás",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Lo sentís, lo jugás",
+                        "descripcion": "Además de una pasión irrefrenable, un Mundial de fútbol genera una infinidad de números que pueden convertirse en un pálpito para jugar. Ese es el insight detrás de la nueva campaña de Lotería de la Ciudad para su tradicional juego la Quiniela Poceada, creada por Kimica Studio. Bajo el claim “Lo sentís, lo jugás”, la propuesta, protagonizada por el icónico personaje Eber Ludueña, apela al humor para conectar los números que surgen en cada partido de fútbol con la inspiración para jugar a la Poceada.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Lucchetti": {
+        "campañas": [
+            {
+                "nombre": "Promo Lucchettineta",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Promo Lucchettineta",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Manaos": {
+        "campañas": [
+            {
+                "nombre": "En la heladera, la de tu bandera",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "En la heladera, la de tu bandera",
+                        "descripcion": "En cada Mundial, las grandes marcas disputan visibilidad a fuerza de presupuestos globales y acuerdos oficiales. En ese contexto, Manaos decidió volver a jugar desde otro lugar: la construcción cultural de marca. En este sentido, lanzaron una nueva campaña junto a Nahuel Molina, Gonzalo Montiel y Thiago Almada bajo el concepto “En la heladera, la de tu bandera”.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Maní King": {
+        "campañas": [
+            {
+                "nombre": "Pasión por la previa",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Pasión por la previa",
+                        "descripcion": "Luego de presentar al Manisero Oficial de la Previa a través de una etapa teaser y un documental, Maní King y TogetherWith lanzan “Pasión por la previa” cinco nuevos spots que ya comenzaron a estrenarse en TV, plataformas digitales, radio y redes sociales. Como parte del lanzamiento, Wanda Nara se vuelve a sumar al universo de Maní King, amplificando el tono popular, humorístico y cultural que la marca viene construyendo en sus últimas campañas.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "McDonald's": {
+        "campañas": [
+            {
+                "nombre": "McAllister, McÁlvarez y McFernández",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "McAllister, McÁlvarez y McFernández",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "McDonald’s": {
+        "campañas": [
+            {
+                "nombre": "McDonald’s del Obelisco",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "McDonald’s del Obelisco",
+                        "descripcion": "Con motivo del debut de la Selección Argentina, McDonald’s y TBWA le volvieron a dar voz al McDonald’s del Obelisco: Sigue construyendo bajo el mismo concepto, esas cosas que solo McDonald’s puede hacer. Lanzó las McAllister, McAlvarez y McFernández, las figuritas, los vasos y ahora el local insignia le cuenta a todo el mundo la forma tan especial que tenemos de vivir el mundial",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Michelob ULTRA": {
+        "campañas": [
+            {
+                "nombre": "The Superior Match",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "The Superior Match",
+                        "descripcion": "Michelob ULTRA presenta su comercial para el Mundial con Messi, Lautaro Martínez, Nico Paz y grandes figuras del fútbol. En la previa de la próxima FIFA World Cup 2026, Michelob ULTRApresenta su concepto global “Superior is Worth PlayingFor”, una invitación a vivir la emoción del fútbol con una experiencia superior, a través de un nuevo comercial cargado de acción y una campaña en celebración del torneo más esperado del mundo.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Mostaza": {
+        "campañas": [
+            {
+                "nombre": "El hambre de la cuarta",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "El hambre de la cuarta",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Dia Argentina": {
+        "campañas": [
+            {
+                "nombre": "Campeones de la previa",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Campeones de la previa",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Naranja X": {
+        "campañas": [
+            {
+                "nombre": "Los convocados de Naranja X",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Los convocados de Naranja X",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Los no convocados de Naranja X",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Los no convocados de Naranja X",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Netflix": {
+        "campañas": [
+            {
+                "nombre": "Caíste en la promo",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Caíste en la promo",
+                        "descripcion": "\"Caíste en la promo\" expone un comportamiento típico de cada Mundial: comprar una tele nueva para ver los partidos. Moria Casán, Martín Garabal y Ariel Staltari aparecen para promocionar sus shows de Netflix y contraponerlos con los consumos típicos de la previa mundialista.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Noblex": {
+        "campañas": [
+            {
+                "nombre": "Si pasa lo que todos queremos que pase",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Si pasa lo que todos queremos que pase",
+                        "descripcion": "Noblex presenta su campaña para el Mundial 2026 y una promo audaz: a los que compren una TV de 100\", si pasa lo que todos queremos que pase, les devuelve el doble de lo pagado en crédito. La propuesta creativa parte de una premisa clara: para hablarle al hincha argentino no alcanza con hablar de fútbol, sino que es necesario entender cómo lo vive. En ese sentido, la campaña se construye sobre un código profundamente arraigado en la cultura local: la cábala y la necesidad de no anticipar resultados.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Olé": {
+        "campañas": [
+            {
+                "nombre": "Olé 30 Años",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Olé 30 Años",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Paladini": {
+        "campañas": [
+            {
+                "nombre": "Argentine, Kansas",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Argentine, Kansas",
+                        "descripcion": "Paladini y Mercado McCann muestran la invasión de argentinos en Argentine, Kansas\nA minutos del estadio donde juega la Selección, hay un barrio llamado Argentina. Y en un evento con tantos choques de culturas, el cruce entre argentinos y argentinos promete dar que hablar.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Pax Assistance": {
+        "campañas": [
+            {
+                "nombre": "Seamos Argentinos en Pax",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Seamos Argentinos en Pax",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Prosegur Alarms": {
+        "campañas": [
+            {
+                "nombre": "En el deporte nada es seguro, salvo tu hogar",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "En el deporte nada es seguro, salvo tu hogar",
+                        "descripcion": "Un penal dudoso en el minuto 90, una roja inesperada, un offside milimétrico o esos partidos donde parece que está todo armado. Porque cuando llega el evento deportivo más esperado, también llegan los nervios, la preocupación… y la sensación de que en cualquier momento te pueden robar. A partir de este insight, Prosegur Alarms presenta junto a Don by Havas su nueva campaña regional bajo el concepto: “En el deporte nada es seguro, salvo tu hogar”.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Quilmes": {
+        "campañas": [
+            {
+                "nombre": "CoRazones para Creer",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "CoRazones para Creer",
+                        "descripcion": "A través de Manu Ginóbli, Charly García, los campeones olímpicos Cecilia Carranza y Santiago Lange, Gaston Edul, Morena Beltrán, Guillermo Cóppola, Leandro Paredes, Ángel Di María, imposibles como la final del Mundial ‘86 donde el Tata Brown jugó con un hombro dislocado y hasta José de San Martín, Quilmes pone sobre la mesa estos hechos imposibles contados por sus mismos protagonistas.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Latas edición limitada",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Latas edición limitada",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Mesa de astros",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Mesa de astros",
+                        "descripcion": "A través de una mesa que funciona como punto de encuentro previo al debut de la Selección, el comercial construye una historia en la que las celebridades que participaron de “CoRazones para Creer” coinciden en un mismo lugar. Un gran encuentro entre Charly García, Manu Ginóbili, Ángel Di María, Leandro Paredes, Cecilia Carranza y Santiago Lange.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Una promo para creer",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Una promo para creer",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Rabieta": {
+        "campañas": [
+            {
+                "nombre": "Malcriados de Gloria",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Malcriados de Gloria",
+                        "descripcion": "Rabieta lanza su campaña oficial para el Mundial 2026: “Malcriados de Gloria”. El Fletero no necesita presentación. En 2022 agarró su camioneta, prendió la cámara y le habló al país de frente, sin guión, sin producción, sin nada que no fuera su propia verdad. Se volvió un fenómeno no porque alguien lo armó, sino porque era real. Y eso, en un mundo lleno de spots perfectos y  mensajes diseñados, es lo más difícil de conseguir.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Rexona": {
+        "campañas": [
+            {
+                "nombre": "Estamos Listos",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Estamos Listos",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Sancor Seguros": {
+        "campañas": [
+            {
+                "nombre": "Respuestas siempre. Ayer, hoy y mañana",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Respuestas siempre. Ayer, hoy y mañana",
+                        "descripcion": "Sancor Seguros celebra sus 80 años lanzando una campaña mundialista. \nCreada por la agencia HelloBrand, la campaña pone el foco en los valores que unen a la Selección y a la aseguradora: esfuerzo, liderazgo, cercanía y espíritu federal",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Santander": {
+        "campañas": [
+            {
+                "nombre": "Seguro de sedes",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Seguro de sedes",
+                        "descripcion": "De cara a la próxima Copa del Mundo, Santander Argentina presentó su nueva campaña publicitaria orientada a un target clave de la época: los amigos que \"ponen la casa\" para ver los partidos. Bajo el concepto creativo de \"Seguro de sedes\", la acción busca dar relevancia a su Seguro de Vivienda a través de una situación culturalmente muy reconocible para los argentinos.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Schneider": {
+        "campañas": [
+            {
+                "nombre": "La Plaga",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "La Plaga",
+                        "descripcion": "En el marco de la Copa del Mundo 2026, Schneider vuelve a acompañar a la Selección Argentina con una nueva campaña que busca meterse de lleno en el corazón de los hinchas. Bajo el concepto de “La Plaga”, la marca presenta una nueva versión de la conocida canción de cancha con el fin de darle identidad a la hinchada argentina durante el Mundial.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Sertal Compuesto": {
+        "campañas": [
+            {
+                "nombre": "El mapa del dolor de panza argentino",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "El mapa del dolor de panza argentino",
+                        "descripcion": "Sertal sabe que los partidos se sienten en la panza. Por eso el Mapa del dolor de panzaargentino vuelve a activarse como una plataforma digital, federal y participativa para que las personas de todo el país puedan subir el dolor de panza que les genera el Mundial, geolocalizarlo y contarle al resto lo que sienten.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Shell": {
+        "campañas": [
+            {
+                "nombre": "La lista",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "La lista",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Promo Mundial",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Promo Mundial",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Shot": {
+        "campañas": [
+            {
+                "nombre": "Garcé trajo alfajores Shot",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Garcé trajo alfajores Shot",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Sugus": {
+        "campañas": [
+            {
+                "nombre": "Suerte Sugus",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Suerte Sugus",
+                        "descripcion": "La propuesta busca trasladar esa cábala del mundo del deporte a la vida cotidiana, para que la gente siempre tenga un Sugus antes de un examen, una entrevista laboral, una competencia o cualquier momento importante de su vida.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Supervielle": {
+        "campañas": [
+            {
+                "nombre": "Una más",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Una más",
+                        "descripcion": "Supervielle lanzó junto a Anita & Vega la campaña “Una más”, con voz en off de la periodista deportiva Sofía Martínez. El banco se sumó este año como sponsor AFA, y estará llevando a 100 clientes al Mundial.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Swift": {
+        "campañas": [
+            {
+                "nombre": "El fútbol se siente en la carne",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "El fútbol se siente en la carne",
+                        "descripcion": "Con el Mundial 2026 como plataforma de conexión global, Minerva Foods Argentina con  su marca Swift, impulsa una campaña de comunicación destinada a reforzar sus atributos de calidad  y consolidar su posicionamiento en hamburguesas como referente de la mejor carne",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Turboblender": {
+        "campañas": [
+            {
+                "nombre": "Familia y El origen",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Familia y El origen",
+                        "descripcion": "En Argentina el mundial se vive de maneras distintas. Algunos sufren, otros gritan, y muchos abrazan, pero hay algo que todos compartimos: cuando algo funciona, no se cambia -O como dijo un sabio una vez: equipo que gana, no se toca-.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "TyC Sports": {
+        "campañas": [
+            {
+                "nombre": "Laureles",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Laureles",
+                        "descripcion": "“Laureles” es una arenga que potencia ese sentimiento que los argentinos expresan cada vez que juega la Selección Nacional y los interpela a renovar las ilusiones luego de la gloria conseguida tras el Mundial 2022.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "The first dance",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "The first dance",
+                        "descripcion": "Todos hablan del último baile, mientras que el canal habla de la primera vez que bailó Messi. El primer partido que Messi jugó para la selección en el sub 20.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Uber": {
+        "campañas": [
+            {
+                "nombre": "Locura es no estar",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Locura es no estar",
+                        "descripcion": "La campaña nace de una verdad profundamente local: en Argentina, el fútbol nunca es solamente fútbol. Es una emoción colectiva que transforma rutinas, altera horarios y lleva a miles de hinchas a hacer “locuras” que solo el fanatismo puede explicar.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Visa": {
+        "campañas": [
+            {
+                "nombre": "Caramelos",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Caramelos",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Centro Argentino de Cábalas",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Centro Argentino de Cábalas",
+                        "descripcion": "En las distintas piezas de la campaña, De Paul lidera este particular centro de control desde donde supervisa cada detalle con absoluta seriedad… o casi. La campaña incluye piezas audiovisuales, contenidos digitales y amplificación en redes sociales.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Visa y Banco Macro": {
+        "campañas": [
+            {
+                "nombre": "Chances",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Chances",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Volkswagen": {
+        "campañas": [
+            {
+                "nombre": "Vamos por más historias. Vamos Argentina",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Vamos por más historias. Vamos Argentina",
+                        "descripcion": "Volkswagen presenta una campaña local que celebra el vínculo único de los argentinos con el fútbol y ofrece la oportunidad de ser parte de la experiencia mundialista. Para quienes registren su auto en la App Mi VW Argentina, la marca brinda la posibilidad de ganar viaje para dos personas para vivir y alentar a la selección desde cerca.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "YPF": {
+        "campañas": [
+            {
+                "nombre": "Simbiosis",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Simbiosis",
+                        "descripcion": "Entre los jugadores y la hinchada existe una retroalimentación en la que ambos se llenan de energía mutuamente. Lo que sucede entre los hinchas y los jugadores argentinos es algo único. Y eso que todo el mundo admira y reconoce se llama simbiosis.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            },
+            {
+                "nombre": "Vamos todos juntos",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Vamos todos juntos",
+                        "descripcion": "YPF comienza el camino al Mundial. En el comercial realizado por Mercado McCann, Messi lleva a la Argentina a un nuevo sueño. Con “Argentina llena de energía”, YPF reafirma una manera de entender el fútbol que va mucho más allá de una campaña: una plataforma cultural y emocional que integra contenidos, experiencias, productos y la pasión de millones de argentinos durante el Mundial.",
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Zorro": {
+        "campañas": [
+            {
+                "nombre": "Jugamos todos",
+                "descripcion": null,
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Jugamos todos",
+                        "descripcion": null,
+                        "paises_de_interes": [
+                            "ARG"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
