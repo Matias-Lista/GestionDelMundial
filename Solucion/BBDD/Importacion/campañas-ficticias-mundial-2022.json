@@ -1,0 +1,346 @@
+{
+    "Coca-Cola": {
+        "campañas": [
+            {
+                "nombre": "Juntos por la Coca",
+                "descripcion": "Campaña destinada a mostrar la unión familiar durante el mundial",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Messi tomando coca cola",
+                        "descripcion": "Messi tomando coca cola y guiñando a la camara",
+                        "paises_de_interes": ["ARG"]
+                    },
+                    {
+                        "nombre": "La felicidad de tomar una buena coca",
+                        "descripcion": "Familias de distintos países del mundo tomando coca-cola",
+                        "paises_de_interes": ["ARG", "URY", "ESP", "USA"]
+                    }
+                ]
+            },
+            {
+                "nombre": "Coca cola de campeones",
+                "descripcion": "Campaña nostálgica recordando viejas glorias",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Messi, Maradona, y Pele comiendo un asado juntos",
+                        "descripcion": "Spot generado con IA uniendo a tres leyendas",
+                        "paises_de_interes": ["ARG", "BRA", "ESP"]
+                    }
+                ]
+            }
+        ]
+    },
+    "BetWarrior": {
+        "campañas": [
+            {
+                "nombre": "Apostá, no seas cagón!",
+                "descripcion": "Campaña destinada a que los jóvenes pierdan toda su plata",
+                "horario_minimo": "06:00",
+                "horario_maximo": "22:00",
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Maradona - Jugate la jubilacion de tu abuela, cagon",
+                        "descripcion": "Un video de IA incitando a los jovenes a apostar",
+                        "paises_de_interes": ["ARG"]
+                    }
+                ]
+            }
+        ]
+    },
+    "Adidas": {
+        "campañas": [
+            {
+                "nombre": "El Balón de Todos",
+                "descripcion": "Presentación oficial de la pelota Al Rihla",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Precisión Alemana y Toque Español",
+                        "descripcion": "Jugadores probando el balón en entrenamientos",
+                        "paises_de_interes": ["GER", "ESP"]
+                    },
+                    {
+                        "nombre": "El viaje a Oriente",
+                        "descripcion": "La pelota viajando por estadios de Asia y Centroamérica",
+                        "paises_de_interes": ["JPN", "CRC"]
+                    }
+                ]
+            },
+            {
+                "nombre": "Impossible is Nothing 2022",
+                "descripcion": "Historias de superación de estrellas emergentes",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Lewandowski vs Ochoa",
+                        "descripcion": "Animación de un penal decisivo",
+                        "paises_de_interes": ["MEX", "POL"]
+                    },
+                    {
+                        "nombre": "El desierto verde",
+                        "descripcion": "El crecimiento del fútbol en el mundo árabe",
+                        "paises_de_interes": ["SAU"]
+                    }
+                ]
+            }
+        ]
+    },
+    "Nike": {
+        "campañas": [
+            {
+                "nombre": "Escribe el Futuro",
+                "descripcion": "Campaña sobre cómo un segundo cambia la historia",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Mbappé a la velocidad de la luz",
+                        "descripcion": "Kylian corriendo contra canguros generados por CGI",
+                        "paises_de_interes": ["FRA", "AUS"]
+                    },
+                    {
+                        "nombre": "La defensa nórdica",
+                        "descripcion": "Eriksen dando pases mágicos en la nieve y la arena",
+                        "paises_de_interes": ["DEN", "TUN"]
+                    }
+                ]
+            },
+            {
+                "nombre": "Joga Bonito Vuelve",
+                "descripcion": "Reviviendo el espíritu del fútbol callejero",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Samba y Táctica",
+                        "descripcion": "Neymar bailando con el balón frente a defensores serbios",
+                        "paises_de_interes": ["BRA", "SRB"]
+                    },
+                    {
+                        "nombre": "Precisión Suiza, Fuerza Africana",
+                        "descripcion": "Contraste de estilos de juego",
+                        "paises_de_interes": ["SUI", "CMR"]
+                    }
+                ]
+            }
+        ]
+    },
+    "Hyundai": {
+        "campañas": [
+            {
+                "nombre": "Conduce al Éxito",
+                "descripcion": "Patrocinio de transporte oficial del mundial",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "El motor de Asia",
+                        "descripcion": "Son Heung-min llegando al estadio en un auto eléctrico",
+                        "paises_de_interes": ["KOR"]
+                    },
+                    {
+                        "nombre": "Ruta a la gloria",
+                        "descripcion": "Cristiano Ronaldo manejando por el desierto con hinchas ghaneses",
+                        "paises_de_interes": ["POR", "GHA"]
+                    }
+                ]
+            },
+            {
+                "nombre": "El Viaje del Hincha",
+                "descripcion": "Caravanas de autos de fanáticos",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "La garra charrúa sobre ruedas",
+                        "descripcion": "Autos celestes cruzando dunas",
+                        "paises_de_interes": ["URY"]
+                    },
+                    {
+                        "nombre": "Destino Qatar",
+                        "descripcion": "Llegada al país anfitrión",
+                        "paises_de_interes": ["KOR", "QAT"]
+                    }
+                ]
+            }
+        ]
+    },
+    "Qatar Airways": {
+        "campañas": [
+            {
+                "nombre": "Volamos con tu Sueño",
+                "descripcion": "Aerolínea oficial uniendo a las naciones",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Bienvenidos a Doha",
+                        "descripcion": "Vista aérea de la ciudad y los estadios",
+                        "paises_de_interes": ["QAT"]
+                    },
+                    {
+                        "nombre": "El vuelo del cóndor",
+                        "descripcion": "Hinchas sudamericanos cantando en el avión",
+                        "paises_de_interes": ["ECU"]
+                    }
+                ]
+            },
+            {
+                "nombre": "Conectando al Mundo",
+                "descripcion": "Spot emocional sobre el reencuentro de culturas",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Ritmo y pasión",
+                        "descripcion": "Tambores africanos en la sala de espera",
+                        "paises_de_interes": ["SEN"]
+                    },
+                    {
+                        "nombre": "La marea naranja",
+                        "descripcion": "Hinchas aterrizando vestidos completamente de naranja",
+                        "paises_de_interes": ["NLD"]
+                    }
+                ]
+            }
+        ]
+    },
+    "McDonald's": {
+        "campañas": [
+            {
+                "nombre": "El Menú del Hincha",
+                "descripcion": "Combos temáticos inspirados en países",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Hamburguesa Tres Leones",
+                        "descripcion": "Promoción especial para días de partido",
+                        "paises_de_interes": ["ENG"]
+                    },
+                    {
+                        "nombre": "Sabor de Medio Oriente",
+                        "descripcion": "Lanzamiento de un menú con especias locales",
+                        "paises_de_interes": ["IRN"]
+                    },
+                    {
+                        "nombre": "El dragón rojo",
+                        "descripcion": "Bale pidiendo comida por el AutoMac",
+                        "paises_de_interes": ["WAL"]
+                    }
+                ]
+            }
+        ]
+    },
+    "Visa": {
+        "campañas": [
+            {
+                "nombre": "Pagá y Viajá",
+                "descripcion": "Sorteo de paquetes para ir al mundial usando la tarjeta",
+                "horario_minimo": null,
+                "horario_maximo": null,
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Un toque y a Qatar",
+                        "descripcion": "Gente pagando con contactless y teletransportándose al estadio",
+                        "paises_de_interes": ["BEL", "CAN"]
+                    },
+                    {
+                        "nombre": "El león del Atlas",
+                        "descripcion": "Un hincha comprando su camiseta de la suerte",
+                        "paises_de_interes": ["MAR"]
+                    },
+                    {
+                        "nombre": "Tablero a cuadros",
+                        "descripcion": "Modric pagando un café en Zagreb antes de viajar",
+                        "paises_de_interes": ["CRO"]
+                    }
+                ]
+            }
+        ]
+    },
+    "Bet365": {
+        "campañas": [
+            {
+                "nombre": "Multiplica tu Pasión",
+                "descripcion": "Campaña enfocada en cuotas mejoradas para partidos clave",
+                "horario_minimo": "06:00",
+                "horario_maximo": "22:00",
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Duelo de potencias europeas",
+                        "descripcion": "Promociones para goles de Kane y Morata",
+                        "paises_de_interes": ["ENG", "ESP"]
+                    },
+                    {
+                        "nombre": "Clásico sudamericano en la mira",
+                        "descripcion": "Bonos por predecir quién llega más lejos",
+                        "paises_de_interes": ["BRA", "ARG"]
+                    }
+                ]
+            },
+            {
+                "nombre": "Apuesta en Vivo",
+                "descripcion": "Fomento de apuestas dinámicas durante los 90 minutos",
+                "horario_minimo": "16:00",
+                "horario_maximo": "22:00",
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "El próximo gol lo cantás vos",
+                        "descripcion": "Aplicación mostrando cuotas subiendo en tiempo real",
+                        "paises_de_interes": ["FRA", "GER"]
+                    },
+                    {
+                        "nombre": "Tensión en Concacaf",
+                        "descripcion": "Apuestas de tarjetas amarillas y tiros de esquina",
+                        "paises_de_interes": ["MEX", "USA"]
+                    }
+                ]
+            }
+        ]
+    },
+    "Bplay": {
+        "campañas": [
+            {
+                "nombre": "Tu Jugada Maestra",
+                "descripcion": "Promoción de casino y apuestas deportivas combinadas",
+                "horario_minimo": "06:00",
+                "horario_maximo": "22:00",
+                "año_mundial": 2022,
+                "piezas_de_contenido": [
+                    {
+                        "nombre": "Los vecinos del Río de la Plata",
+                        "descripcion": "Promociones nocturnas con actores rioplatenses",
+                        "paises_de_interes": ["ARG", "URY"]
+                    },
+                    {
+                        "nombre": "La mitad del mundo y la samba",
+                        "descripcion": "Ruleta temática del mundial con colores verde-amarelos",
+                        "paises_de_interes": ["ECU", "BRA"]
+                    }
+                ]
+            }
+        ]
+    }
+}
