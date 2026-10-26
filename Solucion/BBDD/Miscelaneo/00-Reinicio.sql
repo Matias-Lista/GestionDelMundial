@@ -12,7 +12,7 @@
 
 :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
-:setvar ImportarDatos   1
+:setvar ImportarDatos   0
 :setvar EjecutarTesteos 0
 
 PRINT '[*] Limpiando ...'
@@ -97,3 +97,5 @@ SELECT motivo, tiempo, minuto, extra
 FROM Cambios 
 WHERE id_partido = @DebugPartido 
   AND (id_jugador_entra = @DebugJugador OR id_jugador_sale = @DebugJugador);*/
+
+  exec Importacion.sp_crear_y_cargar_publicidad_json @Ruta = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json';

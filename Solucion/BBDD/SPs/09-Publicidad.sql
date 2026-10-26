@@ -72,21 +72,18 @@ BEGIN
 END
 GO
 
--- TOASK: Cómo debería ordenar estos STORED Procedure? Debería de dar una posibilidad de insertar un @CampañaID nullable, y que el programa elija?
--- Debería directamente admitir solo el ID de la campaña, o debería tener un sp distinto para la importación por nombre
 CREATE OR ALTER PROCEDURE Publicidad.sp_crear_pieza_de_contenido
-	@NombreCampaña VARCHAR(150),
+	@CampañaID INT,
+	@NombrePieza VARCHAR(300),
 	@Descripcion VARCHAR(300),
 	@PaisesInteresados VARCHAR(MAX) = NULL
 AS
 BEGIN
-	-- TODO: atomico
-	DECLARE @campañaId INT = (SELECT id FROM Publicidad.Campañas WHERE nombre = @NombreCampaña);
 
 	INSERT INTO Publicidad.PiezasDeContenido
 		(campaña_id, descripcion)
 		VALUES
-		(@campañaId, @Descripcion);
+		(@CampañaID, @Descripcion);
 
 	DECLARE @piezaDeContenidoID INT = SCOPE_IDENTITY();
 
@@ -110,7 +107,6 @@ exec Publicidad.sp_crear_pieza_de_contenido 'Campaña1', '', 'ar,es,fr'
 
 SELECT * FROM Publicidad.PaisesInteresados*/
 GO
-
 
 -- TODO: REGISTRAR PIEZA EMITIDA: 
 CREATE OR ALTER PROCEDURE Publicidad.sp_definir_pieza_a_emitir

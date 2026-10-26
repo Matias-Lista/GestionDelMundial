@@ -24,6 +24,7 @@ BEGIN
     IF OBJECT_ID('tempdb..##Goals') IS NOT NULL DROP TABLE ##Goals;
     IF OBJECT_ID('tempdb..##PenaltyKicks') IS NOT NULL DROP TABLE ##PenaltyKicks;
     IF OBJECT_ID('tempdb..##Bookings') IS NOT NULL DROP TABLE ##Bookings;
+    IF OBJECT_ID('tempdb..##Publicidad') IS NOT NULL DROP TABLE ##Publicidad;
 
 END
 GO
@@ -1092,3 +1093,54 @@ BEGIN
 END
 GO
 
+/****************************/
+/*        PUBLICIDAD        */
+/****************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_crear_y_cargar_publicidad_json 
+    @Ruta VARCHAR(255)
+AS
+BEGIN 
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Publicidad') IS NOT NULL DROP TABLE ##Publicidad;
+
+    CREATE TABLE ##Publicidad (
+        id INT IDENTITY(1,1),
+        anunciante NVARCHAR(300),
+        JSONAnunciante NVARCHAR(MAX)
+    );
+
+    DECLARE @importacion NVARCHAR(MAX);
+
+    BEGIN TRY
+        SET @importacion = N'
+        DECLARE @json NVARCHAR(max);
+        SELECT @json = BulkColumn
+        FROM OPENROWSET(
+            BULK '''+ @Ruta +''',
+            SINGLE_CLOB,
+            CODEPAGE = ''65001'' -- 65001 corresponde a la codificación UTF-8
+        ) AS ImportacionJson;
+        
+        SELECT @json; -- En este punto ya veo los carácteres rotos
+
+        INSERT INTO ##Publicidad (anunciante, JSONAnunciante)
+        SELECT 
+            [key] AS anunciante,
+            [value] AS JSONAnunciante
+        FROM OPENJSON(@json)
+        WHERE [type] = 5;
+        ';
+
+        EXEC (@importacion);
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50340, @ErrorBulk, 1;
+        RETURN;
+    END CATCH;
+   
+    SELECT * FROM ##Publicidad
+    
+END
+GO

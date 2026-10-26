@@ -467,7 +467,9 @@ BEGIN
 CREATE TABLE Publicidad.PiezasDeContenido (
     id         INT PRIMARY KEY IDENTITY(1,1),
     campaña_id INT REFERENCES Publicidad.Campañas(id) NOT NULL,
-    descripcion VARCHAR(300)
+    nombre VARCHAR(300) NOT NULL,
+    descripcion VARCHAR(300),
+    CONSTRAINT UQ_Nombres_Unicos_Por_Campaña UNIQUE(campaña_id, nombre)
 );
 END
 GO

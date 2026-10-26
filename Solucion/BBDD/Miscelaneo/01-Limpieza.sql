@@ -139,6 +139,9 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 /*            IMPORTACIÓN            */
 /*************************************/
 
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_publicidad;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_publicidad_json;
+
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_amonestaciones;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_bookings_csv;
 
