@@ -1516,37 +1516,36 @@ END
 GO
 
 /********************************/
-/*         PUBLICIDADES        */
+/*         ANUNCIANTES        */
 /********************************/
-CREATE OR ALTER PROCEDURE Importacion.sp_upsert_publicidades
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_anunciantes
 AS
 BEGIN
     SET NOCOUNT ON
 
-    IF OBJECT_ID('tempdb..##Publicidad') IS NULL BEGIN 
+    IF OBJECT_ID('tempdb..##Anunciantes') IS NULL BEGIN 
         THROW 50001, 'No se importó ningún JSON de Publicidad.', 1;
         RETURN;
     END
 
-    DECLARE @maxID INT = (SELECT max(id) FROM ##Publicidad);
+    DECLARE @maxID INT = (SELECT max(id) FROM ##Anunciantes);
 
     DECLARE @idActual INT = 1;
 
-    DECLARE @anunciantesInsertados   INT = 0;
-    DECLARE @anunciantesActualizados   INT = 0;
-    DECLARE @anunciantesOmitidos     INT = 0;
+    DECLARE @insertados   INT = 0;
+    DECLARE @actualizados INT = 0;
+    DECLARE @omitidos     INT = 0;
 
     BEGIN TRAN
     WHILE (@idActual <= @maxID) BEGIN
 
-        -- Necesito nombre y json nada más
+        -- Necesito nombre nada más
 
         DECLARE @anunciante VARCHAR(300) = NULL;
-        DECLARE @json VARCHAR(MAX) = NULL;
         DECLARE @anuncianteID INT = NULL;
 
-        SELECT @anunciante = anunciante, @json = json_anunciante
-            FROM ##Publicidad
+        SELECT @anunciante = anunciante
+            FROM ##Anunciantes
             WHERE id = @idActual;
 
         SELECT @anuncianteID = id FROM Publicidad.Anunciantes where razon_social = @anunciante;
@@ -1560,21 +1559,209 @@ BEGIN
             EXEC Publicidad.sp_crear_anunciante 
                     @RazonSocial = @anunciante,
                     @ID = @anuncianteID OUTPUT;
-            
-            SET @anunciantesInsertados = @anunciantesInsertados + 1;
 
-            -- Una vez que inserté el anunciante y tengo su ID, avanzo con cada campaña.
-
-            -- INSERT INTO ##Publicidad (anunciante, json_anunciante)
-            SELECT 
-                [key] AS clave,
-                [value] AS valor
-            FROM OPENJSON(@json)
-            -- WHERE [type] = 5;
+            SET @insertados = @insertados + 1;
             
         END TRY
         BEGIN CATCH
-            SET @anunciantesOmitidos = @anunciantesOmitidos + 1;
+            SET @omitidos = @omitidos + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%' BEGIN
+                print ERROR_MESSAGE();
+            END
+       END CATCH
+
+       -- MAPEAMOS
+       IF @anunciante is not null 
+          UPDATE ##Anunciantes 
+             SET map_id = @anuncianteID
+             WHERE id = @idActual;
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertados     as 'Anunciantes insertados',
+        @actualizados as 'Anunciantes actualizados',
+        @omitidos     as 'Anunciantes omitidos';
+END
+GO
+
+
+/********************************/
+/*           CAMPAÑAS           */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_campañas
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Campañas') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún JSON de Publicidad.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(id) FROM ##Campañas);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertados   INT = 0;
+    DECLARE @actualizados INT = 0;
+    DECLARE @omitidos     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito nombre, descripcion, anunciante, añomundial, horario min y max 
+        
+
+        DECLARE @nombre VARCHAR(300) = NULL;
+        DECLARE @descripcion VARCHAR(300) = NULL;
+        DECLARE @horarioMinimo SMALLINT = NULL;
+        DECLARE @horarioMaximo SMALLINT = NULL;
+        DECLARE @añoMundial INT = NULL;
+        
+        DECLARE @anuncianteIDJSON INT = NULL;
+
+        DECLARE @anuncianteID INT = NULL;
+        DECLARE @campañaID INT = NULL;
+
+        SELECT @nombre = nombre, @descripcion = descripcion, @horarioMinimo = horario_minimo,
+               @horarioMaximo = horario_maximo, @añoMundial = anio_mundial, @anuncianteIDJSON = anunciante_id
+            FROM ##Campañas
+            WHERE id = @idActual;
+
+        SELECT @anuncianteID = map_id FROM ##Anunciantes where id = @anuncianteIDJSON;
+        SELECT @campañaID = id FROM Publicidad.Campañas where nombre = @nombre and mundial_id = @añoMundial;
+
+        BEGIN TRY
+            
+            IF (@nombre IS NULL) BEGIN
+                THROW 50001, 'campaña skipeado, no se insertó', 1;
+            END;
+            IF @campañaID is not null BEGIN
+
+                EXEC Publicidad.sp_modificar_campaña
+                    @CampañaID     = @campañaID,
+                    @AnuncianteID  = @anuncianteID,
+                    @AñoMundial    = @añoMundial,
+                    @Nombre        = @nombre,
+                    @Descripcion   = @descripcion,
+                    @HorarioMinimo = @horarioMinimo,
+                    @HorarioMaximo = @horarioMaximo
+
+                SET @actualizados = @actualizados + 1;
+
+            END ELSE BEGIN 
+
+                EXEC Publicidad.sp_crear_campaña
+                    @AnuncianteID  = @anuncianteID,
+                    @AñoMundial    = @añoMundial,
+                    @Nombre        = @nombre,
+                    @Descripcion   = @descripcion,
+                    @HorarioMinimo = @horarioMinimo,
+                    @HorarioMaximo = @horarioMaximo,
+                    @ID            = @campañaID OUTPUT;
+
+                SET @insertados = @insertados + 1;
+            END
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidos = @omitidos + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%' BEGIN
+                print ERROR_MESSAGE();
+            END
+       END CATCH
+
+       -- MAPEO
+       IF @campañaID is not null 
+          UPDATE ##Campañas 
+             SET map_id = @campañaID
+             WHERE id = @idActual;
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @insertados     as 'Campañas insertadas',
+        @actualizados   as 'Campañas actualizadas',
+        @omitidos       as 'Campañas omitidas';
+END
+GO
+
+
+/********************************/
+/*     PIEZAS DE CONTENIDO      */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_piezas_de_contenido
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##PiezasDeContenido') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún JSON de Publicidad.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(id) FROM ##PiezasDeContenido);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @insertados   INT = 0;
+    DECLARE @actualizados INT = 0;
+    DECLARE @omitidos     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito nombre, descripcion, campaña y paises interesados 
+
+        DECLARE @nombre VARCHAR(300) = NULL;
+        DECLARE @descripcion VARCHAR(300) = NULL;
+        DECLARE @paisesDeInteres NVARCHAR(MAX) = NULL;
+
+        DECLARE @campañaIDJSON INT = NULL;
+        
+        DECLARE @campañaID INT = NULL;
+        DECLARE @piezaDeContenidoID INT = NULL;
+
+        SELECT @nombre = nombre, @descripcion = descripcion, @paisesDeInteres = paises_de_interes,
+               @campañaIDJSON = campania_id
+            FROM ##PiezasDeContenido
+            WHERE id = @idActual;
+
+        SELECT @campañaID = map_id FROM ##Campañas where id = @campañaIDJSON;
+
+        SELECT @piezaDeContenidoID = id 
+               FROM Publicidad.PiezasDeContenido 
+               WHERE nombre = @nombre AND campaña_id = @campañaID;
+
+        BEGIN TRY
+            
+            IF (@nombre IS NULL) BEGIN
+                THROW 50001, 'pieza skipeado, no se insertó', 1;
+            END;
+
+            IF (@piezaDeContenidoID IS NOT NULL) BEGIN
+                -- THROW 50001, 'pieza skipeado, no se insertó', 1;
+                PRINT 'hay que editar' -- todo: editar
+            END;
+
+            EXEC Publicidad.sp_crear_pieza_de_contenido
+                    @CampañaID = @campañaID,
+                    @NombrePieza = @nombre,
+                    @Descripcion = @descripcion,
+                    @PaisesInteresados = @paisesDeInteres        
+
+            SET @insertados = @insertados + 1;
+            
+        END TRY
+        BEGIN CATCH
+            SET @omitidos = @omitidos + 1;
             IF ERROR_MESSAGE() NOT LIKE '%skipeado%' BEGIN
                 print ERROR_MESSAGE();
             END
@@ -1586,10 +1773,9 @@ BEGIN
     COMMIT TRAN
 
     SELECT 
-        @anunciantesInsertados     as 'Anunciantes insertados',
-        @anunciantesActualizados as 'Anunciantes actualizados',
-        @anunciantesOmitidos     as 'Anunciantes omitidos';
-
+        @insertados     as 'PiezasDeContenido insertadas',
+        @actualizados   as 'PiezasDeContenido actualizadas',
+        @omitidos       as 'PiezasDeContenido omitidas';
 END
 GO
 
@@ -1827,9 +2013,19 @@ BEGIN
         SELECT TOP 10 * FROM Eventos.Cambios WHERE motivo = 'EXPULSION';
     END
 
-    EXEC Importacion.sp_upsert_publicidades
+    EXEC Importacion.sp_upsert_anunciantes
     IF @MostrarDatos = 1 BEGIN
         SELECT * FROM Publicidad.Anunciantes
+    END
+
+    EXEC Importacion.sp_upsert_campañas
+    IF @MostrarDatos = 1 BEGIN
+        SELECT * FROM Publicidad.Campañas
+    END
+
+    EXEC Importacion.sp_upsert_piezas_de_contenido
+    IF @MostrarDatos = 1 BEGIN
+        SELECT * FROM Publicidad.PiezasDeContenido
     END
     
     -- Limpieza

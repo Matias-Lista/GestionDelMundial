@@ -116,6 +116,7 @@ DROP FUNCTION  IF EXISTS Eventos.fn_jugadores_en_cancha;
 DROP PROCEDURE IF EXISTS Publicidad.sp_crear_tarifa;
 DROP PROCEDURE IF EXISTS Publicidad.sp_crear_anunciante;
 DROP PROCEDURE IF EXISTS Publicidad.sp_crear_campaña;
+DROP PROCEDURE IF EXISTS Publicidad.sp_modificar_campaña;
 DROP PROCEDURE IF EXISTS Publicidad.sp_crear_pieza_de_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
@@ -139,6 +140,9 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 /*            IMPORTACIÓN            */
 /*************************************/
 
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_anunciantes;
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_campañas;
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_piezas_de_contenido;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_publicidad;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_publicidad_json;
 

@@ -454,10 +454,11 @@ CREATE TABLE Publicidad.Campañas (
     id             INT          PRIMARY KEY IDENTITY(1,1),
     anunciante_id  INT          REFERENCES Publicidad.Anunciantes(id) NOT NULL,
     mundial_id     SMALLINT     REFERENCES Mundial.Mundiales(año) NOT NULL,
-    nombre         VARCHAR(150) NOT NULL UNIQUE,
+    nombre         VARCHAR(150) NOT NULL,
     descripcion    VARCHAR(300) ,
     horario_minimo SMALLINT     check(horario_minimo between 0 AND 24),
-    horario_maximo SMALLINT     check(horario_maximo between 0 AND 24)
+    horario_maximo SMALLINT     check(horario_maximo between 0 AND 24),
+    CONSTRAINT UQ_Un_Nombre_Por_Mundial UNIQUE (mundial_id, nombre)
 );
 END
 GO

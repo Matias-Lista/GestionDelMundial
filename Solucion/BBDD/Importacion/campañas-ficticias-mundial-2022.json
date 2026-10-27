@@ -1,6 +1,6 @@
 {
     "Coca-Cóla": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Juntos por la Coca",
                 "descripcion": "Campaña destinada a mostrar la unión familiar durante el mundial",
@@ -37,12 +37,12 @@
         ]
     },
     "BetWarrior": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Apostá, no seas cagón!",
                 "descripcion": "Campaña destinada a que los jóvenes pierdan toda su plata",
-                "horario_minimo": "06:00",
-                "horario_maximo": "22:00",
+                "horario_minimo": 6,
+                "horario_maximo": 22,
                 "año_mundial": 2022,
                 "piezas_de_contenido": [
                     {
@@ -55,7 +55,7 @@
         ]
     },
     "Adidas": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "El Balón de Todos",
                 "descripcion": "Presentación oficial de la pelota Al Rihla",
@@ -66,12 +66,12 @@
                     {
                         "nombre": "Precisión Alemana y Toque Español",
                         "descripcion": "Jugadores probando el balón en entrenamientos",
-                        "paises_de_interes": ["GER", "ESP"]
+                        "paises_de_interes": ["DEU", "ESP"]
                     },
                     {
                         "nombre": "El viaje a Oriente",
                         "descripcion": "La pelota viajando por estadios de Asia y Centroamérica",
-                        "paises_de_interes": ["JPN", "CRC"]
+                        "paises_de_interes": ["JPN", "CRI"]
                     }
                 ]
             },
@@ -97,7 +97,7 @@
         ]
     },
     "Nike": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Escribe el Futuro",
                 "descripcion": "Campaña sobre cómo un segundo cambia la historia",
@@ -113,7 +113,7 @@
                     {
                         "nombre": "La defensa nórdica",
                         "descripcion": "Eriksen dando pases mágicos en la nieve y la arena",
-                        "paises_de_interes": ["DEN", "TUN"]
+                        "paises_de_interes": ["DNK", "TUN"]
                     }
                 ]
             },
@@ -132,14 +132,14 @@
                     {
                         "nombre": "Precisión Suiza, Fuerza Africana",
                         "descripcion": "Contraste de estilos de juego",
-                        "paises_de_interes": ["SUI", "CMR"]
+                        "paises_de_interes": ["CHE", "CMR"]
                     }
                 ]
             }
         ]
     },
     "Hyundai": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Conduce al Éxito",
                 "descripcion": "Patrocinio de transporte oficial del mundial",
@@ -155,7 +155,7 @@
                     {
                         "nombre": "Ruta a la gloria",
                         "descripcion": "Cristiano Ronaldo manejando por el desierto con hinchas ghaneses",
-                        "paises_de_interes": ["POR", "GHA"]
+                        "paises_de_interes": ["PRT", "GHA"]
                     }
                 ]
             },
@@ -181,7 +181,7 @@
         ]
     },
     "Qatar Airways": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Volamos con tu Sueño",
                 "descripcion": "Aerolínea oficial uniendo a las naciones",
@@ -223,7 +223,7 @@
         ]
     },
     "McDonald's": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "El Menú del Hincha",
                 "descripcion": "Combos temáticos inspirados en países",
@@ -251,7 +251,7 @@
         ]
     },
     "Visa": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Pagá y Viajá",
                 "descripcion": "Sorteo de paquetes para ir al mundial usando la tarjeta",
@@ -272,19 +272,19 @@
                     {
                         "nombre": "Tablero a cuadros",
                         "descripcion": "Modric pagando un café en Zagreb antes de viajar",
-                        "paises_de_interes": ["CRO"]
+                        "paises_de_interes": ["HRV"]
                     }
                 ]
             }
         ]
     },
     "Bet365": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Multiplica tu Pasión",
                 "descripcion": "Campaña enfocada en cuotas mejoradas para partidos clave",
-                "horario_minimo": "06:00",
-                "horario_maximo": "22:00",
+                "horario_minimo": 6,
+                "horario_maximo": 22,
                 "año_mundial": 2022,
                 "piezas_de_contenido": [
                     {
@@ -302,14 +302,14 @@
             {
                 "nombre": "Apuesta en Vivo",
                 "descripcion": "Fomento de apuestas dinámicas durante los 90 minutos",
-                "horario_minimo": "16:00",
-                "horario_maximo": "22:00",
+                "horario_minimo": 16,
+                "horario_maximo": 22,
                 "año_mundial": 2022,
                 "piezas_de_contenido": [
                     {
                         "nombre": "El próximo gol lo cantás vos",
                         "descripcion": "Aplicación mostrando cuotas subiendo en tiempo real",
-                        "paises_de_interes": ["FRA", "GER"]
+                        "paises_de_interes": ["FRA", "DEU"]
                     },
                     {
                         "nombre": "Tensión en Concacaf",
@@ -321,12 +321,12 @@
         ]
     },
     "Bplay": {
-        "campañas": [
+        "campanias": [
             {
                 "nombre": "Tu Jugada Maestra",
                 "descripcion": "Promoción de casino y apuestas deportivas combinadas",
-                "horario_minimo": "06:00",
-                "horario_maximo": "22:00",
+                "horario_minimo": 6,
+                "horario_maximo": 22,
                 "año_mundial": 2022,
                 "piezas_de_contenido": [
                     {

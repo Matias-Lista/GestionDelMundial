@@ -10,10 +10,10 @@
  ----* Reemplazar la ruta en la que se copió el repositorio de este proyecto en la primera instrucción después de estos comentarios.
  ----* Reemplazar las variables de configuración (EjecutarTesteos, ImportarDatos, ImportarUnUnicoMundial, etc.).
 
-:setvar rutaAlRepositorio C:\gits\GestionDelMundial
--- :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
+-- :setvar rutaAlRepositorio C:\gits\GestionDelMundial
+:setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
-:setvar ImportarDatos   0
+:setvar ImportarDatos   1
 :setvar EjecutarTesteos 0
 
 PRINT '[*] Limpiando ...'
@@ -100,6 +100,8 @@ FROM Cambios
 WHERE id_partido = @DebugPartido 
   AND (id_jugador_entra = @DebugJugador OR id_jugador_sale = @DebugJugador);*/
 
-exec Importacion.sp_crear_y_cargar_publicidad_json @Ruta = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json';
-exec Importacion.sp_upsert_publicidades;
-SELECT * FROM Publicidad.Anunciantes
+--exec Importacion.sp_crear_y_cargar_publicidad_json @Ruta = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json';
+-- exec Importacion.sp_crear_y_cargar_publicidad_json @Ruta = '$(rutaAlRepositorio)\scrapper\campañas-procesadas.json'; 
+--exec Importacion.sp_upsert_anunciantes;
+--exec Importacion.sp_upsert_campañas;
+/*SELECT * FROM Publicidad.Anunciantes*/

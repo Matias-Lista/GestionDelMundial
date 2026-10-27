@@ -1105,46 +1105,120 @@ BEGIN
     SET NOCOUNT ON
 
     IF OBJECT_ID('tempdb..##Anunciantes') IS NOT NULL DROP TABLE ##Anunciantes;
+    IF OBJECT_ID('tempdb..##Campañas') IS NOT NULL DROP TABLE ##Campañas;
+    IF OBJECT_ID('tempdb..##PiezasDeContenido') IS NOT NULL DROP TABLE ##PiezasDeContenido;
 
     CREATE TABLE ##Anunciantes (
-        id INT IDENTITY(1,1),
-        anunciante NVARCHAR(300),
-        json_anunciante NVARCHAR(MAX)
+        id INT IDENTITY(1,1) PRIMARY KEY,
+        anunciante NVARCHAR(300) UNIQUE,
+        map_id INT
+    );
+
+    CREATE TABLE ##Campañas (
+        id INT IDENTITY(1,1) PRIMARY KEY,
+        anunciante_id INT,
+        nombre NVARCHAR(200),
+        descripcion NVARCHAR(MAX),
+        horario_minimo SMALLINT NULL,
+        horario_maximo SMALLINT NULL,
+        anio_mundial INT,
+        map_id INT,
+        CONSTRAINT UQ_Staging_Un_Nombre_Por_Mundial UNIQUE (anio_mundial, nombre)
+    );
+
+    CREATE TABLE ##PiezasDeContenido (
+        id INT IDENTITY(1,1) PRIMARY KEY,
+        campania_id INT,
+        nombre NVARCHAR(200),
+        descripcion NVARCHAR(MAX),
+        paises_de_interes NVARCHAR(MAX),
+        map_id INT
     );
 
     DECLARE @importacion NVARCHAR(MAX);
 
     BEGIN TRY
         SET @importacion = N'
-        DECLARE @json NVARCHAR(max);
-        SELECT @json = BulkColumn
-        FROM OPENROWSET(
-            BULK '''+ @Ruta +''',
-            SINGLE_CLOB,
-            CODEPAGE = ''65001'' -- 65001 corresponde a la codificación UTF-8
-        ) AS ImportacionJson;
-        
-        -- SELECT @json; -- En este punto ya veo los carácteres rotos
+        DECLARE @json NVARCHAR(MAX);
 
-        INSERT INTO ##Anunciantes (anunciante, json_anunciante)
-        SELECT 
-            [key] AS anunciante,
-            [value] AS json_anunciante
+        SELECT @json = CONVERT(VARCHAR(MAX), BulkColumn)
+        FROM OPENROWSET(
+            BULK ''' + @Ruta + ''',
+            SINGLE_BLOB,
+            CODEPAGE = ''65001''
+        ) AS ImportacionJson;
+
+        CREATE TABLE #AnunciantesRaw (
+            id INT IDENTITY(1,1),
+            anunciante NVARCHAR(300),
+            json_anunciante NVARCHAR(MAX)
+        );
+
+        INSERT INTO #AnunciantesRaw (anunciante, json_anunciante)
+        SELECT [key], [value]
         FROM OPENJSON(@json)
-        WHERE [type] = 5;
+        WHERE [type] = 5; -- Filtra solo objetos JSON
+
+        INSERT INTO ##Anunciantes (anunciante)
+        SELECT anunciante FROM #AnunciantesRaw;
+
+        CREATE TABLE #CampaniasRaw (
+            id INT IDENTITY(1,1),
+            anunciante_id INT,
+            nombre NVARCHAR(200),
+            descripcion NVARCHAR(MAX),
+            horario_minimo SMALLINT,
+            horario_maximo SMALLINT,
+            anio_mundial INT,
+            piezas_raw NVARCHAR(MAX)
+        );
+
+        INSERT INTO #CampaniasRaw (anunciante_id, nombre, descripcion, horario_minimo, horario_maximo, anio_mundial, piezas_raw)
+        SELECT 
+            ar.id,
+            c.nombre,
+            c.descripcion,
+            c.horario_minimo,
+            c.horario_maximo,
+            c.anio_mundial,
+            c.piezas_raw
+        FROM #AnunciantesRaw ar
+        CROSS APPLY OPENJSON(ar.json_anunciante, ''$."campanias"'') WITH (
+            nombre          NVARCHAR(200)  ''$.nombre'',
+            descripcion     NVARCHAR(MAX)  ''$.descripcion'',
+            horario_minimo  SMALLINT       ''$.horario_minimo'',
+            horario_maximo  SMALLINT       ''$.horario_maximo'',
+            anio_mundial    INT            ''$."año_mundial"'',
+            piezas_raw      NVARCHAR(MAX)  ''$.piezas_de_contenido'' AS JSON
+        ) AS c;
+
+        INSERT INTO ##Campañas (anunciante_id, nombre, descripcion, horario_minimo, horario_maximo, anio_mundial)
+        SELECT anunciante_id, nombre, descripcion, horario_minimo, horario_maximo, anio_mundial
+        FROM #CampaniasRaw;
+
+        INSERT INTO ##PiezasDeContenido (campania_id, nombre, descripcion, paises_de_interes)
+        SELECT 
+            cr.id,
+            p.nombre,
+            p.descripcion,
+            STRING_AGG(pais.value, '','') AS paises_de_interes
+        FROM #CampaniasRaw cr
+        CROSS APPLY OPENJSON(cr.piezas_raw) WITH (
+            nombre      NVARCHAR(200)  ''$.nombre'',
+            descripcion NVARCHAR(MAX)  ''$.descripcion'',
+            paises_raw  NVARCHAR(MAX)  ''$.paises_de_interes'' AS JSON
+        ) AS p
+        OUTER APPLY OPENJSON(p.paises_raw) AS pais
+        GROUP BY cr.id, p.nombre, p.descripcion;
         ';
 
-        EXEC (@importacion);
+        EXEC sp_executesql @importacion;
     END TRY
     BEGIN CATCH
         DECLARE @ErrorBulk VARCHAR(4000) = ERROR_MESSAGE();
         THROW 50340, @ErrorBulk, 1;
         RETURN;
     END CATCH;
-   
-    -- SELECT * FROM ##Anunciantes
-
-
     
 END
 GO

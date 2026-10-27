@@ -45,7 +45,28 @@ GO
 -- SELECT * FROM Publicidad.Tarifa
 
 CREATE OR ALTER PROCEDURE Publicidad.sp_crear_campaña
-	@Anunciante VARCHAR(150),
+	@AnuncianteID INT,
+	@AñoMundial INT,
+	@Nombre VARCHAR(150),
+	@Descripcion VARCHAR(300) = NULL,
+	@HorarioMinimo INT = NULL,
+	@HorarioMaximo INT = NULL,
+	@ID INT = NULL OUTPUT
+AS
+BEGIN
+
+	INSERT INTO Publicidad.Campañas 
+		(mundial_id, anunciante_id, nombre, descripcion, horario_minimo, horario_maximo)
+		VALUES 
+		(@AñoMundial, @AnuncianteID, @Nombre, @Descripcion, @HorarioMinimo, @HorarioMaximo);
+
+	SET @ID = SCOPE_IDENTITY();
+END
+GO
+
+CREATE OR ALTER PROCEDURE Publicidad.sp_modificar_campaña
+	@CampañaID INT,
+	@AnuncianteID INT,
 	@AñoMundial INT,
 	@Nombre VARCHAR(150),
 	@Descripcion VARCHAR(300) = NULL,
@@ -53,13 +74,12 @@ CREATE OR ALTER PROCEDURE Publicidad.sp_crear_campaña
 	@HorarioMaximo INT = NULL
 AS
 BEGIN
-	
-	DECLARE @anuncianteId INT = (SELECT id FROM Publicidad.Anunciantes WHERE razon_social = @Anunciante);
 
-	INSERT INTO Publicidad.Campañas 
-		(mundial_id, anunciante_id, nombre, descripcion, horario_minimo, horario_maximo)
-		VALUES 
-		(@AñoMundial, @anuncianteId, @Nombre, @Descripcion, @HorarioMinimo, @HorarioMaximo);
+
+	UPDATE Publicidad.Campañas 
+		SET mundial_id = @AñoMundial, anunciante_id = @AnuncianteID, nombre = @Nombre, 
+			descripcion = @Descripcion, horario_minimo = @HorarioMinimo, horario_maximo = @HorarioMaximo
+		WHERE id = @CampañaID;
 END
 GO
 
@@ -75,18 +95,20 @@ BEGIN
 END
 GO
 
+--- Recibe países en este formato: "ARG,ESP,USA" ..
 CREATE OR ALTER PROCEDURE Publicidad.sp_crear_pieza_de_contenido
 	@CampañaID INT,
 	@NombrePieza VARCHAR(300),
 	@Descripcion VARCHAR(300),
-	@PaisesInteresados VARCHAR(MAX) = NULL
+	@PaisesInteresados VARCHAR(MAX) = NULL,
+	@ID INT = NULL OUTPUT
 AS
 BEGIN
 
 	INSERT INTO Publicidad.PiezasDeContenido
-		(campaña_id, descripcion)
+		(nombre, campaña_id, descripcion)
 		VALUES
-		(@CampañaID, @Descripcion);
+		(@NombrePieza, @CampañaID, @Descripcion);
 
 	DECLARE @piezaDeContenidoID INT = SCOPE_IDENTITY();
 
@@ -95,6 +117,8 @@ BEGIN
 		@piezaDeContenidoID,
 		TRIM(value) -- elimina espacios, y da una columna 'value'
 	FROM STRING_SPLIT(@PaisesInteresados, ',');
+
+	SET @ID = SCOPE_IDENTITY();
 END
 GO
 /*SELECT * FROM Publicidad.Anunciantes
