@@ -9,13 +9,16 @@ GO
 
 
 CREATE OR ALTER PROCEDURE Publicidad.sp_crear_anunciante
-	@RazonSocial VARCHAR(150)
+	@RazonSocial VARCHAR(150),
+	@ID INT = NULL OUTPUT
 AS
 BEGIN
 	INSERT INTO Publicidad.Anunciantes
 	(razon_social)
 	VALUES
 	(@RazonSocial);
+
+	SET @ID = SCOPE_IDENTITY();
 END
 GO
 

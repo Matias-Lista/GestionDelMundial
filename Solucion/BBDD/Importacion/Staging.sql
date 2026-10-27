@@ -24,7 +24,9 @@ BEGIN
     IF OBJECT_ID('tempdb..##Goals') IS NOT NULL DROP TABLE ##Goals;
     IF OBJECT_ID('tempdb..##PenaltyKicks') IS NOT NULL DROP TABLE ##PenaltyKicks;
     IF OBJECT_ID('tempdb..##Bookings') IS NOT NULL DROP TABLE ##Bookings;
-    IF OBJECT_ID('tempdb..##Publicidad') IS NOT NULL DROP TABLE ##Publicidad;
+    IF OBJECT_ID('tempdb..##Anunciantes') IS NOT NULL DROP TABLE ##Anunciantes;
+    IF OBJECT_ID('tempdb..##Campañas') IS NOT NULL DROP TABLE ##Campañas;
+    IF OBJECT_ID('tempdb..##PiezasDeContenido') IS NOT NULL DROP TABLE ##PiezasDeContenido;
 
 END
 GO
@@ -1102,12 +1104,12 @@ AS
 BEGIN 
     SET NOCOUNT ON
 
-    IF OBJECT_ID('tempdb..##Publicidad') IS NOT NULL DROP TABLE ##Publicidad;
+    IF OBJECT_ID('tempdb..##Anunciantes') IS NOT NULL DROP TABLE ##Anunciantes;
 
-    CREATE TABLE ##Publicidad (
+    CREATE TABLE ##Anunciantes (
         id INT IDENTITY(1,1),
         anunciante NVARCHAR(300),
-        JSONAnunciante NVARCHAR(MAX)
+        json_anunciante NVARCHAR(MAX)
     );
 
     DECLARE @importacion NVARCHAR(MAX);
@@ -1122,12 +1124,12 @@ BEGIN
             CODEPAGE = ''65001'' -- 65001 corresponde a la codificación UTF-8
         ) AS ImportacionJson;
         
-        SELECT @json; -- En este punto ya veo los carácteres rotos
+        -- SELECT @json; -- En este punto ya veo los carácteres rotos
 
-        INSERT INTO ##Publicidad (anunciante, JSONAnunciante)
+        INSERT INTO ##Anunciantes (anunciante, json_anunciante)
         SELECT 
             [key] AS anunciante,
-            [value] AS JSONAnunciante
+            [value] AS json_anunciante
         FROM OPENJSON(@json)
         WHERE [type] = 5;
         ';
@@ -1140,7 +1142,9 @@ BEGIN
         RETURN;
     END CATCH;
    
-    SELECT * FROM ##Publicidad
+    -- SELECT * FROM ##Anunciantes
+
+
     
 END
 GO

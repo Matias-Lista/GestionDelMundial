@@ -10,7 +10,8 @@
  ----* Reemplazar la ruta en la que se copió el repositorio de este proyecto en la primera instrucción después de estos comentarios.
  ----* Reemplazar las variables de configuración (EjecutarTesteos, ImportarDatos, ImportarUnUnicoMundial, etc.).
 
-:setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
+:setvar rutaAlRepositorio C:\gits\GestionDelMundial
+-- :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
 :setvar ImportarDatos   0
 :setvar EjecutarTesteos 0
@@ -60,21 +61,22 @@ IF ($(ImportarDatos) = 1)
 BEGIN
     PRINT '[*] iMPORTANDO DATOS.';
     exec Importacion.PoblarDB 
-            @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
-            @RutaTeamsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\teams.csv',
-            @RutaPlayersCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\players.csv',
-            @RutaSquadsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\squads.csv',
-            @RutaTournamentsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv',
-            @RutaGroupStandingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv',
-            @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\stadiums.csv',
-            @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
-            @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
-            @RutaRefereesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referees.csv',
-            @RutaRefereeAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\referee_appearances.csv',
-            @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
-            @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\goals.csv',
-            @RutaPenaltyKicksCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\penalty_kicks.csv',
-            @RutaBookingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\bookings.csv',
+            @RutaConfederationsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\confederations.csv',
+            @RutaTeamsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\teams.csv',
+            @RutaPlayersCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\players.csv',
+            @RutaSquadsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\squads.csv',
+            @RutaTournamentsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\tournaments.csv',
+            @RutaGroupStandingsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\group_standings.csv',
+            @RutaStadiumsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\stadiums.csv',
+            @RutaMatchesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\matches.csv',
+            @RutaPlayerAppearancesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\player_appearances.csv',
+            @RutaRefereesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\referees.csv',
+            @RutaRefereeAppearancesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\referee_appearances.csv',
+            @RutaSubstitutionsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\substitutions.csv',
+            @RutaGoalsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\goals.csv',
+            @RutaPenaltyKicksCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\penalty_kicks.csv',
+            @RutaBookingsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\bookings.csv',
+            @RutaPublicidadJSON = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json',
             @MostrarDatos = 1
 END
 
@@ -98,4 +100,6 @@ FROM Cambios
 WHERE id_partido = @DebugPartido 
   AND (id_jugador_entra = @DebugJugador OR id_jugador_sale = @DebugJugador);*/
 
-  exec Importacion.sp_crear_y_cargar_publicidad_json @Ruta = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json';
+exec Importacion.sp_crear_y_cargar_publicidad_json @Ruta = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json';
+exec Importacion.sp_upsert_publicidades;
+SELECT * FROM Publicidad.Anunciantes

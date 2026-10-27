@@ -1515,6 +1515,85 @@ BEGIN
 END
 GO
 
+/********************************/
+/*         PUBLICIDADES        */
+/********************************/
+CREATE OR ALTER PROCEDURE Importacion.sp_upsert_publicidades
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF OBJECT_ID('tempdb..##Publicidad') IS NULL BEGIN 
+        THROW 50001, 'No se importó ningún JSON de Publicidad.', 1;
+        RETURN;
+    END
+
+    DECLARE @maxID INT = (SELECT max(id) FROM ##Publicidad);
+
+    DECLARE @idActual INT = 1;
+
+    DECLARE @anunciantesInsertados   INT = 0;
+    DECLARE @anunciantesActualizados   INT = 0;
+    DECLARE @anunciantesOmitidos     INT = 0;
+
+    BEGIN TRAN
+    WHILE (@idActual <= @maxID) BEGIN
+
+        -- Necesito nombre y json nada más
+
+        DECLARE @anunciante VARCHAR(300) = NULL;
+        DECLARE @json VARCHAR(MAX) = NULL;
+        DECLARE @anuncianteID INT = NULL;
+
+        SELECT @anunciante = anunciante, @json = json_anunciante
+            FROM ##Publicidad
+            WHERE id = @idActual;
+
+        SELECT @anuncianteID = id FROM Publicidad.Anunciantes where razon_social = @anunciante;
+
+        BEGIN TRY
+            
+            IF (@anunciante IS NULL OR @anuncianteID is not null) BEGIN
+                THROW 50001, 'anunciante skipeado, no se insertó', 1;
+            END;
+
+            EXEC Publicidad.sp_crear_anunciante 
+                    @RazonSocial = @anunciante,
+                    @ID = @anuncianteID OUTPUT;
+            
+            SET @anunciantesInsertados = @anunciantesInsertados + 1;
+
+            -- Una vez que inserté el anunciante y tengo su ID, avanzo con cada campaña.
+
+            -- INSERT INTO ##Publicidad (anunciante, json_anunciante)
+            SELECT 
+                [key] AS clave,
+                [value] AS valor
+            FROM OPENJSON(@json)
+            -- WHERE [type] = 5;
+            
+        END TRY
+        BEGIN CATCH
+            SET @anunciantesOmitidos = @anunciantesOmitidos + 1;
+            IF ERROR_MESSAGE() NOT LIKE '%skipeado%' BEGIN
+                print ERROR_MESSAGE();
+            END
+       END CATCH
+
+        SET @idActual = @idActual + 1;
+    END;
+
+    COMMIT TRAN
+
+    SELECT 
+        @anunciantesInsertados     as 'Anunciantes insertados',
+        @anunciantesActualizados as 'Anunciantes actualizados',
+        @anunciantesOmitidos     as 'Anunciantes omitidos';
+
+END
+GO
+
+
 CREATE OR ALTER PROCEDURE Importacion.sp_bypass_mundiales_previos
 AS
 BEGIN
@@ -1586,6 +1665,7 @@ CREATE OR ALTER PROCEDURE Importacion.PoblarDB
     @RutaGoalsCSV VARCHAR(255),
     @RutaPenaltyKicksCSV VARCHAR(255),
     @RutaBookingsCSV VARCHAR(255),
+    @RutaPublicidadJSON VARCHAR(255),
     @MostrarDatos BIT = 0,
     @UnicoMundial INT = NULL 
 AS
@@ -1615,6 +1695,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_goals_csv               @Ruta = @RutaGoalsCSV
     EXEC Importacion.sp_crear_y_cargar_penalty_kicks_csv       @Ruta = @RutaPenaltyKicksCSV
     EXEC Importacion.sp_crear_y_cargar_bookings_csv            @Ruta = @RutaBookingsCSV
+    EXEC Importacion.sp_crear_y_cargar_publicidad_json         @Ruta = @RutaPublicidadJSON
 
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
@@ -1746,10 +1827,14 @@ BEGIN
         SELECT TOP 10 * FROM Eventos.Cambios WHERE motivo = 'EXPULSION';
     END
 
+    EXEC Importacion.sp_upsert_publicidades
+    IF @MostrarDatos = 1 BEGIN
+        SELECT * FROM Publicidad.Anunciantes
+    END
     
-
     -- Limpieza
     exec Importacion.sp_limpieza_tablas_temporales;
+
 END
 GO
 

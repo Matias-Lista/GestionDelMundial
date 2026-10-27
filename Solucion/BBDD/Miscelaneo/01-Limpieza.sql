@@ -190,7 +190,6 @@ DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_confederations_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.PoblarDB;
 
-
 -- Eliminar Schemas
 DROP SCHEMA IF EXISTS [Administracion]
 DROP SCHEMA IF EXISTS [Publicidad]
