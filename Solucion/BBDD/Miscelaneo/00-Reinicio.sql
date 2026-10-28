@@ -13,8 +13,10 @@
 -- :setvar rutaAlRepositorio C:\gits\GestionDelMundial
 :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
-:setvar ImportarDatos   1
-:setvar EjecutarTesteos 0
+:setvar ImportarDatos   1 -- Importa datos de los datasets.
+:setvar MostrarDatos    1 -- Realiza SELECTs de los datos importados.
+:setvar EjecutarTesteos 0 -- Ejecuta los testeos (siguen en proceso)
+:setvar SimularMundial  0 -- Feature en proceso! Genera un mundial de mentirita.
 
 PRINT '[*] Limpiando ...'
 :r $(rutaAlRepositorio)\Solucion\BBDD\Miscelaneo\01-Limpieza.sql
@@ -56,6 +58,7 @@ PRINT '[*] Creando Objetos de Staging e Importación'
 
 :r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Staging.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Importacion.sql
+:r $(rutaAlRepositorio)\Solucion\BBDD\Importacion\Simulacion-de-Mundial.sql
 
 IF ($(ImportarDatos) = 1)
 BEGIN
@@ -77,7 +80,14 @@ BEGIN
             @RutaPenaltyKicksCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\penalty_kicks.csv',
             @RutaBookingsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\bookings.csv',
             @RutaPublicidadJSON = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json',
-            @MostrarDatos = 1
+            @MostrarDatos = $(MostrarDatos)
+END
+
+IF ($(SimularMundial) = 1)
+BEGIN
+    exec Importacion.sp_simular_mundial  
+            @FechaDeInicio = '2069-10-01',
+            @FechaDeFin    = '2069-11-01';
 END
 
 /*

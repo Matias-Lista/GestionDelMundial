@@ -140,6 +140,8 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 /*            IMPORTACIÓN            */
 /*************************************/
 
+DROP PROCEDURE IF EXISTS Importacion.sp_simular_mundial;
+
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_anunciantes;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_campañas;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_piezas_de_contenido;

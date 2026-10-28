@@ -28,6 +28,7 @@
   </Folder>
   <Folder Name="/BBDD/04 - Importacion/">
     <File Path="BBDD/Importacion/Importacion.sql" />
+    <File Path="BBDD/Importacion/Simulacion-De-Mundial.sql" />
     <File Path="BBDD/Importacion/Staging.sql" />
   </Folder>
 </Solution>
