@@ -1,6 +1,6 @@
 /* BBDD/Miscelaneo/extras.sql
  * Fecha: 9/10/2026
- * Integrantes: Lista, Matías Josué. Maldonado Medrano, Milagros.
+ * Lista, Matías Josué.
  * Descripción: Archivo utilizado para validaciones y testeos generales.
                 También contiene algunos comandos utilizables como herramientas de debuggeo.
                 Se puede ignorar.

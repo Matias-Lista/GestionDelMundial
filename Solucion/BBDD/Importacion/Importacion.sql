@@ -1,3 +1,11 @@
+/* BBDD/Importacion/Importacion.sql
+ * Fecha: 28/10/2026
+ * Lista, Matías Josué.
+ * Descripción: Implementa los store procedures encargados de hacer la lógica de upsert para 
+                todos los datasets que emplea la BBDD.
+                Utiliza Los SP de Staging.sql para importar los datos crudos.
+ **/
+
 use GestionDelMundial;
 GO
 

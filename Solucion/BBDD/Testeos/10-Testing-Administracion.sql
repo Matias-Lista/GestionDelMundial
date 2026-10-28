@@ -1,4 +1,4 @@
-/* BBDD/Testeos/Testing-Administracion.sql
+/* BBDD/Testeos/10-Testing-Administracion.sql
  * Fecha: 14/10/2026
  * Lista, Matías Josué.
  * Descripción: Ejecuta todos los store procedures del schema [Administracion], 

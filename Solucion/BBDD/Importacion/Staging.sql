@@ -1,3 +1,11 @@
+/* BBDD/Importacion/Staging.sql
+ * Fecha: 28/10/2026
+ * Lista, Matías Josué.
+ * Descripción: Implementa los store procedures encargados de insertar los datos crudos 
+                de todos los datasets que emplea la BBDD a tablas temporales, para usarse
+                en los procesos de importación.
+ **/
+
 USE GestionDelMundial;
 GO 
 
