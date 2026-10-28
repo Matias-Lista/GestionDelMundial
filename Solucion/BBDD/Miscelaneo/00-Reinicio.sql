@@ -10,11 +10,11 @@
  ----* Reemplazar la ruta en la que se copió el repositorio de este proyecto en la primera instrucción después de estos comentarios.
  ----* Reemplazar las variables de configuración (EjecutarTesteos, ImportarDatos, ImportarUnUnicoMundial, etc.).
 
--- :setvar rutaAlRepositorio C:\gits\GestionDelMundial
-:setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
+:setvar rutaAlRepositorio C:\gits\GestionDelMundial
+-- :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
 :setvar ImportarDatos   1 -- Importa datos de los datasets.
-:setvar MostrarDatos    1 -- Realiza SELECTs de los datos importados.
+:setvar MostrarDatos    0 -- Realiza SELECTs de los datos importados.
 :setvar EjecutarTesteos 0 -- Ejecuta los testeos (siguen en proceso)
 :setvar SimularMundial  0 -- Feature en proceso! Genera un mundial de mentirita.
 

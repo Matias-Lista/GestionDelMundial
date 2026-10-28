@@ -85,6 +85,7 @@ DROP PROCEDURE IF EXISTS Mundial.sp_incluir_pais;
 
 DROP PROCEDURE IF EXISTS Mundial.sp_habilitar_arbitro;
 
+DROP PROCEDURE IF EXISTS Arbitraje.sp_asginar_terna_arbitros;
 DROP PROCEDURE IF EXISTS Arbitraje.sp_crear_arbitro;
 DROP PROCEDURE IF EXISTS Arbitraje.sp_modificar_arbitro;
 DROP PROCEDURE IF EXISTS Arbitraje.sp_eliminar_arbitro;

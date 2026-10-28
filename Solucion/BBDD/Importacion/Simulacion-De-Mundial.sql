@@ -80,17 +80,42 @@ BEGIN
 	EXEC Partidos.sp_generar_partidos
 		 @AñoMundial = @AñoMundial;
 
-		 SELECT * FROM Partidos.Partidos WHERE mundial_id = @AñoMundial
-	--@PaisesSedes
+	SELECT * FROM Partidos.Partidos WHERE mundial_id = @AñoMundial
 	
+	-- Asignación de Arbitros aleatorios. (170)
+	
+    IF OBJECT_ID('tempdb..#Arbitros') IS NOT NULL DROP TABLE #Arbitros;
+	CREATE TABLE #Arbitros (id INT PRIMARY KEY IDENTITY(1,1), arbitro_id INT UNIQUE);
+	
+	INSERT INTO #Arbitros (arbitro_id)
+	SELECT TOP 170 A.id
+	FROM Arbitraje.Arbitros A
+	ORDER BY NEWID();
+
+	DECLARE @arbitroID INT = NULL;
+	SET @i = 1;
+	WHILE @i < 171 BEGIN
+
+		SELECT @arbitroID = arbitro_id FROM #Arbitros WHERE id = @i;
+
+		EXEC Mundial.sp_habilitar_arbitro
+			@AñoMundial = @AñoMundial,
+			@ArbitroID  = @arbitroID;
+
+		SET @i = @i + 1;
+	END
+
+	
+
+	
+
 END
 GO
 /*
 BEGIN TRANSACTION
 
 EXEC Importacion.sp_simular_mundial 
-	  @FechaDeInicio = '2039-09-01',
-	  @FechaDeFin    = '2039-10-01';
+	  @FechaDeInicio = '2040-09-01',
+	  @FechaDeFin    = '2040-10-01';
 
-ROLLBACK TRANSACTION;
-*/
+ROLLBACK TRANSACTION;*/

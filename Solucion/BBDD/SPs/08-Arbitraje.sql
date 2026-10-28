@@ -497,8 +497,35 @@ BEGIN
 END
 GO
 
--- CREATE OR ALTER PROCEDURE Arbitraje.sp_asginar_terna_arbitros (automatica)
+CREATE OR ALTER PROCEDURE Arbitraje.sp_asginar_terna_arbitros 
+	@PartidoID INT
+AS
+BEGIN
 
+	SET NOCOUNT ON;
+	
+	DECLARE @errores VARCHAR(5000) = '';
+
+	DECLARE @añoMundial INT = NULL;
+
+	IF @PartidoID IS NULL BEGIN
+		SET @errores = @errores + '- Debe indicar un partido. ' + char(13) + char(10);
+	END ELSE BEGIN
+		SELECT @añoMundial = mundial_id
+	        FROM Partidos.Partidos WHERE id = @PartidoID;
+		IF @añoMundial is null
+			SET @errores = @errores + '- El partido no es valido. ' + char(13) + char(10);
+    END
+
+	IF (@errores <> '')
+		THROW 50001, @errores, 1;
+
+    DECLARE @usaVar BIT = Administracion.fn_obtener_regla (@añoMundial, 'ARBITRO_DE_VAR'); 
+
+    
+
+END
+GO
 
 -- CREATE OR ALTER PROCEDURE Arbitraje.sp_quitar_designacion
 -- 	@PartidoID INT,
