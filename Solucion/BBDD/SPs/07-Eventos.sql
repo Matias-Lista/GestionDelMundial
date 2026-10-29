@@ -8,6 +8,24 @@ USE GestionDelMundial;
 GO
 
 
+CREATE OR ALTER FUNCTION Eventos.fn_tiempo(
+    @Minuto SMALLINT, 
+    @Extra  SMALLINT, 
+    @Tiempo SMALLINT
+)
+RETURNS VARCHAR(100)
+AS
+BEGIN
+	RETURN (
+		CONCAT(
+			'T', CAST(@Tiempo as CHAR(1)), '-',
+			CAST(@Minuto as CHAR(2)), '''',
+			IIF(@Extra > 0, CONCAT('+', CAST(@Extra as CHAR(2)), ''''),'')
+		)
+	)
+END
+GO
+
 CREATE OR ALTER FUNCTION Eventos.fn_mapear_fase (
 	@fase VARCHAR(25)
 )

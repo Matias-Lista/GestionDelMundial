@@ -109,6 +109,7 @@ DROP PROCEDURE IF EXISTS Equipos.sp_cancelar_convocacion;
 DROP FUNCTION  IF EXISTS Equipos.fn_obtener_integrante_id;
 DROP FUNCTION  IF EXISTS Equipos.fn_obtener_jugadores_convocados
 DROP FUNCTION  IF EXISTS Administracion.fn_obtener_regla;
+DROP FUNCTION  IF EXISTS Eventos.fn_tiempo;
 DROP FUNCTION  IF EXISTS Eventos.fn_mapear_fase;
 DROP FUNCTION  IF EXISTS Eventos.fn_validar_momento;
 DROP FUNCTION  IF EXISTS Eventos.fn_resultado_partido;
@@ -122,7 +123,8 @@ DROP PROCEDURE IF EXISTS Publicidad.sp_crear_pieza_de_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
 
-DROP FUNCTION IF  EXISTS  Partidos.fn_jugadores_en_cancha;
+DROP FUNCTION IF  EXISTS Partidos.fn_jugadores_disponibles;
+DROP FUNCTION IF  EXISTS Partidos.fn_jugadores_en_cancha;
 DROP PROCEDURE IF EXISTS Partidos.sp_definir_formacion_inicial;
 
 DROP PROCEDURE IF EXISTS Eventos.sp_registrar_cambio;
@@ -142,6 +144,7 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 /*************************************/
 
 DROP PROCEDURE IF EXISTS Importacion.sp_simular_mundial;
+DROP PROCEDURE IF EXISTS Importacion.sp_simular_partido;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_anunciantes;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_campañas;

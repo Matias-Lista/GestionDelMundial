@@ -398,7 +398,11 @@ BEGIN
     -- Validación 2: Regla de Grupos vs Regla de Knockout
     IF @añoMundial IS NOT NULL AND @paisArbitro IS NOT NULL BEGIN
         
-        DECLARE @selArbitro INT = (SELECT id FROM Mundial.Selecciones WHERE pais_id = @paisArbitro);
+        DECLARE @selArbitro INT = (
+					SELECT S.id 
+					FROM Mundial.Selecciones S
+					JOIN Mundial.Paises_Participes PP ON PP.seleccion_id = S.id
+					WHERE S.pais_id = @paisArbitro and PP.mundial_id = @añoMundial);
 
         IF @fase = 'GRUPOS'
         BEGIN
@@ -522,7 +526,39 @@ BEGIN
 
     DECLARE @usaVar BIT = Administracion.fn_obtener_regla (@añoMundial, 'ARBITRO_DE_VAR'); 
 
-    
+    DECLARE @arbitrosIDs TABLE (id INT IDENTITY(1,1), arbitro_id INT);
+
+	DECLARE @PaisA CHAR(3) = NULL; DECLARE @PaisB CHAR(3) = NULL;
+
+	SELECT @PaisA = S.pais_id
+		FROM Partidos.Partidos P
+		JOIN Mundial.Selecciones S ON S.id = P.seleccion_A_id
+		WHERE P.id = @PartidoID;
+		
+	SELECT @PaisB = S.pais_id
+		FROM Partidos.Partidos P
+		JOIN Mundial.Selecciones S ON S.id = P.seleccion_B_id
+		WHERE P.id = @PartidoID;
+
+	INSERT INTO @arbitrosIDs (arbitro_id)
+	SELECT TOP (3 + @usaVar) A.id
+	FROM Arbitraje.Arbitros A
+	WHERE A.pais_id <> @PaisA and A.pais_id <> @PaisB ---- NO PUEDEN SER ARBITROS DE LOS PAISES QUE JUEGAN.
+	ORDER BY NEWID();
+
+	DECLARE @i INT = 1;
+	DECLARE @arbitroID INT = NULL;
+	WHILE @i < (3 + @usaVar + 1) BEGIN
+		
+		SELECT @arbitroID = arbitro_id FROM @arbitrosIDs WHERE id = @i;
+
+		EXEC Arbitraje.sp_designar_arbitro
+			 @PartidoID = @PartidoID,
+			 @ArbitroID = @arbitroID;
+
+		SET @i = @i + 1;
+	END
+
 
 END
 GO

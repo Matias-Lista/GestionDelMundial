@@ -7,6 +7,36 @@
 USE GestionDelMundial;
 GO
 
+-- Esta función devuelve los jugadores disponibles para un partido, y una selección.
+-- Basicamente, toma todos los jugadores convocados, y remueve todos los jugadores con un impedimento activo.
+
+CREATE OR ALTER FUNCTION Partidos.fn_jugadores_disponibles (
+	@PartidoID INT,
+	@SeleccionID INT
+)
+RETURNS TABLE
+AS 
+RETURN (
+	SELECT J.*
+	FROM Equipos.IntegranteSeleccion J
+	JOIN Equipos.ConvocacionEnSeleccion C 
+			 ON C.miembro_id = J.id 
+			 AND C.f_fin is NULL 
+			 AND C.tipo = 'Jugador'
+	WHERE C.seleccion_id = @SeleccionID
+				AND NOT EXISTS ( -- "Y no exista un impedimento con partidos restantes para el mismo mundial que el partido"
+					SELECT 1 
+					FROM Eventos.Impedimentos I 
+					JOIN Partidos.Partidos P_Origen 
+							 ON I.partido_origen_id = P_Origen.id
+				  WHERE I.jugador_id = J.id 
+							  AND I.cantidad_restante > 0
+							  AND P_Origen.mundial_id = (SELECT mundial_id FROM Partidos.Partidos WHERE id = @PartidoID)
+				)
+)
+GO
+
+--- Son los jugadores que están jugando en un instante dado
 CREATE OR ALTER FUNCTION Partidos.fn_jugadores_en_cancha (
     @PartidoID INT, 
     @Minuto SMALLINT, 
