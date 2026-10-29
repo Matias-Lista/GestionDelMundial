@@ -197,7 +197,12 @@ BEGIN
 	END 
 
 	-- Acá hay que evaluar si requiere o no requiere prórroga
+	IF @fase <> 'GRUPOS' BEGIN
+		--
+		print 'Evaluo prorroga...' --TODO
+	END
 
+	EXEC Partidos.sp_terminar_partido @PartidoID = @PartidoID;
 
 END
 GO
@@ -338,7 +343,7 @@ BEGIN
 	-- LEFT JOIN Partidos.Partidos P ON P.id = A.partido_id
 	-- WHERE P.mundial_id = @AñoMundial;
 
-
+	SELECT * FROM Partidos.Partidos WHERE mundial_id = @AñoMundial and fase = 'GRUPOS'
 END
 GO
 /*

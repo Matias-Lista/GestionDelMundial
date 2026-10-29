@@ -7,6 +7,25 @@
 USE GestionDelMundial;
 GO
 
+-- TODO: Manejar bien goles en contra.
+CREATE OR ALTER VIEW Partidos.vw_resumen_partido AS
+SELECT 
+    P.*,
+	(SELECT COUNT(*) 
+		FROM Eventos.Goles G
+		JOIN Equipos.ConvocacionEnSeleccion C ON C.miembro_id = G.jugador_autor_id
+		WHERE G.tipo <> 'E' and G.partido_id = P.id and C.seleccion_id = P.seleccion_A_id) as goles_A,
+		
+	(SELECT COUNT(*) 
+		FROM Eventos.Goles G
+		JOIN Equipos.ConvocacionEnSeleccion C ON C.miembro_id = G.jugador_autor_id
+		WHERE G.tipo <> 'E' and G.partido_id = P.id and C.seleccion_id = P.seleccion_B_id) as goles_B
+	FROM Partidos P;
+GO
+
+---SELECT * FROM Partidos.vw_resumen_partido
+GO
+
 -- Esta función devuelve los jugadores disponibles para un partido, y una selección.
 -- Basicamente, toma todos los jugadores convocados, y remueve todos los jugadores con un impedimento activo.
 
@@ -370,6 +389,50 @@ BEGIN
 	END -- while;
 	
 	DROP TABLE #SeleccionesGrupos;
+END
+GO
+
+CREATE OR ALTER PROCEDURE Partidos.sp_terminar_partido 
+	@PartidoID INT
+AS
+BEGIN 
+	SET NOCOUNT ON
+
+	DECLARE @errores VARCHAR(4000) = '';
+
+	if @PartidoID is null
+		SET @errores = @errores + '- Debe indicar partido' + CHAR(13) + CHAR(10);
+	ELSE IF NOT EXISTS (SELECT mundial_id FROM Partidos.Partidos WHERE id = @PartidoID)
+		SET @errores = @errores + '- El partido no existe' + CHAR(13) + CHAR(10);
+
+	if @errores <> ''
+		throw 50001, @errores, 1;
+
+	-- Tengo que fijarme quién tiene más goles.
+	DECLARE @golesA INT = 0;
+	DECLARE @golesB INT = 0;
+	DECLARE @fase VARCHAR(15);
+	DECLARE @seleccionA INT = 0;
+	DECLARE @seleccionB INT = 0;
+	DECLARE @seleccionGanadora INT = NULL;
+	SELECT @fase = fase, 
+				 @golesA = goles_A, @golesB = goles_B,
+				 @seleccionA = seleccion_A_id, @seleccionB = seleccion_B_id
+				 FROM Partidos.vw_resumen_partido WHERE id = @PartidoID;
+
+	IF @golesA > @golesB SET @seleccionGanadora = @seleccionA;
+	IF @golesB > @golesA SET @seleccionGanadora = @seleccionB;
+
+	UPDATE Partidos.Partidos 
+		SET seleccion_ganadora_id = @seleccionGanadora 
+		WHERE id = @PartidoID;
+
+	-- Si NO es fase de grupos, hay que llevar al ganador al siguiente partido 
+	-- IF @fase <> ' GRUPOS'
+
+
+
+
 END
 GO
 

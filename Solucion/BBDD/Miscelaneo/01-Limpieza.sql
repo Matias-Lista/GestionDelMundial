@@ -123,9 +123,11 @@ DROP PROCEDURE IF EXISTS Publicidad.sp_crear_pieza_de_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
 
+DROP VIEW     IF  EXISTS Partidos.vw_resumen_partido;
 DROP FUNCTION IF  EXISTS Partidos.fn_jugadores_disponibles;
 DROP FUNCTION IF  EXISTS Partidos.fn_jugadores_en_cancha;
 DROP PROCEDURE IF EXISTS Partidos.sp_definir_formacion_inicial;
+DROP PROCEDURE IF EXISTS Partidos.sp_terminar_partido;
 
 DROP PROCEDURE IF EXISTS Eventos.sp_registrar_cambio;
 DROP PROCEDURE IF EXISTS Eventos.sp_registrar_amonestacion;
