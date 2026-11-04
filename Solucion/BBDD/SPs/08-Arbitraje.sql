@@ -528,22 +528,36 @@ BEGIN
 
     DECLARE @arbitrosIDs TABLE (id INT IDENTITY(1,1), arbitro_id INT);
 
-	DECLARE @PaisA CHAR(3) = NULL; DECLARE @PaisB CHAR(3) = NULL;
+	DECLARE @PaisA  CHAR(3) = NULL;
+	DECLARE @PaisB  CHAR(3) = NULL;
+	DECLARE @GrupoA CHAR(1) = NULL;
+	DECLARE @GrupoB CHAR(1) = NULL;
 
-	SELECT @PaisA = S.pais_id
+	SELECT @PaisA = S.pais_id, @GrupoA = PP.grupo
 		FROM Partidos.Partidos P
 		JOIN Mundial.Selecciones S ON S.id = P.seleccion_A_id
+		LEFT JOIN Mundial.Paises_Participes PP ON PP.pais_id = S.pais_id AND PP.mundial_id = P.mundial_id
 		WHERE P.id = @PartidoID;
 		
-	SELECT @PaisB = S.pais_id
+	SELECT @PaisB = S.pais_id, @GrupoB = PP.grupo
 		FROM Partidos.Partidos P
 		JOIN Mundial.Selecciones S ON S.id = P.seleccion_B_id
+		LEFT JOIN Mundial.Paises_Participes PP ON PP.pais_id = S.pais_id AND PP.mundial_id = P.mundial_id
 		WHERE P.id = @PartidoID;
 
 	INSERT INTO @arbitrosIDs (arbitro_id)
 	SELECT TOP (3 + @usaVar) A.id
 	FROM Arbitraje.Arbitros A
-	WHERE A.pais_id <> @PaisA and A.pais_id <> @PaisB ---- NO PUEDEN SER ARBITROS DE LOS PAISES QUE JUEGAN.
+	LEFT JOIN Mundial.Paises_Participes PP_Arbitro 
+		ON A.pais_id = PP_Arbitro.pais_id AND PP_Arbitro.mundial_id = @añoMundial
+	WHERE A.pais_id <> @PaisA 
+	  AND A.pais_id <> @PaisB -- NO PUEDEN SER ÁRBITROS DE LOS PAÍSES QUE JUEGAN.
+	  AND (
+		  -- EL ÁRBITRO NO TIENE GRUPO (su país no clasificó) 
+		  PP_Arbitro.grupo IS NULL 
+		  -- O SU GRUPO ES DISTINTO AL DE LOS DOS EQUIPOS QUE JUEGAN
+		  OR (PP_Arbitro.grupo <> ISNULL(@GrupoA, '') AND PP_Arbitro.grupo <> ISNULL(@GrupoB, ''))
+	  )
 	ORDER BY NEWID();
 
 	DECLARE @i INT = 1;

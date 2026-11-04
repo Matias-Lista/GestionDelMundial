@@ -119,6 +119,40 @@ RETURN (
 );
 GO
 
+--- Se arma una tabla de puntajes
+---- Primero por puntos: 3 si ganas, 1 si empatas, 0 si perdés
+---- Después se desempata en este orden:
+---- .Diferencia de goles, a favor y en contra
+---- .Mayor cantidad de goles a favor marcados
+---- .Puntos obtenidos en los partidos directos entre los equipos empatados.
+---- .Diferencia de goles en los partidos directos entre los equipos empatados.
+---- .Goles marcados en los partidos directos entre los equipos empatados.
+---- .Puntos de Fair Play (menos tarjetas rojas y amarillas).
+---- .Sorteo.
+
+CREATE OR ALTER FUNCTION Partidos.fn_tabla_grupos(@AñoMundial INT)
+RETURNS table
+RETURN (
+	SELECT *, ROW_NUMBER() OVER (
+				PARTITION BY grupo 
+				ORDER BY puntos DESC, diferencia_de_goles DESC, 
+						 goles_a_favor DESC, puntos_de_fair_play ASC
+						 --, NEWID() TODO: SQL SERver no le gustan las cosas no deterministicas acá. Hay un workaround que es usando una vista que envuelva un newid
+			) as posicion_en_grupo
+	FROM Mundial.Paises_Participes
+	WHERE mundial_id = @AñoMundial
+)
+GO
+
+CREATE OR ALTER PROCEDURE Partidos.sp_terminar_fase_de_grupos
+	@AñoMundial INT
+AS
+BEGIN
+
+print '';
+
+END
+GO
  
 CREATE OR ALTER PROCEDURE Partidos.sp_definir_formacion_inicial 
 	@Jugando BIT,
@@ -365,7 +399,7 @@ BEGIN
 		-- Esta consulta cruza sin repetir todas las selecciones que pertenecen a un mismo grupo.
 		SELECT PP1.seleccion_id as 'seleccion_a_id', PP2.seleccion_id as 'seleccion_b_id' FROM Mundial.Paises_Participes PP1
 		JOIN Mundial.Paises_Participes PP2 ON PP1.grupo = PP2.grupo AND PP1.pais_id < PP2.pais_id
-		WHERE PP1.mundial_id = 2022 and PP2.mundial_id = 2022
+		WHERE PP1.mundial_id = @AñoMundial and PP2.mundial_id = @AñoMundial
 	);
 
 	DECLARE @partidosDeGrupos INT = (SELECT count(*) FROM #SeleccionesGrupos);
@@ -408,6 +442,8 @@ BEGIN
 	if @errores <> ''
 		throw 50001, @errores, 1;
 
+	DECLARE @añoMundial SMALLINT = (SELECT mundial_id FROM Partidos.Partidos WHERE id = @PartidoID);
+
 	-- Tengo que fijarme quién tiene más goles.
 	DECLARE @golesA INT = 0;
 	DECLARE @golesB INT = 0;
@@ -426,6 +462,23 @@ BEGIN
 	UPDATE Partidos.Partidos 
 		SET seleccion_ganadora_id = @seleccionGanadora 
 		WHERE id = @PartidoID;
+
+	-- Si es de grupos, hay que actualizar los datos de puntos!
+	IF @fase = 'GRUPOS' BEGIN 
+		
+		---TODO: hacer los puntos de fair play
+		-- TODO: Transaccion
+
+		UPDATE Mundial.Paises_Participes
+		SET 
+			goles_a_favor   = goles_a_favor + IIF(seleccion_id = @seleccionA, @golesA, @golesB),
+			goles_en_contra = goles_en_contra + IIF(seleccion_id = @seleccionA, @golesB, @golesA),
+			ganados         = ganados + IIF(seleccion_id = @seleccionGanadora, 1, 0),
+			perdidos        = perdidos + IIF(@seleccionGanadora IS NOT NULL AND seleccion_id <> @seleccionGanadora, 1, 0),
+			empatados       = empatados + IIF(@seleccionGanadora IS NULL, 1, 0)
+		WHERE seleccion_id IN (@seleccionA, @seleccionB);
+
+	END
 
 	-- Si NO es fase de grupos, hay que llevar al ganador al siguiente partido 
 	-- IF @fase <> ' GRUPOS'

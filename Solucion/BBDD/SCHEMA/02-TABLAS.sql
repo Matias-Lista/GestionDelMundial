@@ -188,12 +188,23 @@ GO
 IF OBJECT_ID('Mundial.Paises_Participes', 'U') IS NULL
 BEGIN
 CREATE TABLE Mundial.Paises_Participes (
-    id             INT      IDENTITY(1,1),
-    pais_id        CHAR(3)  NOT NULL,
-    mundial_id     SMALLINT NOT NULL,
-    seleccion_id   INT      , -- No pongo not null acá para poder asociar un pais al mundial sin haber creado la seleccion aun
-    esta_eliminado BIT      DEFAULT 0,
-    grupo          CHAR(1)  ,
+    id                  INT      IDENTITY(1,1),
+    pais_id             CHAR(3)  NOT NULL,
+    mundial_id          SMALLINT NOT NULL,
+    seleccion_id        INT      , -- No pongo not null acá para poder asociar un pais al mundial sin haber creado la seleccion aun
+    esta_eliminado      BIT      DEFAULT 0,
+    grupo               CHAR(1)  ,
+
+    ---- Resumen
+    puntos                       AS (ganados * 3 + empatados) PERSISTED,
+    diferencia_de_goles          AS (goles_a_favor - goles_en_contra) PERSISTED,
+    goles_a_favor       SMALLINT DEFAULT 0,
+    goles_en_contra     SMALLINT DEFAULT 0,
+    ganados             SMALLINT DEFAULT 0,
+    perdidos            SMALLINT DEFAULT 0,
+    empatados           SMALLINT DEFAULT 0,
+    puntos_de_fair_play SMALLINT DEFAULT 0,
+
 
     CONSTRAINT PK_Paises_Participes                   PRIMARY KEY (id),
     CONSTRAINT FK_Paises_Participes_Pais              FOREIGN KEY (pais_id)      REFERENCES Administracion.Paises(codigo),

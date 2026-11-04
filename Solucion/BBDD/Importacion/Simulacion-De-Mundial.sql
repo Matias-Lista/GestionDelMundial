@@ -314,7 +314,8 @@ BEGIN
 	SELECT * FROM Mundial.Habilitacion_Arbitro WHERE mundial_id = @AñoMundial;
 
 	DECLARE @partidosDeGrupos TABLE (id INT IDENTITY(1,1), partido_id INT);
-	
+	print 'AÑO MUNDIAL: '
+	print @AñoMundial
 	INSERT INTO @partidosDeGrupos (partido_id)
 		SELECT id
 		FROM Partidos.Partidos
@@ -336,6 +337,11 @@ BEGIN
 
 	-- Ejecuto SP FINALIZAR FASE DE GRUPOS.
 
+	EXEC Partidos.sp_terminar_fase_de_grupos @AñoMundial = @AñoMundial;
+	
+	SELECT * FROM Mundial.Paises_Participes
+	SELECT * FROM Partidos.fn_tabla_grupos(@AñoMundial)
+
 	-- Hago otro while con los partidos que quedan
 
 	-- SELECT A.arbitro_id 
@@ -344,6 +350,7 @@ BEGIN
 	-- WHERE P.mundial_id = @AñoMundial;
 
 	SELECT * FROM Partidos.Partidos WHERE mundial_id = @AñoMundial and fase = 'GRUPOS'
+	
 END
 GO
 /*
