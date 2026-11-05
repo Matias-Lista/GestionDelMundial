@@ -10,8 +10,8 @@
  ----* Reemplazar la ruta en la que se copió el repositorio de este proyecto en la primera instrucción después de estos comentarios.
  ----* Reemplazar las variables de configuración (EjecutarTesteos, ImportarDatos, ImportarUnUnicoMundial, etc.).
 
-:setvar rutaAlRepositorio C:\gits\GestionDelMundial
--- :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
+-- :setvar rutaAlRepositorio C:\gits\GestionDelMundial
+:setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
 :setvar ImportarDatos   1 -- Importa datos de los datasets.
 :setvar MostrarDatos    0 -- Realiza SELECTs de los datos importados.
@@ -64,22 +64,22 @@ IF ($(ImportarDatos) = 1)
 BEGIN
     PRINT '[*] iMPORTANDO DATOS.';
     exec Importacion.PoblarDB 
-            @RutaConfederationsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\confederations.csv',
-            @RutaTeamsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\teams.csv',
-            @RutaPlayersCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\players.csv',
-            @RutaSquadsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\squads.csv',
-            @RutaTournamentsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\tournaments.csv',
-            @RutaGroupStandingsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\group_standings.csv',
-            @RutaStadiumsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\stadiums.csv',
-            @RutaMatchesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\matches.csv',
-            @RutaPlayerAppearancesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\player_appearances.csv',
-            @RutaRefereesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\referees.csv',
-            @RutaRefereeAppearancesCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\referee_appearances.csv',
-            @RutaSubstitutionsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\substitutions.csv',
-            @RutaGoalsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\goals.csv',
-            @RutaPenaltyKicksCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\penalty_kicks.csv',
-            @RutaBookingsCSV = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\bookings.csv',
-            @RutaPublicidadJSON = '$(rutaAlRepositorio)\Solucion\BBDD\Importacion\campañas-ficticias-mundial-2022.json',
+            @RutaConfederationsCSV = '$(rutaAlRepositorio)\Datasets\confederations.csv',
+            @RutaTeamsCSV = '$(rutaAlRepositorio)\Datasets\teams.csv',
+            @RutaPlayersCSV = '$(rutaAlRepositorio)\Datasets\players.csv',
+            @RutaSquadsCSV = '$(rutaAlRepositorio)\Datasets\squads.csv',
+            @RutaTournamentsCSV = '$(rutaAlRepositorio)\Datasets\tournaments.csv',
+            @RutaGroupStandingsCSV = '$(rutaAlRepositorio)\Datasets\group_standings.csv',
+            @RutaStadiumsCSV = '$(rutaAlRepositorio)\Datasets\stadiums.csv',
+            @RutaMatchesCSV = '$(rutaAlRepositorio)\Datasets\matches.csv',
+            @RutaPlayerAppearancesCSV = '$(rutaAlRepositorio)\Datasets\player_appearances.csv',
+            @RutaRefereesCSV = '$(rutaAlRepositorio)\Datasets\referees.csv',
+            @RutaRefereeAppearancesCSV = '$(rutaAlRepositorio)\Datasets\referee_appearances.csv',
+            @RutaSubstitutionsCSV = '$(rutaAlRepositorio)\Datasets\substitutions.csv',
+            @RutaGoalsCSV = '$(rutaAlRepositorio)\Datasets\goals.csv',
+            @RutaPenaltyKicksCSV = '$(rutaAlRepositorio)\Datasets\penalty_kicks.csv',
+            @RutaBookingsCSV = '$(rutaAlRepositorio)\Datasets\bookings.csv',
+            @RutaPublicidadJSON = '$(rutaAlRepositorio)\Datasets\campañas-ficticias-mundial-2022.json',
             @MostrarDatos = $(MostrarDatos)
 END
 
