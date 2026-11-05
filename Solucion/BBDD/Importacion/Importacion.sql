@@ -2043,19 +2043,19 @@ END
 GO
 
 -- exec Importacion.PoblarDB 
---         @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\confederations.csv',
---         @RutaTeamsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\teams.csv',
---         @RutaPlayersCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\players.csv',
---         @RutaSquadsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\squads.csv',
---         @RutaTournamentsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\tournaments.csv',
---         @RutaGroupStandingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\group_standings.csv',
---         @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\stadiums.csv',
---         @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\matches.csv',
---         @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\player_appearances.csv',
---         @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\substitutions.csv',
---         @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\goals.csv',
---         @RutaPenaltyKicksCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\penalty_kicks.csv',
---         @RutaBookingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\Solucion\BBDD\Importacion\bookings.csv',
+--         @RutaConfederationsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\confederations.csv',
+--         @RutaTeamsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\teams.csv',
+--         @RutaPlayersCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\players.csv',
+--         @RutaSquadsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\squads.csv',
+--         @RutaTournamentsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\tournaments.csv',
+--         @RutaGroupStandingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\group_standings.csv',
+--         @RutaStadiumsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\stadiums.csv',
+--         @RutaMatchesCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\matches.csv',
+--         @RutaPlayerAppearancesCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\player_appearances.csv',
+--         @RutaSubstitutionsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\substitutions.csv',
+--         @RutaGoalsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\goals.csv',
+--         @RutaPenaltyKicksCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\penalty_kicks.csv',
+--         @RutaBookingsCSV = 'C:\Soluciones-SQL\GestionDelMundial\datasets\bookings.csv',
 --         @MostrarDatos = 1,
 --         @UnicoMundial = 2022
 

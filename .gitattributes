@@ -6,4 +6,4 @@
 *.pdf linguist-generated
 
 ## Evitar que me modifique el fin de los archivos CSV, que causa que la importación falle
-*.csv text eol=crlf
+*.csv eol=lf
