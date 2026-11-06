@@ -26,6 +26,17 @@ GO
 ---SELECT * FROM Partidos.vw_resumen_partido
 GO
 
+CREATE OR ALTER FUNCTION Partidos.fn_estan_empatados (
+	@PartidoID INT
+)
+RETURNS INT 
+AS
+RETURN (
+	SELECT ISNULL(IIF(goles_A = goles_B, 1, 0), 0)
+  FROM Partidos.vw_resumen_partido
+  WHERE id = @PartidoID
+)
+GO
 -- Esta función devuelve los jugadores disponibles para un partido, y una selección.
 -- Basicamente, toma todos los jugadores convocados, y remueve todos los jugadores con un impedimento activo.
 
@@ -149,8 +160,166 @@ CREATE OR ALTER PROCEDURE Partidos.sp_terminar_fase_de_grupos
 AS
 BEGIN
 
-print '';
 
+	DECLARE @cantidadDeEquipos INT = Administracion.fn_obtener_regla(@AñoMundial, 'CANTIDAD_EQUIPOS');
+
+	-- fn_tabla_grupos devuelve el puntaje y la posicion de cada selección dentro de cada grupo.
+	-- Necesito tomar los 2 mejores de cada grupo, y los mejorfes terceros, dependiendo de cuantos equipos sean.
+	-- Después hay que repartirlos entre los partidos.
+
+	DECLARE @clasificadosFijos INT = @cantidadDeEquipos / 2; -- clasifican 2 de cada grupo de 4
+
+	-- Calculamos la siguiente potencia de 2
+	DECLARE @siguientePotenciaDeDos INT = POWER(2, CEILING(LOG(@clasificadosFijos, 2)));
+
+	DECLARE @tercerosFaltantes INT = @siguientePotenciaDeDos - @clasificadosFijos;
+
+	DECLARE @equiposQueAvanzan TABLE (id int IDENTITY(1,1), seleccion_id INT, grupo CHAR(1))
+
+
+	INSERT INTO @equiposQueAvanzan (seleccion_id, grupo)
+	SELECT seleccion_id, grupo
+				 FROM Partidos.fn_tabla_grupos(@AñoMundial)
+				 WHERE posicion_en_grupo <= 2
+				 ORDER BY grupo ASC, posicion_en_grupo ASC -- en teoría ya está ordenado en la funcion igual.
+
+	IF @tercerosFaltantes > 0 BEGIN
+		INSERT INTO @equiposQueAvanzan (seleccion_id, grupo)
+		SELECT TOP (@tercerosFaltantes) seleccion_id, grupo
+					 FROM Partidos.fn_tabla_grupos(@AñoMundial)
+					 WHERE posicion_en_grupo = 3
+					 ORDER BY puntos DESC
+	END
+
+		-- Ahora hay que eliminar a todos los que no están en @equiposQueAvanzan, e ir asignando los que sí avanzan
+		-- a los partidos que le siguen a la fase de GRUPOS.
+	
+	UPDATE Mundial.Paises_Participes
+		SET esta_eliminado = 1
+		WHERE mundial_id = @AñoMundial
+		AND seleccion_id NOT IN (SELECT seleccion_id FROM @equiposQueAvanzan);
+
+
+	/* ACÁ CARGO LOS PARTIDOS DE LA FASE SIGUIENTE */
+	DECLARE @nombreFaseSiguiente VARCHAR(15) = CASE 
+		WHEN @siguientePotenciaDeDos = 32 THEN 'DIECISEISAVOS'
+		WHEN @siguientePotenciaDeDos = 16 THEN 'OCTAVOS'
+		WHEN @siguientePotenciaDeDos = 8  THEN 'CUARTOS'
+		WHEN @siguientePotenciaDeDos = 4  THEN 'SEMIFINAL'
+	END;
+
+	DECLARE @partidosFaseSiguiente TABLE (
+		id INT, 
+		nro_partido INT IDENTITY(1,1), -- Al venir ordenados por ID asc, la primera mitad pertenece a una rama de la llave y la segunda a la otra.
+		seleccion_A_id INT NULL,
+		seleccion_B_id INT NULL
+	);
+
+	INSERT INTO @partidosFaseSiguiente (id)
+		SELECT id 
+		FROM Partidos.Partidos 
+		WHERE mundial_id = @AñoMundial AND fase = @nombreFaseSiguiente
+		ORDER BY id ASC;
+
+	DECLARE @cantidadPartidos INT = @siguientePotenciaDeDos / 2;
+
+
+/* REPARTO DE EQUIPOS USANDO WHILE (ALGORITMO ANTI-CRUCE) */
+	DECLARE @totalEquipos INT = (SELECT COUNT(*) FROM @equiposQueAvanzan);
+	DECLARE @i INT = 1;
+	
+	DECLARE @curr_seleccion_id INT;
+	DECLARE @curr_grupo CHAR(1);
+	
+	WHILE @i <= @totalEquipos
+	BEGIN
+		-- 1. Tomamos el equipo actual
+		SELECT @curr_seleccion_id = seleccion_id, @curr_grupo = grupo 
+		FROM @equiposQueAvanzan 
+		WHERE id = @i;
+
+		-- 2. Buscamos de qué lado de la llave ya hay alguien de su grupo (si lo hay)
+		DECLARE @mitadOcupada INT = 0; -- 0 = ninguna, 1 = izquierda, 2 = derecha
+		
+		IF EXISTS (
+			SELECT 1 FROM @partidosFaseSiguiente P
+			JOIN @equiposQueAvanzan E ON E.seleccion_id IN (P.seleccion_A_id, P.seleccion_B_id)
+			WHERE E.grupo = @curr_grupo AND P.nro_partido <= @cantidadPartidos / 2
+		) 
+			SET @mitadOcupada = 1;
+		ELSE IF EXISTS (
+			SELECT 1 FROM @partidosFaseSiguiente P
+			JOIN @equiposQueAvanzan E ON E.seleccion_id IN (P.seleccion_A_id, P.seleccion_B_id)
+			WHERE E.grupo = @curr_grupo AND P.nro_partido > @cantidadPartidos / 2
+		) 
+			SET @mitadOcupada = 2;
+
+		DECLARE @partidoElegido INT = NULL;
+		DECLARE @asignaEnA BIT = 1;
+
+		-- A. Buscar lugar como Equipo A (Local), respetando la mitad libre del cuadro
+		SELECT TOP 1 @partidoElegido = id 
+		FROM @partidosFaseSiguiente 
+		WHERE seleccion_A_id IS NULL
+		  AND (@mitadOcupada = 0 OR 
+			  (@mitadOcupada = 1 AND nro_partido > @cantidadPartidos / 2) OR 
+			  (@mitadOcupada = 2 AND nro_partido <= @cantidadPartidos / 2))
+		ORDER BY nro_partido ASC;
+
+		-- B. Si no hay cupo como Equipo A en esa mitad, buscar como Equipo B (Visitante)
+		IF @partidoElegido IS NULL
+		BEGIN
+			SET @asignaEnA = 0;
+			SELECT TOP 1 @partidoElegido = id 
+			FROM @partidosFaseSiguiente 
+			WHERE seleccion_B_id IS NULL
+			  -- Asegurar no caer en el MISMO partido que el compañero de grupo
+			  AND seleccion_A_id NOT IN (SELECT seleccion_id FROM @equiposQueAvanzan WHERE grupo = @curr_grupo)
+			  AND (@mitadOcupada = 0 OR 
+				  (@mitadOcupada = 1 AND nro_partido > @cantidadPartidos / 2) OR 
+				  (@mitadOcupada = 2 AND nro_partido <= @cantidadPartidos / 2))
+			ORDER BY nro_partido ASC;
+		END
+
+		-- C. Fallback: Formatos de muchos 3ros pueden forzar colisiones de llave inevitables.
+		-- Agarra cualquier partido, pero con la condición estricta de NO cruzarse en primera ronda.
+		IF @partidoElegido IS NULL
+		BEGIN
+			SELECT TOP 1 @partidoElegido = id, @asignaEnA = CASE WHEN seleccion_A_id IS NULL THEN 1 ELSE 0 END
+			FROM @partidosFaseSiguiente
+			WHERE (seleccion_A_id IS NULL OR seleccion_B_id IS NULL)
+			  AND (seleccion_A_id IS NULL OR seleccion_A_id NOT IN (SELECT seleccion_id FROM @equiposQueAvanzan WHERE grupo = @curr_grupo))
+			  AND (seleccion_B_id IS NULL OR seleccion_B_id NOT IN (SELECT seleccion_id FROM @equiposQueAvanzan WHERE grupo = @curr_grupo))
+			ORDER BY nro_partido ASC;
+		END
+
+		-- 3. Guardamos la asignación en la variable temporal
+		IF @partidoElegido IS NOT NULL
+		BEGIN
+			IF @asignaEnA = 1
+				UPDATE @partidosFaseSiguiente SET seleccion_A_id = @curr_seleccion_id WHERE id = @partidoElegido;
+			ELSE
+				UPDATE @partidosFaseSiguiente SET seleccion_B_id = @curr_seleccion_id WHERE id = @partidoElegido;
+		END
+
+		-- 4. Avanzar ciclo
+		SET @i = @i + 1;
+	END;
+
+	/* ACTUALIZACIÓN FINAL EN LA TABLA REAL */
+	BEGIN TRY
+		BEGIN TRANSACTION
+			UPDATE P
+			SET P.seleccion_A_id = PF.seleccion_A_id,
+				P.seleccion_B_id = PF.seleccion_B_id
+			FROM Partidos.Partidos P
+			INNER JOIN @partidosFaseSiguiente PF ON P.id = PF.id;
+		COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+		THROW;
+	END CATCH
 END
 GO
  
@@ -463,6 +632,13 @@ BEGIN
 		SET seleccion_ganadora_id = @seleccionGanadora 
 		WHERE id = @PartidoID;
 
+	--------- A PARTIR DE ACÁ, EL COMPORTAMIENTO CAMBIA SEGÚN LA FASE.
+	-- GRUPOS: ACTUALIZO PUNTOS.
+	-- FINAL: ganador del mundial
+	-- SEMIFINAL: Recursividad normal y tercer puesto
+	-- TERCER PUESTO: Define 3er y 4to puesto
+	-- el resto: recursividad comun (avanza el q gana, eliminado el q pierde)
+
 	-- Si es de grupos, hay que actualizar los datos de puntos!
 	IF @fase = 'GRUPOS' BEGIN 
 		
@@ -483,7 +659,7 @@ BEGIN
 	-- Si NO es fase de grupos, hay que llevar al ganador al siguiente partido 
 	-- IF @fase <> ' GRUPOS'
 
-
+	-- -- -- -- 
 
 
 END

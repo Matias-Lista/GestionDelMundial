@@ -545,24 +545,87 @@ BEGIN
 		LEFT JOIN Mundial.Paises_Participes PP ON PP.pais_id = S.pais_id AND PP.mundial_id = P.mundial_id
 		WHERE P.id = @PartidoID;
 
+	DECLARE @FasePartido VARCHAR(15) = (SELECT fase FROM Partidos.Partidos WHERE id = @PartidoID);
+
+	-- 1. Obtenemos toda la rama del partido actual hasta antes de la final. 
+    -- Lo guardamos en una variable de tabla para cruzarlo fácilmente.
+	DECLARE @RamaPartido TABLE (id INT);
+	
+	;WITH CTE_RamaPartido AS (
+		SELECT id, siguiente_partido_id, fase 
+		FROM Partidos.Partidos 
+		WHERE id = @PartidoID
+		
+		UNION ALL
+		
+		SELECT P.id, P.siguiente_partido_id, P.fase
+		FROM Partidos.Partidos P
+		INNER JOIN CTE_RamaPartido RP ON P.id = RP.siguiente_partido_id
+	)
+	INSERT INTO @RamaPartido (id)
+	SELECT id FROM CTE_RamaPartido WHERE fase <> 'FINAL';
+
+	-- 2. Construimos el recorrido futuro de TODAS las selecciones del mundial
+	;WITH 
+	PartidosBase AS (
+		-- Obtenemos los partidos actuales asignados a cada selección
+		SELECT seleccion_A_id AS seleccion_id, id, siguiente_partido_id, fase 
+		FROM Partidos.Partidos WHERE mundial_id = @añoMundial AND seleccion_A_id IS NOT NULL
+		
+		UNION ALL
+		
+		SELECT seleccion_B_id AS seleccion_id, id, siguiente_partido_id, fase 
+		FROM Partidos.Partidos WHERE mundial_id = @añoMundial AND seleccion_B_id IS NOT NULL
+	),
+	RamaTodasLasSelecciones AS (
+		-- Recursividad: Proyectamos el camino de esas selecciones hacia adelante
+		SELECT seleccion_id, id, siguiente_partido_id, fase FROM PartidosBase
+		
+		UNION ALL
+		
+		SELECT RS.seleccion_id, P.id, P.siguiente_partido_id, P.fase
+		FROM Partidos.Partidos P
+		INNER JOIN RamaTodasLasSelecciones RS ON P.id = RS.siguiente_partido_id
+	)
+
+
 	INSERT INTO @arbitrosIDs (arbitro_id)
-	SELECT TOP (3 + @usaVar) A.id
+	SELECT TOP (4 + @usaVar) A.id
 	FROM Arbitraje.Arbitros A
 	LEFT JOIN Mundial.Paises_Participes PP_Arbitro 
 		ON A.pais_id = PP_Arbitro.pais_id AND PP_Arbitro.mundial_id = @añoMundial
-	WHERE A.pais_id <> @PaisA 
-	  AND A.pais_id <> @PaisB -- NO PUEDEN SER ÁRBITROS DE LOS PAÍSES QUE JUEGAN.
+	WHERE A.pais_id <> ISNULL(@PaisA, '') 
+	  AND A.pais_id <> ISNULL(@PaisB, '') -- NO PUEDEN SER ÁRBITROS DE LOS PAÍSES QUE JUEGAN.
 	  AND (
-		  -- EL ÁRBITRO NO TIENE GRUPO (su país no clasificó) 
-		  PP_Arbitro.grupo IS NULL 
-		  -- O SU GRUPO ES DISTINTO AL DE LOS DOS EQUIPOS QUE JUEGAN
-		  OR (PP_Arbitro.grupo <> ISNULL(@GrupoA, '') AND PP_Arbitro.grupo <> ISNULL(@GrupoB, ''))
+	  		-- REGLA FASE DE GRUPOS:
+		  @FasePartido <> 'GRUPOS' 
+		  OR (
+
+			  -- EL ÁRBITRO NO TIENE GRUPO (su país no clasificó) 
+		      PP_Arbitro.grupo IS NULL 
+		  	  -- O SU GRUPO ES DISTINTO AL DE LOS DOS EQUIPOS QUE JUEGAN
+		      OR (PP_Arbitro.grupo <> ISNULL(@GrupoA, '') AND PP_Arbitro.grupo <> ISNULL(@GrupoB, ''))
+		  )
+	  )
+	  AND (
+		  -- REGLA KNOCKOUT:
+		  @FasePartido = 'GRUPOS'
+		  OR PP_Arbitro.seleccion_id IS NULL -- El país del árbitro no clasificó, puede dirigir a cualquiera
+		  OR NOT EXISTS (
+			  -- Verificamos si el camino proyectado de la selección del árbitro 
+			  -- se cruza en ALGÚN punto con la rama proyectada de este partido
+			  SELECT 1 
+			  FROM RamaTodasLasSelecciones RS
+			  INNER JOIN @RamaPartido RP ON RS.id = RP.id
+			  WHERE RS.seleccion_id = PP_Arbitro.seleccion_id
+		  )
 	  )
 	ORDER BY NEWID();
 
+
 	DECLARE @i INT = 1;
 	DECLARE @arbitroID INT = NULL;
-	WHILE @i < (3 + @usaVar + 1) BEGIN
+	WHILE @i < (4 + @usaVar + 1) BEGIN
 		
 		SELECT @arbitroID = arbitro_id FROM @arbitrosIDs WHERE id = @i;
 

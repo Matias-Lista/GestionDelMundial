@@ -1,126 +1,32 @@
 USE GestionDelMundial;
 GO
 
-CREATE OR ALTER PROCEDURE Importacion.sp_simular_partido
-	@PartidoID INT
-AS 
-BEGIN 
-
-	-- En un partido:
-	----1. Se asignan arbitros.
-	----2. Se designan jugadores (de los posibles, convocados menos impedimentos) de los dos equipos.
-	----3. Minuto a minuto se plantean eventos. (Cambios, goles, amonestaciones)
-	----4. Si al terminar, es empate, y es una fase KO, => alargue y penales.
-	----5. Terminar partido. Si fase <> 'GRUPOS', la selección ganadora avanza al siguiente partido.
-
-	EXEC Arbitraje.sp_asginar_terna_arbitros 
-		  @PartidoID = @PartidoID;
-
-	DECLARE @SeleccionA INT;
-	DECLARE @SeleccionB INT;
-	DECLARE @fase VARCHAR(15);
-
-	SELECT @SeleccionA = seleccion_A_id, 
-		   @SeleccionB = seleccion_B_id,
-		   @fase       = fase
-		   FROM Partidos.Partidos 
-		   WHERE id = @PartidoID;
-
-	DECLARE @posiciones TABLE (posicion CHAR(2));
-	INSERT INTO @posiciones (posicion)
-	VALUES ('GK'), ('AA'), ('BB'), ('CC'); ------TODO: VER POSICIONES REALES!
-
-
-	DECLARE @jugadoresDisponiblesA TABLE (id INT IDENTITY(1,1), jugador_id INT);
-
-	INSERT INTO @jugadoresDisponiblesA (jugador_id)
-	SELECT id 
-		FROM Partidos.fn_jugadores_disponibles (@PartidoID, @SeleccionA)
-	ORDER BY NEWID();
-
-	DECLARE @i INT = 1;
-	DECLARE @maxDisponibles INT = (SELECT COUNT(*) FROM @jugadoresDisponiblesA);
-	DECLARE @jugando BIT;
-	DECLARE @jugadorID INT;
-
-	DECLARE @posicion CHAR(2);
-
-	WHILE @i < (@maxDisponibles + 1) BEGIN
-
-		SET @jugando = IIF(@i < 12, 1, 0);
-
-		SELECT @jugadorID = jugador_id FROM @jugadoresDisponiblesA WHERE id = @i;
-
-		-- Posicion al azar.
-		SELECT TOP 1 @posicion = posicion FROM @posiciones ORDER BY NEWID(); 
-
-		EXEC Partidos.sp_definir_formacion_inicial
-				@Jugando     = @jugando,
-				@Posicion    = @posicion,
-				@PartidoID   = @PartidoID,
-				@JugadorID   = @jugadorID,
-				@SeleccionID = @SeleccionA;
-
-		SET @i = @i + 1;
-	END
-
-	DECLARE @jugadoresDisponiblesB TABLE (id INT IDENTITY(1,1), jugador_id INT);
-
-	INSERT INTO @jugadoresDisponiblesB (jugador_id)
-	SELECT id 
-		FROM Partidos.fn_jugadores_disponibles (@PartidoID, @SeleccionB)
-	ORDER BY NEWID();
-
-	SET @i = 1;
-	SET @maxDisponibles = (SELECT COUNT(*) FROM @jugadoresDisponiblesB);
-
-	WHILE @i < (@maxDisponibles + 1) BEGIN
-
-		SET @jugando = IIF(@i < 12, 1, 0);
-
-		SELECT @jugadorID = jugador_id FROM @jugadoresDisponiblesB WHERE id = @i;
-
-		-- Posicion al azar.
-		SELECT TOP 1 @posicion = posicion FROM @posiciones ORDER BY NEWID(); 
-
-		EXEC Partidos.sp_definir_formacion_inicial
-				@Jugando     = @jugando,
-				@Posicion    = @posicion,
-				@PartidoID   = @PartidoID,
-				@JugadorID   = @jugadorID,
-				@SeleccionID = @SeleccionB;
-
-		SET @i = @i + 1;
-	END
-
-	/*SELECT * FROM Partidos.JugadorPosicionInicial WHERE partido_id = @PartidoID;
-	throw 50001, 'xD', 1;*/
-
-	-- Para que los numeros no sean tan irrealistas (tipo, 10 goles por partido jasjdja),
-	-- saqué estos numeros del mundial 2022 para cada minuto:
-		-- Gol: 2.7% (o 0.027)
-		-- Amonestación: 3.6% (o 0.036)
-		-- Cambio: 9.0% (o 0.090)
-		-- No pasa nada: 84.7% (o 0.847)
+CREATE OR ALTER PROCEDURE Importacion.sp_simular_eventos
+	@PartidoID INT,
+	@EsProrroga BIT,
+	@SeleccionA INT,
+	@SeleccionB INT
+AS
+BEGIN
 
 	----Simulo el partido minuto a minuto.
 	DECLARE @random INT;
 
 	DECLARE @minuto TINYINT = 0;
-	DECLARE @tiempo TINYINT = 1;
+	DECLARE @tiempo TINYINT = IIF(@EsProrroga = 1, 3, 1);
 	DECLARE @extra  TINYINT = 0;
 
-	DECLARE @terminoElPartido BIT = 0;
+	DECLARE @tiempoDeCorte INT = @tiempo + 2;
 
 	DECLARE @eventoA BIT;
 
 	DECLARE @seleccionAux INT;
 
-	WHILE @terminoElPartido = 0 BEGIN
+	DECLARE @jugadorID INT = NULL;
+
+	WHILE @tiempo < @tiempoDeCorte BEGIN
 
 		SET @random = FLOOR(RAND() * (100 - 1 + 1)) + 1;
-
-
 
 		IF @random <= 85 BEGIN
 			-- Nada
@@ -192,14 +98,115 @@ BEGIN
 			SET @extra  = 0;
 		END
 
-		IF @tiempo = 3 SET @terminoElPartido = 1;
-
 	END 
+
+END
+GO
+
+CREATE OR ALTER PROCEDURE Importacion.sp_simular_partido
+	@PartidoID INT
+AS 
+BEGIN 
+
+	-- En un partido:
+	----1. Se asignan arbitros.
+	----2. Se designan jugadores (de los posibles, convocados menos impedimentos) de los dos equipos.
+	----3. Minuto a minuto se plantean eventos. (Cambios, goles, amonestaciones)
+	----4. Si al terminar, es empate, y es una fase KO, => alargue y penales.
+	----5. Terminar partido. Si fase <> 'GRUPOS', la selección ganadora avanza al siguiente partido.
+
+	EXEC Arbitraje.sp_asginar_terna_arbitros 
+		  @PartidoID = @PartidoID;
+
+	DECLARE @SeleccionA INT;
+	DECLARE @SeleccionB INT;
+	DECLARE @fase VARCHAR(15);
+
+	SELECT @SeleccionA = seleccion_A_id, 
+		   @SeleccionB = seleccion_B_id,
+		   @fase       = fase
+		   FROM Partidos.Partidos 
+		   WHERE id = @PartidoID;
+	
+	print 'partido de fase: '
+	print @fase
+	DECLARE @posiciones TABLE (posicion CHAR(2));
+	INSERT INTO @posiciones (posicion)
+	VALUES ('GK'), ('AA'), ('BB'), ('CC'); ------TODO: VER POSICIONES REALES!
+
+
+	DECLARE @jugadoresDisponiblesA TABLE (id INT IDENTITY(1,1), jugador_id INT);
+
+	INSERT INTO @jugadoresDisponiblesA (jugador_id)
+	SELECT id 
+		FROM Partidos.fn_jugadores_disponibles (@PartidoID, @SeleccionA)
+	ORDER BY NEWID();
+
+	DECLARE @i INT = 1;
+	DECLARE @maxDisponibles INT = (SELECT COUNT(*) FROM @jugadoresDisponiblesA);
+	DECLARE @jugando BIT;
+	DECLARE @jugadorID INT;
+
+	DECLARE @posicion CHAR(2);
+
+	WHILE @i < (@maxDisponibles + 1) BEGIN
+
+		SET @jugando = IIF(@i < 12, 1, 0);
+
+		SELECT @jugadorID = jugador_id FROM @jugadoresDisponiblesA WHERE id = @i;
+
+		-- Posicion al azar.
+		SELECT TOP 1 @posicion = posicion FROM @posiciones ORDER BY NEWID(); 
+
+		EXEC Partidos.sp_definir_formacion_inicial
+				@Jugando     = @jugando,
+				@Posicion    = @posicion,
+				@PartidoID   = @PartidoID,
+				@JugadorID   = @jugadorID,
+				@SeleccionID = @SeleccionA;
+
+		SET @i = @i + 1;
+	END
+
+	DECLARE @jugadoresDisponiblesB TABLE (id INT IDENTITY(1,1), jugador_id INT);
+
+	INSERT INTO @jugadoresDisponiblesB (jugador_id)
+	SELECT id 
+		FROM Partidos.fn_jugadores_disponibles (@PartidoID, @SeleccionB)
+	ORDER BY NEWID();
+
+	SET @i = 1;
+	SET @maxDisponibles = (SELECT COUNT(*) FROM @jugadoresDisponiblesB);
+
+	WHILE @i < (@maxDisponibles + 1) BEGIN
+
+		SET @jugando = IIF(@i < 12, 1, 0);
+
+		SELECT @jugadorID = jugador_id FROM @jugadoresDisponiblesB WHERE id = @i;
+
+		-- Posicion al azar.
+		SELECT TOP 1 @posicion = posicion FROM @posiciones ORDER BY NEWID(); 
+
+		EXEC Partidos.sp_definir_formacion_inicial
+				@Jugando     = @jugando,
+				@Posicion    = @posicion,
+				@PartidoID   = @PartidoID,
+				@JugadorID   = @jugadorID,
+				@SeleccionID = @SeleccionB;
+
+		SET @i = @i + 1;
+	END
+
+	EXEC Importacion.sp_simular_eventos
+		@PartidoID = @PartidoID,
+		@EsProrroga = 0,
+		@SeleccionA = @SeleccionA,
+		@SeleccionB = @SeleccionB;
 
 	-- Acá hay que evaluar si requiere o no requiere prórroga
 	IF @fase <> 'GRUPOS' BEGIN
-		--
 		print 'Evaluo prorroga...' --TODO
+
 	END
 
 	EXEC Partidos.sp_terminar_partido @PartidoID = @PartidoID;
@@ -339,21 +346,33 @@ BEGIN
 
 	EXEC Partidos.sp_terminar_fase_de_grupos @AñoMundial = @AñoMundial;
 	
-	SELECT * FROM Mundial.Paises_Participes
-	SELECT * FROM Partidos.fn_tabla_grupos(@AñoMundial)
-
 	-- Hago otro while con los partidos que quedan
 
-	-- SELECT A.arbitro_id 
-	-- FROM Arbitraje.ArbitroAsignadoPartido  A
-	-- LEFT JOIN Partidos.Partidos P ON P.id = A.partido_id
-	-- WHERE P.mundial_id = @AñoMundial;
+	DECLARE @partidosRestantes TABLE (id INT IDENTITY(1,1), partido_id INT);
+	INSERT INTO @partidosRestantes (partido_id)
+		SELECT id
+		FROM Partidos.Partidos
+		WHERE mundial_id = @AñoMundial and fase <> 'GRUPOS'
+		ORDER BY fecha_y_hora ASC;
 
-	SELECT * FROM Partidos.Partidos WHERE mundial_id = @AñoMundial and fase = 'GRUPOS'
+	SET @i = 1;
+	SET @partidoID = NULL;
+
+	WHILE @i < 49 BEGIN -- Son 48 partidos de grupos para 32 equipos
+		SELECT @partidoID = partido_id FROM @partidosRestantes WHERE id = @i;
+
+		EXEC Importacion.sp_simular_partido 
+			  @PartidoID = @partidoID;
+
+		SET @i = @i + 1;
+	END
+
+	SELECT * FROM Partidos.Partidos WHERE mundial_id = @AñoMundial
 	
 END
 GO
-/*
+
+BEGIN TRY
 BEGIN TRANSACTION
 
 DECLARE @FechaInicioMasUnAño DATE;
@@ -370,4 +389,12 @@ EXEC Importacion.sp_simular_mundial
 	  @FechaDeFin    = @FechaFinMasUnAño;
 
 ROLLBACK TRANSACTION;
-*/
+END TRY
+BEGIN CATCH
+  IF @@TRANCOUNT > 0
+	ROLLBACK TRANSACTION
+	
+	PRINT ERROR_MESSAGE();
+	DECLARE @xxxxx Varchar(5000) = ERROR_MESSAGE();
+	THROW 50001, @xxxxx, 1;
+END CATCH
