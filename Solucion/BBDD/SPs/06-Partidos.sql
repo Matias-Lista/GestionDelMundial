@@ -19,8 +19,19 @@ SELECT
 	(SELECT COUNT(*) 
 		FROM Eventos.Goles G
 		JOIN Equipos.ConvocacionEnSeleccion C ON C.miembro_id = G.jugador_autor_id
-		WHERE G.tipo <> 'E' and G.partido_id = P.id and C.seleccion_id = P.seleccion_B_id) as goles_B
-	FROM Partidos P;
+		WHERE G.tipo <> 'E' and G.partido_id = P.id and C.seleccion_id = P.seleccion_B_id) as goles_B,
+
+	(SELECT COUNT(*) 
+		FROM Eventos.PenalesDeTanda PDT
+		JOIN Equipos.ConvocacionEnSeleccion C ON C.miembro_id = PDT.jugador_id
+		WHERE PDT.partido_id = P.id and C.seleccion_id = P.seleccion_A_id and PDT.convirtio = 1) as goles_tanda_de_penales_A,
+
+	(SELECT COUNT(*) 
+		FROM Eventos.PenalesDeTanda PDT
+		JOIN Equipos.ConvocacionEnSeleccion C ON C.miembro_id = PDT.jugador_id
+		WHERE PDT.partido_id = P.id and C.seleccion_id = P.seleccion_B_id and PDT.convirtio = 1) as goles_tanda_de_penales_B
+
+	FROM Partidos.Partidos P;
 GO
 
 ---SELECT * FROM Partidos.vw_resumen_partido
@@ -31,11 +42,13 @@ CREATE OR ALTER FUNCTION Partidos.fn_estan_empatados (
 )
 RETURNS INT 
 AS
-RETURN (
-	SELECT ISNULL(IIF(goles_A = goles_B, 1, 0), 0)
-  FROM Partidos.vw_resumen_partido
-  WHERE id = @PartidoID
-)
+BEGIN
+	RETURN (
+		SELECT ISNULL(IIF(goles_A = goles_B, 1, 0), 0)
+			FROM Partidos.vw_resumen_partido
+			WHERE id = @PartidoID
+	)
+END
 GO
 -- Esta función devuelve los jugadores disponibles para un partido, y una selección.
 -- Basicamente, toma todos los jugadores convocados, y remueve todos los jugadores con un impedimento activo.
@@ -616,21 +629,41 @@ BEGIN
 	-- Tengo que fijarme quién tiene más goles.
 	DECLARE @golesA INT = 0;
 	DECLARE @golesB INT = 0;
+	DECLARE @golesPenalesA INT;
+	DECLARE @golesPenalesB INT;
 	DECLARE @fase VARCHAR(15);
 	DECLARE @seleccionA INT = 0;
 	DECLARE @seleccionB INT = 0;
 	DECLARE @seleccionGanadora INT = NULL;
 	SELECT @fase = fase, 
 				 @golesA = goles_A, @golesB = goles_B,
-				 @seleccionA = seleccion_A_id, @seleccionB = seleccion_B_id
+				 @seleccionA = seleccion_A_id, @seleccionB = seleccion_B_id,
+				 @golesPenalesA = goles_tanda_de_penales_A, @golesPenalesB = goles_tanda_de_penales_B
 				 FROM Partidos.vw_resumen_partido WHERE id = @PartidoID;
 
 	IF @golesA > @golesB SET @seleccionGanadora = @seleccionA;
 	IF @golesB > @golesA SET @seleccionGanadora = @seleccionB;
 
+	IF @fase <> 'GRUPOS' AND @golesA = @golesB BEGIN
+		-- MIro los penales SOLO si no es grupos
+
+		IF @golesPenalesA = @golesPenalesB
+			throw 50001, 'Hubieron penales, y estan empatados. No se puede finalizar el partido.', 1;
+
+		SET @seleccionGanadora = IIF(@golesPenalesA > @golesPenalesB, @seleccionA, @seleccionB);
+	END;
+
+	DECLARE @seleccionPerdedora INT = IIF(@seleccionGanadora = @seleccionA, @seleccionB, @seleccionA);
 	UPDATE Partidos.Partidos 
 		SET seleccion_ganadora_id = @seleccionGanadora 
 		WHERE id = @PartidoID;
+
+	IF @fase <> 'GRUPOS' BEGIN -- eliminar del mundial!
+		UPDATE Mundial.Paises_Participes 
+			SET esta_eliminado = 1 
+			WHERE mundial_id = @añoMundial 
+						and seleccion_id = IIF(@seleccionA = @seleccionGanadora, @seleccionB, @seleccionA);
+	END
 
 	--------- A PARTIR DE ACÁ, EL COMPORTAMIENTO CAMBIA SEGÚN LA FASE.
 	-- GRUPOS: ACTUALIZO PUNTOS.
@@ -657,7 +690,42 @@ BEGIN
 	END
 
 	-- Si NO es fase de grupos, hay que llevar al ganador al siguiente partido 
-	-- IF @fase <> ' GRUPOS'
+	IF @fase NOT IN ('GRUPOS', 'TERCER_PUESTO', 'FINAL') BEGIN
+		DECLARE @siguientePartidoID INT;
+		SELECT @siguientePartidoID = siguiente_partido_id FROM Partidos.Partidos WHERE id = @PartidoID;
+
+		-- Tengo que fijarme si está disponible seleccion_a_ID o seleccion_B_ID para poner a la seleccion ganadora.
+
+		-- Intenta asignarlo como Equipo A
+		UPDATE Partidos.Partidos 
+		SET seleccion_A_id = @seleccionGanadora 
+		WHERE id = @siguientePartidoID AND seleccion_A_id IS NULL;
+
+		-- Si el cupo A estaba ocupado (@@ROWCOUNT es 0), lo asigno al Equipo B
+		IF @@ROWCOUNT = 0 BEGIN
+			UPDATE Partidos.Partidos 
+			SET seleccion_B_id = @seleccionGanadora 
+			WHERE id = @siguientePartidoID AND seleccion_B_id IS NULL;
+		END
+
+	END
+
+	IF @fase = 'SEMIFINAL' BEGIN
+		-- Tengo que poner al perdedor en el a o b disponible del unico partido de tercer puesto de ese mundial
+		DECLARE @partidoTercerPuesto INT = (SELECT id FROM Partidos.Partidos WHERE mundial_id = @añoMundial AND fase = 'TERCER_PUESTO');
+
+		IF @partidoTercerPuesto IS NOT NULL BEGIN
+			UPDATE Partidos.Partidos 
+			SET seleccion_A_id = @seleccionPerdedora 
+			WHERE id = @partidoTercerPuesto AND seleccion_A_id IS NULL;
+
+			IF @@ROWCOUNT = 0 BEGIN
+				UPDATE Partidos.Partidos 
+				SET seleccion_B_id = @seleccionPerdedora 
+				WHERE id = @partidoTercerPuesto AND seleccion_B_id IS NULL;
+			END
+		END
+	END 
 
 	-- -- -- -- 
 

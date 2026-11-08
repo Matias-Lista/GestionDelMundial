@@ -124,7 +124,7 @@ DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
 
 DROP PROCEDURE IF EXISTS Partidos.sp_terminar_fase_de_grupos;
-DROP FUNCTION  IF EXISTS Partidos.Partidos.fn_estan_empatados;
+DROP FUNCTION  IF EXISTS Partidos.fn_estan_empatados;
 DROP VIEW      IF EXISTS Partidos.vw_resumen_partido;
 DROP FUNCTION  IF EXISTS Partidos.fn_tabla_grupos;
 DROP FUNCTION  IF EXISTS Partidos.fn_jugadores_disponibles;
@@ -148,6 +148,7 @@ DROP PROCEDURE IF EXISTS Partidos.sp_crear_partido;
 /*            IMPORTACIÓN            */
 /*************************************/
 
+DROP PROCEDURE IF EXISTS Importacion.sp_simular_penales;
 DROP PROCEDURE IF EXISTS Importacion.sp_simular_eventos;
 DROP PROCEDURE IF EXISTS Importacion.sp_simular_partido;
 DROP PROCEDURE IF EXISTS Importacion.sp_simular_mundial;

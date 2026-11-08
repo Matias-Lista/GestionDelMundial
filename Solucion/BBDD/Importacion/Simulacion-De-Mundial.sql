@@ -1,4 +1,73 @@
+/* BBDD/Importacion/Simulacion-De-Mundial.sql
+ * Fecha: 7/11/2026
+ * Lista, Matías Josué.
+ * Descripción: Crea todos los store procedures, necesarios para simular distintos
+ *              datos vinculados a un mundial. Partidos, participantes, eventos, penales.
+ **/
+
 USE GestionDelMundial;
+GO
+
+
+CREATE OR ALTER PROCEDURE Importacion.sp_simular_penales
+	@PartidoID INT
+AS
+BEGIN
+
+	----Simulo el partido minuto a minuto.
+	DECLARE @random INT;
+	
+	DECLARE @i INT = 0;
+
+	DECLARE @jugadorID INT = NULL;
+
+	DECLARE @convirtio BIT;
+
+	DECLARE @jugadoresEnCancha TABLE (jugador_id INT, seleccion_id INT);
+
+
+	DECLARE @SeleccionA INT;
+	DECLARE @SeleccionB INT;
+
+	SELECT @SeleccionA = seleccion_A_id, 
+		   @SeleccionB = seleccion_B_id
+		   FROM Partidos.Partidos 
+		   WHERE id = @PartidoID;
+	
+	DECLARE @seleccionQuePatea INT = @SeleccionA;
+
+	INSERT INTO @jugadoresEnCancha (jugador_id, seleccion_id)
+		SELECT jugador_id, seleccion_id
+			FROM Partidos.fn_jugadores_en_cancha (@PartidoID, 15, 10, 4)
+		ORDER BY NEWID();
+
+	WHILE @i < 10 BEGIN
+
+		SET @jugadorID = NULL; -- para ver errores de jugadores insuficientes
+
+		SET @random = FLOOR(RAND() * (100 - 1 + 1)) + 1;
+
+		SET @convirtio = IIF(@random < 70, 1, 0); -- 70% de chance de embocar!
+
+		SELECT TOP 1 @jugadorID = jugador_id
+		FROM @jugadoresEnCancha
+		WHERE seleccion_id = @seleccionQuePatea;
+
+		DELETE FROM @jugadoresEnCancha WHERE jugador_id = @jugadorID
+
+		-- registrar
+		EXEC Eventos.sp_registrar_penal_de_tanda
+					@PartidoID = @PartidoID,
+					@JugadorID = @jugadorID,
+					@Convirtio = @convirtio;
+
+		SET @seleccionQuePatea = IIF(@seleccionQuePatea = @SeleccionA, @SeleccionB, @SeleccionA);
+
+		SET @i = @i + 1;
+
+	END 
+	---- TODO: MANEJAR EMPATES DE PENALES!!!!!!
+END
 GO
 
 CREATE OR ALTER PROCEDURE Importacion.sp_simular_eventos
@@ -23,6 +92,8 @@ BEGIN
 	DECLARE @seleccionAux INT;
 
 	DECLARE @jugadorID INT = NULL;
+
+	DECLARE @minutoMaximo INT = IIF(@EsProrroga = 1, 15, 45);
 
 	WHILE @tiempo < @tiempoDeCorte BEGIN
 
@@ -58,19 +129,34 @@ BEGIN
 
 			END ELSE IF @random <= 92 BEGIN
 				-- Amonestación
+
 				EXEC Eventos.sp_registrar_amonestacion 
-				 @Minuto    = @minuto,
-				 @Extra     = @extra,
-				 @Tiempo    = @tiempo,
-				 @PartidoID = @PartidoID,
-				 @JugadorID = @jugadorID,
-				 @Tarjeta   = 'A', --- TODO: Hay que hacerlo al azar amarilla / roja
-				 @Motivo    = NULL;
+				  @Minuto    = @minuto,
+				  @Extra     = @extra,
+				  @Tiempo    = @tiempo,
+				  @PartidoID = @PartidoID,
+				  @JugadorID = @jugadorID,
+				  @Tarjeta   = 'A', --- TODO: Hay que hacerlo al azar amarilla / roja
+				  @Motivo    = NULL;
 
 				 PRINT CONCAT(Eventos.fn_tiempo(@minuto, @extra, @tiempo), ' amonestacion');
 
 			END ELSE IF @random > 92 BEGIN
 				-- Cambio
+
+				DECLARE @jugadorEntraID INT = NULL;
+				
+				-- Buscar un suplente que no haya entrado antes
+				SELECT TOP 1 @jugadorEntraID = jugador_id
+				FROM Partidos.JugadorPosicionInicial 
+				WHERE partido_id = @PartidoID 
+				  AND seleccion_id = @seleccionAux
+				  AND comienza_jugando = 0
+				  AND jugador_id NOT IN (
+					  SELECT jugador_entra_id FROM Eventos.Cambios 
+					  WHERE partido_id = @PartidoID AND jugador_entra_id IS NOT NULL
+				  )
+				ORDER BY NEWID();
 
 				EXEC Eventos.sp_registrar_cambio
 					 @Minuto    = @minuto,
@@ -79,14 +165,14 @@ BEGIN
 					 @PartidoID = @PartidoID,
 					 @Motivo = 'TACTICO', ---TODO: Al azar
 					 @JugadorEntraID = NULL,
-					 @JugadorSaleID = @jugadorID; ---TODO: hay que hacer que alguien entre
+					 @JugadorSaleID = @jugadorID;
 
 				PRINT CONCAT(Eventos.fn_tiempo(@minuto, @extra, @tiempo), ' cambio');
 			END
 
 		END
 
-		IF @minuto < 45 BEGIN
+		IF @minuto < @minutoMaximo BEGIN
 			SET @minuto = @minuto + 1
 		END ELSE BEGIN 
 			SET @extra = @extra + 1
@@ -198,14 +284,21 @@ BEGIN
 	END
 
 	EXEC Importacion.sp_simular_eventos
-		@PartidoID = @PartidoID,
-		@EsProrroga = 0,
-		@SeleccionA = @SeleccionA,
-		@SeleccionB = @SeleccionB;
+		@PartidoID = @PartidoID, @EsProrroga = 0,
+		@SeleccionA = @SeleccionA, @SeleccionB = @SeleccionB;
 
 	-- Acá hay que evaluar si requiere o no requiere prórroga
-	IF @fase <> 'GRUPOS' BEGIN
-		print 'Evaluo prorroga...' --TODO
+	IF @fase <> 'GRUPOS' AND 
+		Partidos.fn_estan_empatados(@PartidoID) = 1 BEGIN
+			EXEC Importacion.sp_simular_eventos 
+				@PartidoID = @PartidoID, @EsProrroga = 1,
+				@SeleccionA = @SeleccionA, @SeleccionB = @SeleccionB;
+
+		IF Partidos.fn_estan_empatados(@PartidoID) = 1 BEGIN
+			-- Si no es grupos, y siguen empatados después de la prórroga, simulamos penales!
+
+			EXEC Importacion.sp_simular_penales @PartidoID = @PartidoID;
+		END
 
 	END
 
@@ -358,7 +451,7 @@ BEGIN
 	SET @i = 1;
 	SET @partidoID = NULL;
 
-	WHILE @i < 49 BEGIN -- Son 48 partidos de grupos para 32 equipos
+	WHILE @i < 17 BEGIN -- Son 16 partidos restantes para un mundial de 32 equipos
 		SELECT @partidoID = partido_id FROM @partidosRestantes WHERE id = @i;
 
 		EXEC Importacion.sp_simular_partido 
@@ -388,13 +481,17 @@ EXEC Importacion.sp_simular_mundial
 	  @FechaDeInicio = @FechaInicioMasUnAño,
 	  @FechaDeFin    = @FechaFinMasUnAño;
 
-ROLLBACK TRANSACTION;
+COMMIT TRANSACTION;
 END TRY
 BEGIN CATCH
   IF @@TRANCOUNT > 0
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 	
 	PRINT ERROR_MESSAGE();
 	DECLARE @xxxxx Varchar(5000) = ERROR_MESSAGE();
+	SELECT * FROM Partidos.vw_resumen_partido WHERE mundial_id = 2041 ORDER BY fecha_y_hora DESC;
 	THROW 50001, @xxxxx, 1;
+
 END CATCH
+
+-- SELECT * FROM Mundial.Paises_Participes WHERE seleccion_id = 692 or seleccion_id = 682
