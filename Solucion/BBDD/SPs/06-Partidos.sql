@@ -441,6 +441,20 @@ BEGIN
 	IF @AñoMundial is null	or @SedeID is null or @Fase = NULL
 		throw 50001, 'error null', 1;
 
+	IF @FechaYHora IS NOT NULL BEGIN
+		DECLARE @ZonaHoraria VARCHAR(250);
+
+    SELECT @ZonaHoraria = P.zona_horaria
+    FROM Administracion.Sedes S
+    INNER JOIN Administracion.Paises P ON P.codigo = S.pais_id
+    WHERE S.id = @SedeID;
+
+    IF @ZonaHoraria IS NULL
+        THROW 50002, 'No se encontró la zona horaria asociada a la sede ingresada.', 1;
+		
+		SET @FechaYHora = CAST((@FechaYHora AT TIME ZONE @ZonaHoraria AT TIME ZONE 'UTC') AS DATETIME);
+	END
+
 	INSERT INTO Partidos.Partidos
 	(mundial_id, seleccion_A_id, seleccion_B_id, seleccion_ganadora_id, sede_id, 
 	fecha_y_hora, fase, siguiente_partido_id, tiempo_adicional_1, tiempo_adicional_2, 
