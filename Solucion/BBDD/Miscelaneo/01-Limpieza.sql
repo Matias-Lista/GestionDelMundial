@@ -156,7 +156,7 @@ DROP PROCEDURE IF EXISTS Importacion.sp_simular_mundial;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_anunciantes;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_campañas;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_piezas_de_contenido;
-DROP PROCEDURE IF EXISTS Importacion.sp_upsert_publicidad;
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_publicidades;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_publicidad_json;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_amonestaciones;
@@ -183,13 +183,15 @@ DROP PROCEDURE IF EXISTS Importacion.sp_upsert_formaciones;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_player_appearances_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_sedes;
-DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_group_stadiums_csv;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_stadiums_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_convocados;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_paises_participes;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_group_standings_csv;
 
+DROP PROCEDURE IF EXISTS Importacion.sp_upsert_partidos;
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_matches_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_mundiales;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_tournaments_csv;
@@ -198,17 +200,29 @@ DROP PROCEDURE IF EXISTS Importacion.sp_upsert_jugadores;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_players_csv;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_squads_csv;
 
-
+DROP PROCEDURE IF EXISTS Importacion.sp_mapear_zonas_horarias;
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_paises;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_teams_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_confederaciones;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_confederations_csv;
 
+DROP PROCEDURE IF EXISTS Importacion.sp_limpieza_tablas_temporales;
+
 DROP PROCEDURE IF EXISTS Importacion.PoblarDB;
 
+DROP PROCEDURE IF EXISTS Reportes.sp_goleadores_por_torneo
+DROP PROCEDURE IF EXISTS Reportes.sp_goleadores_por_fase
+DROP PROCEDURE IF EXISTS Reportes.sp_goleadores_por_seleccion
+DROP PROCEDURE IF EXISTS Reportes.sp_goleadores_por_seleccion_historico
+DROP PROCEDURE IF EXISTS Reportes.sp_jugadores_amonestados_historico
+DROP PROCEDURE IF EXISTS Reportes.sp_jugadores_amonestados_por_mundial
+DROP PROCEDURE IF EXISTS Reportes.sp_jugadores_amonestados_por_seleccion_en_un_mundial
+DROP PROCEDURE IF EXISTS Reportes.sp_resumen_de_arbitro
+
 -- Eliminar Schemas
-DROP SCHEMA IF EXISTS [Administracion]
+DROP SCHEMA IF EXISTS [Reportes]
+DROP SCHEMA IF EXISTS [Importacion]
 DROP SCHEMA IF EXISTS [Publicidad]
 DROP SCHEMA IF EXISTS [Partidos]
 DROP SCHEMA IF EXISTS [Equipos]

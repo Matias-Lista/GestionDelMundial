@@ -124,6 +124,79 @@ BEGIN
 
 END
 GO
+    --- Hice este SP con Gemini para mapear las zonas horarias
+CREATE OR ALTER PROCEDURE Importacion.sp_mapear_zonas_horarias
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    -- W. Europe Standard Time (Europa Central)
+    UPDATE Administracion.Paises SET zona_horaria = 'W. Europe Standard Time' WHERE codigo IN ('DEU','ITA','NLD','BEL','CHE','SWE','DNK','NOR','AUT','CSK','CZE','DDR','SVK');
+
+    -- Central European Standard Time (Europa Central / Balcanes)
+    UPDATE Administracion.Paises SET zona_horaria = 'Central European Standard Time' WHERE codigo IN ('SRB','BIH','SCG','SVN','YUG');
+
+    -- Romance Standard Time
+    UPDATE Administracion.Paises SET zona_horaria = 'Romance Standard Time' WHERE codigo IN ('FRA','ESP');
+
+    -- GMT Standard Time (Reino Unido, Irlanda, Islandia)
+    UPDATE Administracion.Paises SET zona_horaria = 'GMT Standard Time' WHERE codigo IN ('GBR','IRL','ENG','ISL','NIR','SCO','WAL');
+
+    -- GTB Standard Time (Europa del Este y Medio Oriente)
+    UPDATE Administracion.Paises SET zona_horaria = 'GTB Standard Time' WHERE codigo IN ('PRT','HRV','UKR','GRC','BGR','HUN','ISR','ROU','TUR');
+
+    -- FLE Standard Time (Nórdicos / Europa Oriental)
+    UPDATE Administracion.Paises SET zona_horaria = 'FLE Standard Time' WHERE codigo IN ('POL','FIN');
+
+    -- Russian Standard Time
+    UPDATE Administracion.Paises SET zona_horaria = 'Russian Standard Time' WHERE codigo IN ('RUS','SUN');
+
+    -- Arab Standard Time & Saudi Standard Time
+    UPDATE Administracion.Paises SET zona_horaria = 'Arab Standard Time' WHERE codigo IN ('QAT','ARE','IRQ','KWT');
+
+    UPDATE Administracion.Paises SET zona_horaria = 'Saudi Standard Time' WHERE codigo = 'SAU';
+
+    -- Central Standard Time (México y Centroamérica)
+    UPDATE Administracion.Paises SET zona_horaria = 'Central Standard Time' WHERE codigo IN ('MEX','CRI','HND','SLV');
+
+    -- Eastern Standard Time (EE. UU. Este y Caribe)
+    UPDATE Administracion.Paises SET zona_horaria = 'Eastern Standard Time' WHERE codigo IN ('USA','CUB','HTI','JAM');
+
+    -- SA Pacific Standard Time (Pacífico Sudamericano y Caribe)
+    UPDATE Administracion.Paises SET zona_horaria = 'SA Pacific Standard Time' WHERE codigo IN ('COL','ECU','PER','PAN','TTO');
+
+    -- SA Western Standard Time (Sudamérica Central/Oeste y África)
+    UPDATE Administracion.Paises SET zona_horaria = 'SA Western Standard Time' WHERE codigo IN ('BRA','URY','PRY','BOL','VEN','COD');
+
+    -- Pacific SA Standard Time (Chile y Canadá)
+    UPDATE Administracion.Paises SET zona_horaria = 'Pacific SA Standard Time' WHERE codigo IN ('CAN','CHL');
+
+    -- Argentina Standard Time
+    UPDATE Administracion.Paises SET zona_horaria = 'Argentina Standard Time' WHERE codigo = 'ARG';
+
+    -- W. Central Africa Standard Time & South Africa / Egypt Standard Time
+    UPDATE Administracion.Paises SET zona_horaria = 'W. Central Africa Standard Time' WHERE codigo IN ('MAR','SEN','CMR','GHA','AGO','CIV','DZA','GNQ','NGA','TGO','TUN');
+
+    UPDATE Administracion.Paises SET zona_horaria = 'Egypt Standard Time' WHERE codigo = 'EGY';
+
+    UPDATE Administracion.Paises SET zona_horaria = 'South Africa Standard Time' WHERE codigo = 'ZAF';
+
+    -- ASIA Y OCEANÍA
+    UPDATE Administracion.Paises SET zona_horaria = 'Tokyo Standard Time' WHERE codigo = 'JPN';
+
+    UPDATE Administracion.Paises SET zona_horaria = 'Korea Standard Time' WHERE codigo IN ('KOR','PRK');
+
+    UPDATE Administracion.Paises SET zona_horaria = 'China Standard Time' WHERE codigo IN ('CHN','TWN');
+
+    UPDATE Administracion.Paises SET zona_horaria = 'SE Asia Standard Time' WHERE codigo IN ('IDN','THA');
+
+    UPDATE Administracion.Paises SET zona_horaria = 'AUS Eastern Standard Time' WHERE codigo = 'AUS';
+
+    UPDATE Administracion.Paises SET zona_horaria = 'New Zealand Standard Time' WHERE codigo = 'NZL';
+
+    UPDATE Administracion.Paises SET zona_horaria = 'Iran Standard Time' WHERE codigo = 'IRN';
+END
+GO
 
 CREATE OR ALTER PROCEDURE Importacion.sp_upsert_jugadores
 AS
@@ -1891,6 +1964,7 @@ BEGIN
     EXEC Importacion.sp_crear_y_cargar_bookings_csv            @Ruta = @RutaBookingsCSV
     EXEC Importacion.sp_crear_y_cargar_publicidad_json         @Ruta = @RutaPublicidadJSON
 
+    -- SIN BYPASS FUNCIONA: 3:30 MINUTOS ~
     EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
     -- ejecutar inserción de los datos
@@ -1902,6 +1976,8 @@ BEGIN
     if @MostrarDatos = 1 
         SELECT TOP 5 * FROM Administracion.Paises
     UPDATE Administracion.Paises set nombre = 'Germany' WHERE nombre = 'West Germany';
+
+    EXEC Importacion.sp_mapear_zonas_horarias;
 
     EXEC Importacion.sp_upsert_jugadores;
     if @MostrarDatos = 1 

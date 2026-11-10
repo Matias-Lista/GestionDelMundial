@@ -31,4 +31,7 @@
     <File Path="BBDD/Importacion/Simulacion-De-Mundial.sql" />
     <File Path="BBDD/Importacion/Staging.sql" />
   </Folder>
+  <Folder Name="/BBDD/05 - Reportes/">
+    <File Path="BBDD/Reportes/Reportes.sql" />
+  </Folder>
 </Solution>

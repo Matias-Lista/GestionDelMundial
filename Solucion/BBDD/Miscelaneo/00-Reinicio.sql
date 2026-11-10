@@ -4,7 +4,11 @@
  * Descripción: Este script deja la base de datos en un estado inicial conocido, limpiando y creando de cero sus objetos, además
                 de ejecutar sus testeos e importar los datos (según lo configurado en las variables del inicio.
  **/
+ 
 
+IF (@@TRANCOUNT > 0)
+	ROLLBACK TRANSACTION;
+ 
  --- INSTRUCCIONES:
  ----* Activar SQLCMD (Consulta > Modo SQLCMD), para permitir la ejecución de scripts.
  ----* Reemplazar la ruta en la que se copió el repositorio de este proyecto en la primera instrucción después de estos comentarios.

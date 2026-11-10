@@ -464,7 +464,7 @@ BEGIN
 	
 END
 GO
-
+/*
 BEGIN TRY
 BEGIN TRANSACTION
 
@@ -492,6 +492,6 @@ BEGIN CATCH
 	SELECT * FROM Partidos.vw_resumen_partido WHERE mundial_id = 2041 ORDER BY fecha_y_hora DESC;
 	THROW 50001, @xxxxx, 1;
 
-END CATCH
+END CATCH*/
 
 -- SELECT * FROM Mundial.Paises_Participes WHERE seleccion_id = 692 or seleccion_id = 682

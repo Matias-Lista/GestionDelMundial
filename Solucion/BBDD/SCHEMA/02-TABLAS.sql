@@ -75,6 +75,12 @@ BEGIN
 END
 GO
 
+IF SCHEMA_ID('Reportes') IS NULL
+BEGIN
+    EXEC('CREATE SCHEMA Reportes;');
+END
+GO
+
 --- TABLAS!!!!!
 
 IF OBJECT_ID('Mundial.Mundiales', 'U') IS NULL
@@ -147,13 +153,13 @@ CREATE TABLE Administracion.Paises (
     codigo           CHAR(3)      ,
     confederacion_id INT          ,
     nombre           VARCHAR(100) NOT NULL UNIQUE,
+    zona_horaria     VARCHAR(250),
+    --- Tomé la decisión de asignar una sola zona horaria a un país (la que guarda SQL SERVER en sys.time_zone_info)
 
     CONSTRAINT PK_Paises             PRIMARY KEY (codigo),
     CONSTRAINT FK_Pais_Confederacion FOREIGN KEY (confederacion_id) REFERENCES Administracion.Confederaciones(id),
     CONSTRAINT CK_Codigo_Pais_ISO    CHECK(codigo LIKE '[A-Z][A-Z][A-Z]')
 
-    -- TODO: HAY QUE SUMAR HUSO HORARIO AL PAIS TAMBIEN. la gestion de la publicidad requiere saber el 
-    -- uso horario de un país, no solo de la sede del partido
 );
 END
 GO
