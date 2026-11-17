@@ -5,6 +5,7 @@
                 de ejecutar sus testeos e importar los datos (según lo configurado en las variables del inicio.
  **/
  
+ 
 
 IF (@@TRANCOUNT > 0)
 	ROLLBACK TRANSACTION;

@@ -215,13 +215,13 @@ INNER JOIN Mundial.Paises_Participes PP_B ON PP_B.seleccion_id = P.seleccion_B_i
 INNER JOIN Administracion.Paises Pais_A ON Pais_A.codigo = PP_A.pais_id
 INNER JOIN Administracion.Paises Pais_B ON Pais_B.codigo = PP_B.pais_id
 -- INNER JOIN Administracion.Sedes S ON S.id = P.sede_id
-WHERE P.mundial_id = 2002
+WHERE P.mundial_id = 2022
 order by fecha_y_hora DESC
 
 
 ------Selecciones y plantillas: listado de selecciones con un vector anidado de convocados (nombre, posición, club,
 -----dorsal).
-
+/*
 SELECT 2022 as '@año',
 	(
 		SELECT P.nombre as '@Pais',
@@ -241,11 +241,11 @@ SELECT 2022 as '@año',
 		FOR XML PATH('Seleccion'), TYPE
 	)
 FOR XML PATH('Mundial')
-
+*/
 --- Entiendo que esta es la opción ideal para XML por la parte de "anidado"
 
  
-
+ /*
 EXEC Reportes.sp_goleadores_por_torneo @AñoMundial = 2022
 GO
 
@@ -272,7 +272,7 @@ GO
 EXEC Reportes.sp_resumen_de_arbitro 
 	@ArbitroID = 193;
 GO
-
+*/
 
 
 --- idea: cantidad de partidos perdidos por seleccion?

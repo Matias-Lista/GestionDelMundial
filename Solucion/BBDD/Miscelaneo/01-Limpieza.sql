@@ -121,7 +121,7 @@ DROP PROCEDURE IF EXISTS Publicidad.sp_crear_campaña;
 DROP PROCEDURE IF EXISTS Publicidad.sp_modificar_campaña;
 DROP PROCEDURE IF EXISTS Publicidad.sp_crear_pieza_de_contenido;
 DROP PROCEDURE IF EXISTS Publicidad.sp_asociar_pais_a_contenido;
-DROP PROCEDURE IF EXISTS Publicidad.sp_definir_pieza_a_emitir;
+DROP PROCEDURE IF EXISTS Publicidad.sp_definir_piezas_a_emitir;
 
 DROP PROCEDURE IF EXISTS Partidos.sp_terminar_fase_de_grupos;
 DROP FUNCTION  IF EXISTS Partidos.fn_estan_empatados;
@@ -195,6 +195,8 @@ DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_matches_csv;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_mundiales;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_tournaments_csv;
+
+DROP PROCEDURE IF EXISTS Importacion.sp_crear_tarifas;
 
 DROP PROCEDURE IF EXISTS Importacion.sp_upsert_jugadores;
 DROP PROCEDURE IF EXISTS Importacion.sp_crear_y_cargar_players_csv;
