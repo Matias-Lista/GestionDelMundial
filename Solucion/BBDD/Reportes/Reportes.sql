@@ -193,57 +193,80 @@ BEGIN
 		GROUP BY A.nombre, A.apellido, A.pais_id, P.id, AAP.partido_id, PP_A.pais_id, PP_B.pais_id, P.mundial_id
 END
 GO
+
+
 --- Resultados de los encuentros (en la forma que vean más ilustrativa).
-
-SELECT 
-	P.mundial_id,
-	 CONCAT(Pais_A.nombre, ' vs ',Pais_B.nombre) as partido,
-	 (CASE 
-		WHEN P.seleccion_ganadora_id is NULL THEN 'EMPATE'
-		WHEN P.seleccion_ganadora_id = seleccion_A_id THEN Pais_A.nombre
-		WHEN P.seleccion_ganadora_id = seleccion_B_id THEN Pais_B.nombre 
-	END) as ganador,
-	P.fase,
-	P.fecha_y_hora,
-	P.goles_A,
-	P.goles_B,
-	P.goles_tanda_de_penales_A,
-	P.goles_tanda_de_penales_B
-FROM Partidos.vw_resumen_partido P
-INNER JOIN Mundial.Paises_Participes PP_A ON PP_A.seleccion_id = P.seleccion_A_id
-INNER JOIN Mundial.Paises_Participes PP_B ON PP_B.seleccion_id = P.seleccion_B_id
-INNER JOIN Administracion.Paises Pais_A ON Pais_A.codigo = PP_A.pais_id
-INNER JOIN Administracion.Paises Pais_B ON Pais_B.codigo = PP_B.pais_id
--- INNER JOIN Administracion.Sedes S ON S.id = P.sede_id
-WHERE P.mundial_id = 2022
-order by fecha_y_hora DESC
-
+CREATE OR ALTER PROCEDURE Reportes.sp_resultados_de_encuentros
+	@AñoMundial INT
+AS
+BEGIN
+	SELECT 
+		P.mundial_id,
+		 CONCAT(Pais_A.nombre, ' vs ',Pais_B.nombre) as partido,
+		 (CASE 
+			WHEN P.seleccion_ganadora_id is NULL THEN 'EMPATE'
+			WHEN P.seleccion_ganadora_id = seleccion_A_id THEN Pais_A.nombre
+			WHEN P.seleccion_ganadora_id = seleccion_B_id THEN Pais_B.nombre 
+		END) as ganador,
+		P.fase,
+		P.fecha_y_hora,
+		P.goles_A,
+		P.goles_B,
+		P.goles_tanda_de_penales_A,
+		P.goles_tanda_de_penales_B
+	FROM Partidos.vw_resumen_partido P
+	INNER JOIN Mundial.Paises_Participes PP_A ON PP_A.seleccion_id = P.seleccion_A_id
+	INNER JOIN Mundial.Paises_Participes PP_B ON PP_B.seleccion_id = P.seleccion_B_id
+	INNER JOIN Administracion.Paises Pais_A ON Pais_A.codigo = PP_A.pais_id
+	INNER JOIN Administracion.Paises Pais_B ON Pais_B.codigo = PP_B.pais_id
+	-- INNER JOIN Administracion.Sedes S ON S.id = P.sede_id
+	WHERE P.mundial_id = @AñoMundial
+	order by fecha_y_hora DESC
+END
+GO
 
 ------Selecciones y plantillas: listado de selecciones con un vector anidado de convocados (nombre, posición, club,
 -----dorsal).
-/*
-SELECT 2022 as '@año',
-	(
-		SELECT P.nombre as '@Pais',
-			(
-				SELECT C.dorsal, trim(c.tipo) as 'Tipo', I.nombre, I.apellido
-					FROM Equipos.ConvocacionEnSeleccion C
-					INNER JOIN Equipos.IntegranteSeleccion I ON I.id = C.miembro_id
-					WHERE C.seleccion_id = PP.seleccion_id and f_fin is Null -- o sea, que no lo cambiaron
-			
-				FOR XML Path('Jugador'), TYPE
-			) as 'Convocados'
-		FROM Mundial.Selecciones S
-		INNER JOIN Mundial.Paises_Participes PP ON PP.seleccion_id = S.id
 
-		INNER JOIN Administracion.Paises P ON P.codigo = PP.pais_id
-		WHERE PP.mundial_id = 2022
-		FOR XML PATH('Seleccion'), TYPE
-	)
-FOR XML PATH('Mundial')
-*/
+CREATE OR ALTER PROCEDURE Reportes.sp_selecciones
+	@AñoMundial INT
+AS
+BEGIN
+
+
+	SELECT @AñoMundial as '@año',
+		(
+			SELECT P.nombre as '@Pais',
+				(
+					SELECT C.dorsal, trim(c.tipo) as 'Tipo', I.nombre, I.apellido
+						FROM Equipos.ConvocacionEnSeleccion C
+						INNER JOIN Equipos.IntegranteSeleccion I ON I.id = C.miembro_id
+						WHERE C.seleccion_id = PP.seleccion_id and f_fin is Null -- o sea, que no lo cambiaron
+				
+					FOR XML Path('Jugador'), TYPE
+				) as 'Convocados'
+			FROM Mundial.Selecciones S
+			INNER JOIN Mundial.Paises_Participes PP ON PP.seleccion_id = S.id
+
+			INNER JOIN Administracion.Paises P ON P.codigo = PP.pais_id
+			WHERE PP.mundial_id = @AñoMundial
+			FOR XML PATH('Seleccion'), TYPE
+		)
+	FOR XML PATH('Mundial')
+
+END
 --- Entiendo que esta es la opción ideal para XML por la parte de "anidado"
 
+-- Ocupación publicitaria por sede y partido: anunciantes exhibidos en los cuatro espacios, e ingresos generados.
+-- • Matriz de prime time: tabla cruzada (pivot) que muestre, para cada partido, en qué mercados/países su horario
+-- cae en prime time
+
+CREATE OR ALTER PROCEDURE Reportes.sp_ingresos_publicitarios
+	@AñoMundial INT
+AS
+BEGIN
+
+END
  
  /*
 EXEC Reportes.sp_goleadores_por_torneo @AñoMundial = 2022
@@ -272,6 +295,14 @@ GO
 EXEC Reportes.sp_resumen_de_arbitro 
 	@ArbitroID = 193;
 GO
+
+EXEC Reportes.sp_resultados_de_encuentros @AñoMundial = 2022
+GO
+
+EXEC Reportes.sp_selecciones @AñoMundial = 2022
+GO
+
+
 */
 
 

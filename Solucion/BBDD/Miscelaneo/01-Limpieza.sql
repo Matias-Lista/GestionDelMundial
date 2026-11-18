@@ -221,6 +221,9 @@ DROP PROCEDURE IF EXISTS Reportes.sp_jugadores_amonestados_historico
 DROP PROCEDURE IF EXISTS Reportes.sp_jugadores_amonestados_por_mundial
 DROP PROCEDURE IF EXISTS Reportes.sp_jugadores_amonestados_por_seleccion_en_un_mundial
 DROP PROCEDURE IF EXISTS Reportes.sp_resumen_de_arbitro
+DROP PROCEDURE IF EXISTS Reportes.sp_resultados_de_encuentros
+DROP PROCEDURE IF EXISTS Reportes.sp_selecciones
+DROP PROCEDURE IF EXISTS Reportes.sp_ingresos_publicitarios
 
 -- Eliminar Schemas
 DROP SCHEMA IF EXISTS [Reportes]
