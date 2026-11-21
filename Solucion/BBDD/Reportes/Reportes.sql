@@ -313,7 +313,7 @@ BEGIN
 END
 GO
 
-EXEC Reportes.sp_ingresos_publicitarios @AñoMundial = 2022
+-- EXEC Reportes.sp_ingresos_publicitarios @AñoMundial = 2022
 
 GO
 -- • Matriz de prime time: tabla cruzada (pivot) que muestre, para cada partido, en qué mercados/países su horario
@@ -416,7 +416,7 @@ EXEC Reportes.sp_jugadores_amonestados_por_seleccion_en_un_mundial
 GO
 
 EXEC Reportes.sp_resumen_de_arbitro 
-	@ArbitroID = 193;
+	@ArbitroID = 295;
 GO
 
 EXEC Reportes.sp_resultados_de_encuentros @AñoMundial = 2022

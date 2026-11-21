@@ -18,10 +18,15 @@ IF (@@TRANCOUNT > 0)
 -- :setvar rutaAlRepositorio C:\gits\GestionDelMundial
 :setvar rutaAlRepositorio C:\Soluciones-SQL\GestionDelMundial
 
-:setvar ImportarDatos   1 -- Importa datos de los datasets.
-:setvar MostrarDatos    0 -- Realiza SELECTs de los datos importados.
-:setvar EjecutarTesteos 0 -- Ejecuta los testeos (siguen en proceso)
-:setvar SimularMundial  0 -- Feature en proceso! Genera un mundial de mentirita.
+:setvar ImportarDatos                1 -- Importa datos de los datasets.
+:setvar MostrarDatos                 0 -- Realiza SELECTs de los datos importados.
+:setvar EjecutarTesteos              0 -- Ejecuta los testeos (siguen en proceso)
+:setvar SimularMundial               0 -- (Inestable, requiere un par de intentos)! Genera un mundial de mentirita.
+
+-- Cifra el apellido de los arbitros y modifica todos los objetos que interactuan con ese campo, antes del import.
+:setvar CifrarDatosAntesDelImport 0
+-- Cifra el apellido de los arbitros y modifica todos los objetos que interactuan con ese campo, después del import.
+:setvar CifrarDatosDespuesDelImport 1
 
 PRINT '[*] Limpiando ...'
 :r $(rutaAlRepositorio)\Solucion\BBDD\Miscelaneo\01-Limpieza.sql
@@ -35,6 +40,8 @@ PRINT '[*] Creando tablas y SPs ...'
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\08-Arbitraje.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Publicidad.sql
+
+:r $(rutaAlRepositorio)\Solucion\BBDD\Reportes\Reportes.sql
 
 IF ($(EjecutarTesteos) = 0) SET NOEXEC ON;
 GO
@@ -58,6 +65,18 @@ GO
 GO
 SET NOEXEC OFF; -- Fin testeos
 GO
+
+IF ($(CifrarDatosAntesDelImport) = 0) SET NOEXEC ON;
+GO
+    PRINT '[*] Cifrar Arbitraje ...'
+    GO
+    
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Seguridad\Cifrado.sql
+
+GO
+
+SET NOEXEC OFF;
+GO -- Fin Cifrado Antes Del Import
 
 PRINT '[*] Creando Objetos de Staging e Importación'
 
@@ -87,6 +106,17 @@ BEGIN
             @RutaPublicidadJSON = '$(rutaAlRepositorio)\Datasets\campañas-ficticias-mundial-2022.json',
             @MostrarDatos = $(MostrarDatos)
 END
+
+
+
+IF ($(CifrarDatosDespuesDelImport) = 0) SET NOEXEC ON;
+GO
+    PRINT '[*] Cifrar Arbitraje ...'
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Seguridad\Cifrado.sql
+GO
+
+SET NOEXEC OFF;
+GO -- Fin Cifrado Despues Del Import
 
 IF ($(SimularMundial) = 1)
 BEGIN

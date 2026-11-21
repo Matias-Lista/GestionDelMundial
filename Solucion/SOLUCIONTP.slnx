@@ -35,6 +35,7 @@
     <File Path="BBDD/Reportes/Reportes.sql" />
   </Folder>
   <Folder Name="/BBDD/06 - Seguridad/">
-    <File Path="BBDD/Seguridad/Cifrado.sql" />
+    <File Path="BBDD/Seguridad/Cifrado_0.sql" />
+    <File Path="BBDD/Seguridad/Cifrado_1.sql" />
   </Folder>
 </Solution>
