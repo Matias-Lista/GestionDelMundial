@@ -256,18 +256,141 @@ BEGIN
 
 END
 --- Entiendo que esta es la opción ideal para XML por la parte de "anidado"
+GO
+
 
 -- Ocupación publicitaria por sede y partido: anunciantes exhibidos en los cuatro espacios, e ingresos generados.
--- • Matriz de prime time: tabla cruzada (pivot) que muestre, para cada partido, en qué mercados/países su horario
--- cae en prime time
-
 CREATE OR ALTER PROCEDURE Reportes.sp_ingresos_publicitarios
 	@AñoMundial INT
 AS
 BEGIN
+	SET NOCOUNT ON;
 
+	SELECT 
+		@AñoMundial AS [@Mundial],
+		(
+			SELECT 
+				CONCAT(ISNULL(Pais_A.nombre, 'A definir'), ' vs ', ISNULL(Pais_B.nombre, 'A definir')) AS [@nombre],
+				P.fase                    AS [@fase],
+				S.nombre                  AS [sede/@nombre],
+				S.ciudad                  AS [sede/@ciudad],
+				Pais_Sede.nombre          AS [sede/@pais],
+				Totales.espacios_ocupados AS [piezas/@espacios_ocupados],
+				Totales.costo_total       AS [piezas/@costo_total],
+				(
+					SELECT 
+						A.razon_social AS [@anunciante],
+						C.nombre       AS [@campaña],
+						PDC.nombre     AS [@nombre],
+						RPE.costo      AS [@costo]
+					FROM Publicidad.RegistroDePiezasEmitidas RPE
+					INNER JOIN Publicidad.PiezasDeContenido PDC ON PDC.id = RPE.pieza_de_contenido_id
+					INNER JOIN Publicidad.Campañas C           ON C.id = PDC.campaña_id
+					INNER JOIN Publicidad.Anunciantes A        ON A.id = C.anunciante_id
+					WHERE RPE.partido_id = P.id
+					ORDER BY RPE.id ASC
+					FOR XML PATH('pieza'), TYPE
+				)                         AS [piezas]
+			FROM Partidos.Partidos P
+			INNER JOIN Administracion.Sedes S          ON S.id = P.sede_id
+			INNER JOIN Administracion.Paises Pais_Sede ON Pais_Sede.codigo = S.pais_id
+			LEFT JOIN Mundial.Paises_Participes PP_A   ON PP_A.seleccion_id = P.seleccion_A_id AND PP_A.mundial_id = P.mundial_id
+			LEFT JOIN Mundial.Paises_Participes PP_B   ON PP_B.seleccion_id = P.seleccion_B_id AND PP_B.mundial_id = P.mundial_id
+			LEFT JOIN Administracion.Paises Pais_A     ON Pais_A.codigo = PP_A.pais_id
+			LEFT JOIN Administracion.Paises Pais_B     ON Pais_B.codigo = PP_B.pais_id
+			OUTER APPLY (
+				SELECT 
+					COUNT(*)                      AS espacios_ocupados,
+					ISNULL(SUM(RPE_Tot.costo), 0) AS costo_total
+				FROM Publicidad.RegistroDePiezasEmitidas RPE_Tot
+				WHERE RPE_Tot.partido_id = P.id
+			) Totales
+			WHERE P.mundial_id = @AñoMundial
+			ORDER BY P.fecha_y_hora ASC
+			FOR XML PATH('Partido'), TYPE
+		)
+	FOR XML PATH('OcupacionPublicitaria'), TYPE;
 END
+GO
+
+EXEC Reportes.sp_ingresos_publicitarios @AñoMundial = 2022
+
+GO
+-- • Matriz de prime time: tabla cruzada (pivot) que muestre, para cada partido, en qué mercados/países su horario
+-- cae en prime time
  
+CREATE OR ALTER PROCEDURE Reportes.sp_matriz_prime_time
+	@AñoMundial INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @columnas NVARCHAR(MAX);
+	DECLARE @sql NVARCHAR(MAX);
+
+	-- Obtener dinámicamente las columnas de los países/mercados del mundial
+	SELECT @columnas = STRING_AGG(QUOTENAME(codigo), ', ') WITHIN GROUP (ORDER BY codigo)
+	FROM (
+		SELECT DISTINCT Pais.codigo
+		FROM Mundial.Paises_Participes PP
+		INNER JOIN Administracion.Paises Pais ON Pais.codigo = PP.pais_id
+		WHERE PP.mundial_id = @AñoMundial
+	) Paises;
+
+	IF @columnas IS NULL
+	BEGIN
+		THROW 50001, 'No existen países partícipes registrados para el mundial indicado.', 1;
+	END
+
+	-- Armar y ejecutar la consulta cruzada (PIVOT)
+	SET @sql = N'
+	SELECT 
+		partido_id,
+		fase,
+		partido,
+		fecha_hora_utc0,
+		' + @columnas + N'
+	FROM (
+		SELECT 
+			P.id AS partido_id,
+			P.fase,
+			CONCAT(ISNULL(Pais_A.nombre, ''A definir''), '' vs '', ISNULL(Pais_B.nombre, ''A definir'')) AS partido,
+			P.fecha_y_hora AS fecha_hora_utc0,
+			Mercado.codigo AS pais_mercado,
+			CASE 
+				WHEN Mercado.zona_horaria IS NULL THEN ''Sin ZH''
+				WHEN DATEPART(HOUR, CAST((P.fecha_y_hora AT TIME ZONE ''UTC'' AT TIME ZONE Mercado.zona_horaria) AS DATETIME)) BETWEEN 19 AND 23 
+					THEN ''Sí''
+				ELSE ''No''
+			END AS es_prime_time
+		FROM Partidos.Partidos P
+		LEFT JOIN Mundial.Paises_Participes PP_A ON PP_A.seleccion_id = P.seleccion_A_id AND PP_A.mundial_id = P.mundial_id
+		LEFT JOIN Mundial.Paises_Participes PP_B ON PP_B.seleccion_id = P.seleccion_B_id AND PP_B.mundial_id = P.mundial_id
+		LEFT JOIN Administracion.Paises Pais_A   ON Pais_A.codigo = PP_A.pais_id
+		LEFT JOIN Administracion.Paises Pais_B   ON Pais_B.codigo = PP_B.pais_id
+		CROSS JOIN (
+			SELECT DISTINCT Pais.codigo, Pais.zona_horaria
+			FROM Mundial.Paises_Participes PP
+			INNER JOIN Administracion.Paises Pais ON Pais.codigo = PP.pais_id
+			WHERE PP.mundial_id = @AñoMundial
+		) Mercado
+		WHERE P.mundial_id = @AñoMundial
+	) Fuente
+	PIVOT (
+		MAX(es_prime_time)
+		FOR pais_mercado IN (' + @columnas + N')
+	) Matriz
+	ORDER BY fecha_hora_utc0 ASC, partido_id ASC;';
+
+	EXEC sp_executesql 
+		@stmt = @sql, 
+		@params = N'@AñoMundial INT', 
+		@AñoMundial = @AñoMundial;
+END
+GO
+
+--EXEC Reportes.sp_matriz_prime_time @AñoMundial = 2022;
+
  /*
 EXEC Reportes.sp_goleadores_por_torneo @AñoMundial = 2022
 GO
@@ -302,6 +425,11 @@ GO
 EXEC Reportes.sp_selecciones @AñoMundial = 2022
 GO
 
+EXEC Reportes.sp_ingresos_publicitarios @AñoMundial = 2022
+GO
+
+EXEC Reportes.sp_matriz_prime_time @AñoMundial = 2022;
+GO
 
 */
 

@@ -260,61 +260,6 @@ BEGIN
 		descripcion,
 		costo,
 		@PartidoID
-	FROM @PiezasSeleccionadas;-- Piezas orientadas al País A
-	INSERT INTO @PiezasSeleccionadas (pieza_de_contenido_id, descripcion, costo)
-	SELECT TOP (@piezasA)
-		PC.id,
-		CONCAT('Orientada a ', @paisA, ' (Franja ', @franjaA, ' - ', @horaA, 'hs local)'),
-		@costoA
-	FROM Publicidad.PiezasDeContenido PC
-	INNER JOIN Publicidad.Campañas C 
-		ON C.id = PC.campaña_id
-	INNER JOIN Publicidad.PaisesInteresados PI 
-		ON PI.pieza_de_contenido_id = PC.id
-	WHERE C.mundial_id = @añoMundial
-	  AND PI.pais_id = @paisA
-	  AND (
-			(C.horario_minimo IS NOT NULL AND C.horario_maximo IS NOT NULL AND (
-				(C.horario_minimo <= C.horario_maximo AND @horaA BETWEEN C.horario_minimo AND C.horario_maximo)
-				OR (C.horario_minimo > C.horario_maximo AND (@horaA >= C.horario_minimo OR @horaA <= C.horario_maximo))
-			))
-			OR (C.horario_minimo IS NULL AND (C.horario_maximo IS NULL OR @horaA <= C.horario_maximo))
-			OR (C.horario_maximo IS NULL AND @horaA >= C.horario_minimo)
-		  )
-	ORDER BY NEWID();
-
-	-- Piezas orientadas al País B (excluyendo las ya elegidas para A por si una pieza apunta a ambos)
-	INSERT INTO @PiezasSeleccionadas (pieza_de_contenido_id, descripcion, costo)
-	SELECT TOP (@piezasB)
-		PC.id,
-		CONCAT('Orientada a ', @paisB, ' (Franja ', @franjaB, ' - ', @horaB, 'hs local)'),
-		@costoB
-	FROM Publicidad.PiezasDeContenido PC
-	INNER JOIN Publicidad.Campañas C 
-		ON C.id = PC.campaña_id
-	INNER JOIN Publicidad.PaisesInteresados PI 
-		ON PI.pieza_de_contenido_id = PC.id
-	WHERE C.mundial_id = @añoMundial
-	  AND PI.pais_id = @paisB
-	  AND PC.id NOT IN (SELECT pieza_de_contenido_id FROM @PiezasSeleccionadas)
-	  AND (
-			(C.horario_minimo IS NOT NULL AND C.horario_maximo IS NOT NULL AND (
-				(C.horario_minimo <= C.horario_maximo AND @horaB BETWEEN C.horario_minimo AND C.horario_maximo)
-				OR (C.horario_minimo > C.horario_maximo AND (@horaB >= C.horario_minimo OR @horaB <= C.horario_maximo))
-			))
-			OR (C.horario_minimo IS NULL AND (C.horario_maximo IS NULL OR @horaB <= C.horario_maximo))
-			OR (C.horario_maximo IS NULL AND @horaB >= C.horario_minimo)
-		  )
-	ORDER BY NEWID();
-
-	-- 7. Registrar las emisiones definitivas
-	INSERT INTO Publicidad.RegistroDePiezasEmitidas
-		(pieza_de_contenido_id, descripcion, costo, partido_id)
-	SELECT 
-		pieza_de_contenido_id,
-		descripcion,
-		costo,
-		@PartidoID
 	FROM @PiezasSeleccionadas;
 END
 GO

@@ -17,6 +17,26 @@
                         "nombre": "La felicidad de tomar una buena coca",
                         "descripcion": "Familias de distintos países del mundo tomando coca-cola",
                         "paises_de_interes": ["ARG", "URY", "ESP", "USA"]
+                    },
+                    {
+                        "nombre": "Brindis en Buenos Aires y Tokio",
+                        "descripcion": "Hinchas celebrando goles a miles de kilómetros con una Coca bien fría",
+                        "paises_de_interes": ["ARG", "JPN"]
+                    },
+                    {
+                        "nombre": "Pasión compartida en Doha y Madrid",
+                        "descripcion": "Reencuentro de amigos en la previa del partido",
+                        "paises_de_interes": ["ESP", "QAT"]
+                    },
+                    {
+                        "nombre": "Festejo sin fronteras: Montevideo y Nueva York",
+                        "descripcion": "Familias viviendo el minuto a minuto frente al televisor",
+                        "paises_de_interes": ["URY", "USA"]
+                    },
+                    {
+                        "nombre": "La mesa mundialista de Dakar y Rosario",
+                        "descripcion": "Comidas típicas acompañadas de Coca-Cola antes del pitazo inicial",
+                        "paises_de_interes": ["ARG", "SEN"]
                     }
                 ]
             },
@@ -31,6 +51,21 @@
                         "nombre": "Messi, Maradona, y Pele comiendo un asado juntos",
                         "descripcion": "Spot generado con IA uniendo a tres leyendas",
                         "paises_de_interes": ["ARG", "BRA", "ESP"]
+                    },
+                    {
+                        "nombre": "Magia eterna de Brasil y Arabia",
+                        "descripcion": "Homenaje a los goles históricos que marcaron épocas",
+                        "paises_de_interes": ["BRA", "SAU"]
+                    },
+                    {
+                        "nombre": "Recuerdos de gloria en París y Zagreb",
+                        "descripcion": "Finalistas históricos reviviendo sus mejores jugadas",
+                        "paises_de_interes": ["FRA", "HRV"]
+                    },
+                    {
+                        "nombre": "Leyendas que unen Seúl y Ámsterdam",
+                        "descripcion": "Ídolos de distintas generaciones compartiendo el mismo brindis",
+                        "paises_de_interes": ["KOR", "NLD"]
                     }
                 ]
             }
@@ -72,6 +107,26 @@
                         "nombre": "El viaje a Oriente",
                         "descripcion": "La pelota viajando por estadios de Asia y Centroamérica",
                         "paises_de_interes": ["JPN", "CRI"]
+                    },
+                    {
+                        "nombre": "De Sídney a San José rodando sin parar",
+                        "descripcion": "El balón recorriendo canchas de Oceanía y Centroamérica",
+                        "paises_de_interes": ["AUS", "CRI"]
+                    },
+                    {
+                        "nombre": "Toque preciso entre Bruselas y Varsovia",
+                        "descripcion": "Mediocampistas demostrando control absoluto con Al Rihla",
+                        "paises_de_interes": ["BEL", "POL"]
+                    },
+                    {
+                        "nombre": "Velocidad en Copenhague y Quito",
+                        "descripcion": "Pruebas aerodinámicas del balón oficial bajo lluvia y altura",
+                        "paises_de_interes": ["DNK", "ECU"]
+                    },
+                    {
+                        "nombre": "El balón oficial en Teherán y Toronto",
+                        "descripcion": "Jóvenes promesas dominando la pelota en las calles",
+                        "paises_de_interes": ["CAN", "IRN"]
                     }
                 ]
             },
@@ -91,6 +146,26 @@
                         "nombre": "El desierto verde",
                         "descripcion": "El crecimiento del fútbol en el mundo árabe",
                         "paises_de_interes": ["SAU"]
+                    },
+                    {
+                        "nombre": "Garra y entrega de Toronto a Copenhague",
+                        "descripcion": "El regreso a la élite tras décadas de esfuerzo",
+                        "paises_de_interes": ["CAN", "DNK"]
+                    },
+                    {
+                        "nombre": "Superación en Berna y Túnez",
+                        "descripcion": "Historias de sacrificio de futbolistas que llegaron a Qatar",
+                        "paises_de_interes": ["CHE", "TUN"]
+                    },
+                    {
+                        "nombre": "Desafío en el desierto: México y Arabia",
+                        "descripcion": "Entrenamientos bajo el sol preparando el partido clave",
+                        "paises_de_interes": ["MEX", "SAU"]
+                    },
+                    {
+                        "nombre": "Espíritu indomable en Yaundé y San José",
+                        "descripcion": "Selecciones desafiando todos los pronósticos",
+                        "paises_de_interes": ["CMR", "CRI"]
                     }
                 ]
             }
@@ -114,6 +189,26 @@
                         "nombre": "La defensa nórdica",
                         "descripcion": "Eriksen dando pases mágicos en la nieve y la arena",
                         "paises_de_interes": ["DNK", "TUN"]
+                    },
+                    {
+                        "nombre": "El instante decisivo en Berlín y Seúl",
+                        "descripcion": "Un contragolpe en el minuto 90 define la clasificación",
+                        "paises_de_interes": ["DEU", "KOR"]
+                    },
+                    {
+                        "nombre": "Un segundo de gloria para París y Dakar",
+                        "descripcion": "Velocidad explosiva por las bandas en una noche inolvidable",
+                        "paises_de_interes": ["FRA", "SEN"]
+                    },
+                    {
+                        "nombre": "Jugada maestra entre Londres y Varsovia",
+                        "descripcion": "Delanteros definiendo al ángulo en cámara lenta",
+                        "paises_de_interes": ["ENG", "POL"]
+                    },
+                    {
+                        "nombre": "Futuro brillante en Rabat y Sídney",
+                        "descripcion": "Nuevas generaciones escribiendo páginas históricas",
+                        "paises_de_interes": ["AUS", "MAR"]
                     }
                 ]
             },
@@ -133,6 +228,26 @@
                         "nombre": "Precisión Suiza, Fuerza Africana",
                         "descripcion": "Contraste de estilos de juego",
                         "paises_de_interes": ["CHE", "CMR"]
+                    },
+                    {
+                        "nombre": "Fantasía en Yaundé y Belgrado",
+                        "descripcion": "Caños y lujos en canchas de barrio antes del mundial",
+                        "paises_de_interes": ["CMR", "SRB"]
+                    },
+                    {
+                        "nombre": "Arte con el balón de Quito a Lisboa",
+                        "descripcion": "Malabares y talento puro en cada rincón de la ciudad",
+                        "paises_de_interes": ["ECU", "PRT"]
+                    },
+                    {
+                        "nombre": "Regates que unen Madrid y Accra",
+                        "descripcion": "Duelo de habilidad en espacios reducidos",
+                        "paises_de_interes": ["ESP", "GHA"]
+                    },
+                    {
+                        "nombre": "Fútbol total entre Lisboa y Belgrado",
+                        "descripcion": "Pases de taco y definiciones acrobáticas en el entrenamiento",
+                        "paises_de_interes": ["PRT", "SRB"]
                     }
                 ]
             }
@@ -156,6 +271,21 @@
                         "nombre": "Ruta a la gloria",
                         "descripcion": "Cristiano Ronaldo manejando por el desierto con hinchas ghaneses",
                         "paises_de_interes": ["PRT", "GHA"]
+                    },
+                    {
+                        "nombre": "Rumbo al estadio desde Londres y Accra",
+                        "descripcion": "Flota eléctrica trasladando delegaciones e hinchas",
+                        "paises_de_interes": ["ENG", "GHA"]
+                    },
+                    {
+                        "nombre": "Kilómetros de ilusión entre Teherán y Guadalajara",
+                        "descripcion": "Viaje en carretera siguiendo a la selección",
+                        "paises_de_interes": ["IRN", "MEX"]
+                    },
+                    {
+                        "nombre": "Potencia híbrida en Berlín y Túnez",
+                        "descripcion": "Tecnología sustentable impulsando la pasión mundialista",
+                        "paises_de_interes": ["DEU", "TUN"]
                     }
                 ]
             },
@@ -198,6 +328,16 @@
                         "nombre": "El vuelo del cóndor",
                         "descripcion": "Hinchas sudamericanos cantando en el avión",
                         "paises_de_interes": ["ECU"]
+                    },
+                    {
+                        "nombre": "Puente aéreo entre Zagreb y Ámsterdam",
+                        "descripcion": "Aficionados europeos volando rumbo a la fase final",
+                        "paises_de_interes": ["HRV", "NLD"]
+                    },
+                    {
+                        "nombre": "Vuelo directo de Casablanca a Montevideo",
+                        "descripcion": "Tripulación celebrando el encuentro de dos continentes",
+                        "paises_de_interes": ["MAR", "URY"]
                     }
                 ]
             },
@@ -245,6 +385,16 @@
                         "nombre": "El dragón rojo",
                         "descripcion": "Bale pidiendo comida por el AutoMac",
                         "paises_de_interes": ["WAL"]
+                    },
+                    {
+                        "nombre": "Combo Norteamérica y Dragón Rojo",
+                        "descripcion": "Edición limitada para disfrutar durante la fase de grupos",
+                        "paises_de_interes": ["USA", "WAL"]
+                    },
+                    {
+                        "nombre": "Menú mundialista de Bruselas a Doha",
+                        "descripcion": "Papas doradas y salsa especial para acompañar el encuentro",
+                        "paises_de_interes": ["BEL", "QAT"]
                     }
                 ]
             }
@@ -273,6 +423,16 @@
                         "nombre": "Tablero a cuadros",
                         "descripcion": "Modric pagando un café en Zagreb antes de viajar",
                         "paises_de_interes": ["HRV"]
+                    },
+                    {
+                        "nombre": "Viaje instantáneo de Río a Cardiff",
+                        "descripcion": "Pagos sin contacto que te llevan directo a la tribuna",
+                        "paises_de_interes": ["BRA", "WAL"]
+                    },
+                    {
+                        "nombre": "Sin fronteras entre Zúrich y Tokio",
+                        "descripcion": "Hinchas comprando entradas y recuerdos con un solo toque",
+                        "paises_de_interes": ["CHE", "JPN"]
                     }
                 ]
             }

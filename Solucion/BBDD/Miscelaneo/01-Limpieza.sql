@@ -224,6 +224,7 @@ DROP PROCEDURE IF EXISTS Reportes.sp_resumen_de_arbitro
 DROP PROCEDURE IF EXISTS Reportes.sp_resultados_de_encuentros
 DROP PROCEDURE IF EXISTS Reportes.sp_selecciones
 DROP PROCEDURE IF EXISTS Reportes.sp_ingresos_publicitarios
+DROP PROCEDURE IF EXISTS Reportes.sp_matriz_prime_time
 
 -- Eliminar Schemas
 DROP SCHEMA IF EXISTS [Reportes]

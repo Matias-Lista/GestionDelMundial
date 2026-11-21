@@ -152,9 +152,7 @@ BEGIN
 	UPDATE Administracion.Paises SET zona_horaria = 'Russian Standard Time' WHERE codigo IN ('RUS','SUN');
 
 	-- Arab Standard Time & Saudi Standard Time
-	UPDATE Administracion.Paises SET zona_horaria = 'Arab Standard Time' WHERE codigo IN ('QAT','ARE','IRQ','KWT');
-
-	UPDATE Administracion.Paises SET zona_horaria = 'Saudi Standard Time' WHERE codigo = 'SAU';
+	UPDATE Administracion.Paises SET zona_horaria = 'Arab Standard Time' WHERE codigo IN ('SAU', 'QAT','ARE','IRQ','KWT');
 
 	-- Central Standard Time (México y Centroamérica)
 	UPDATE Administracion.Paises SET zona_horaria = 'Central Standard Time' WHERE codigo IN ('MEX','CRI','HND','SLV');
