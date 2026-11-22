@@ -81,6 +81,12 @@ BEGIN
 END
 GO
 
+IF SCHEMA_ID('Seguridad') IS NULL
+BEGIN
+    EXEC('CREATE SCHEMA Seguridad;');
+END
+GO
+
 --- TABLAS!!!!!
 
 IF OBJECT_ID('Mundial.Mundiales', 'U') IS NULL

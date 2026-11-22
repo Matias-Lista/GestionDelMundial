@@ -226,7 +226,11 @@ DROP PROCEDURE IF EXISTS Reportes.sp_selecciones
 DROP PROCEDURE IF EXISTS Reportes.sp_ingresos_publicitarios
 DROP PROCEDURE IF EXISTS Reportes.sp_matriz_prime_time
 
+DROP PROCEDURE IF EXISTS Seguridad.sp_crear_roles
+DROP PROCEDURE IF EXISTS Seguridad.sp_crear_usuarios
+
 -- Eliminar Schemas
+DROP SCHEMA IF EXISTS [Seguridad]
 DROP SCHEMA IF EXISTS [Reportes]
 DROP SCHEMA IF EXISTS [Importacion]
 DROP SCHEMA IF EXISTS [Publicidad]

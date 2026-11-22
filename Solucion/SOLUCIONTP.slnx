@@ -25,6 +25,13 @@
     <File Path="BBDD/Testeos/10-Testing-Administracion.sql" />
     <File Path="BBDD/Testeos/11-Testing-Mundial.sql" />
     <File Path="BBDD/Testeos/15-Testing-Arbitraje.sql" />
+    <File Path="BBDD/Testeos/Testing-Rol-Administrador.sql" />
+    <File Path="BBDD/Testeos/Testing-Rol-Cargador-De-Resultados.sql" />
+    <File Path="BBDD/Testeos/Testing-Rol-Consulta-Reportes.sql" />
+    <File Path="BBDD/Testeos/Testing-Rol-Delegado-De-Seleccion.sql" />
+    <File Path="BBDD/Testeos/Testing-Rol-Gestor-De-Publicidad.sql" />
+    <File Path="BBDD/Testeos/Testing-Rol-Gestor-Fifa.sql" />
+    <File Path="BBDD/Testeos/Testing-Rol-Organizador.sql" />
   </Folder>
   <Folder Name="/BBDD/04 - Importacion/">
     <File Path="BBDD/Importacion/Importacion.sql" />
@@ -37,5 +44,6 @@
   <Folder Name="/BBDD/06 - Seguridad/">
     <File Path="BBDD/Seguridad/Cifrado_0.sql" />
     <File Path="BBDD/Seguridad/Cifrado_1.sql" />
+    <File Path="BBDD/Seguridad/Roles.sql" />
   </Folder>
 </Solution>

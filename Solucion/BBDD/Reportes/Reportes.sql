@@ -1,7 +1,7 @@
 /* BBDD/SPs/Eventos.sql
  * Fecha: 18/10/2026
  * Lista, Matías Josué.
- * Descripción: 
+ * Descripción: Contiene todos los store procedures necesarios para generar reportes.
  **/
 
 USE GestionDelMundial;
@@ -319,8 +319,10 @@ GO
 -- • Matriz de prime time: tabla cruzada (pivot) que muestre, para cada partido, en qué mercados/países su horario
 -- cae en prime time
  
+ ---- Como el exec dinamico rompe el "ownership chaining, agrego "WITH EXECUTE AS OWNER"
 CREATE OR ALTER PROCEDURE Reportes.sp_matriz_prime_time
 	@AñoMundial INT
+WITH EXECUTE AS OWNER
 AS
 BEGIN
 	SET NOCOUNT ON;
