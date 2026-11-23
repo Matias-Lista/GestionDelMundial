@@ -229,6 +229,27 @@ DROP PROCEDURE IF EXISTS Reportes.sp_matriz_prime_time
 DROP PROCEDURE IF EXISTS Seguridad.sp_crear_roles
 DROP PROCEDURE IF EXISTS Seguridad.sp_crear_usuarios
 
+-- Eliminar usuarios de la base de datos
+DROP USER IF EXISTS usr_administracion;
+DROP USER IF EXISTS usr_organizador;
+DROP USER IF EXISTS usr_gestor_fifa;
+DROP USER IF EXISTS usr_delegado_de_seleccion;
+DROP USER IF EXISTS usr_gestor_de_publicidad;
+DROP USER IF EXISTS usr_cargador_de_resultados;
+DROP USER IF EXISTS usr_consulta_reportes;
+GO
+
+-- Eliminar roles de la base de datos
+DROP ROLE IF EXISTS rol_administrador;
+DROP ROLE IF EXISTS rol_organizador;
+DROP ROLE IF EXISTS rol_gestor_fifa;
+DROP ROLE IF EXISTS rol_delegado_de_seleccion;
+DROP ROLE IF EXISTS rol_gestor_de_publicidad;
+DROP ROLE IF EXISTS rol_cargador_de_resultados;
+DROP ROLE IF EXISTS rol_consulta_reportes;
+GO
+
+
 -- Eliminar Schemas
 DROP SCHEMA IF EXISTS [Seguridad]
 DROP SCHEMA IF EXISTS [Reportes]
@@ -240,6 +261,17 @@ DROP SCHEMA IF EXISTS [Mundial]
 DROP SCHEMA IF EXISTS [Arbitraje]
 DROP SCHEMA IF EXISTS [Administracion]
 
+GO
+
+-- Eliminar el login a nivel instancia
+USE master;
+GO
+
+IF SUSER_ID('login_consulta_reportes') IS NOT NULL
+    DROP LOGIN login_consulta_reportes;
+GO
+
+USE GestionDelMundial;
 GO
 
 /*

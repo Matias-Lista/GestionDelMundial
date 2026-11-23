@@ -33,11 +33,11 @@ BEGIN
 END;
 GO
 
-SELECT 
-    id, nombre, apellido_cifrado,
-    CONVERT(VARCHAR(100), DecryptByPassPhrase(N'QuieroMiPanDanes', apellido_cifrado, 0)) AS apellido_descifrado
-FROM Arbitraje.Arbitros;
-GO
+-- SELECT 
+--     id, nombre, apellido_cifrado,
+--     CONVERT(VARCHAR(100), DecryptByPassPhrase(N'QuieroMiPanDanes', apellido_cifrado, 0)) AS apellido_descifrado
+-- FROM Arbitraje.Arbitros;
+-- GO
 
 /****************************/
 /* MODIFICACION DE PROCESOS */

@@ -242,8 +242,8 @@ print 'Mundiales -------------'
 		IF NOT EXISTS (SELECT 1 FROM Mundial.Mundiales WHERE año = 2034)
 			THROW 50001, 'No se creó el mundial en la tabla Mundial.Mundiales', 1;
 
-		IF (SELECT COUNT(*) FROM Administracion.Reglas WHERE mundial_id = 2034) <> 4
-			THROW 50001, 'No se registraron las 4 reglas requeridas para el mundial', 1;
+		IF (SELECT COUNT(*) FROM Administracion.Reglas WHERE mundial_id = 2034) <> 8
+			THROW 50001, 'No se registraron las 8 reglas requeridas para el mundial', 1;
 
 		-- Muestra evidenciando la inserción en Mundiales y en Reglas
 		SELECT * FROM Mundial.Mundiales WHERE año = 2034;

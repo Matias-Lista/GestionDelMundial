@@ -1954,6 +1954,7 @@ GO
 -- Para resolver eso uso los ids internos de los datasets (player_id)
 -- por eso de momento tiene sentido que la importación sea con todos los archivos.
 CREATE OR ALTER PROCEDURE Importacion.PoblarDB 
+	@BypassMundialesPrevios INT = 1,
 	@RutaConfederationsCSV VARCHAR(255),
 	@RutaTeamsCSV VARCHAR(255),
 	@RutaPlayersCSV VARCHAR(255),
@@ -2001,8 +2002,8 @@ BEGIN
 	EXEC Importacion.sp_crear_y_cargar_bookings_csv            @Ruta = @RutaBookingsCSV
 	EXEC Importacion.sp_crear_y_cargar_publicidad_json         @Ruta = @RutaPublicidadJSON
 
-	-- SIN BYPASS FUNCIONA: 3:30 MINUTOS ~
-	EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
+	IF @BypassMundialesPrevios = 1
+		EXEC Importacion.sp_bypass_mundiales_previos; -- Solo para hacer testeos más rápidos!
 
 	-- ejecutar inserción de los datos
 	EXEC Importacion.sp_upsert_confederaciones;

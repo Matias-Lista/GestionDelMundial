@@ -32,8 +32,8 @@ BEGIN
 	GRANT EXECUTE ON Partidos.sp_terminar_partido         TO rol_organizador;
 	GRANT EXECUTE ON Partidos.sp_terminar_fase_de_grupos  TO rol_organizador;
 	GRANT EXECUTE ON Arbitraje.sp_designar_arbitro        TO rol_organizador;
-	--GRANT EXECUTE ON Arbitraje.sp_quitar_designacion      TO rol_organizador;
-	GRANT EXECUTE ON Arbitraje.sp_asginar_terna_arbitros TO rol_organizador;
+	--GRANT EXECUTE ON Arbitraje.sp_quitar_designacion    TO rol_organizador;
+	GRANT EXECUTE ON Arbitraje.sp_asginar_terna_arbitros  TO rol_organizador;
 
 	GRANT SELECT  ON SCHEMA::Mundial TO rol_organizador;
 	GRANT SELECT  ON Partidos.Partidos TO rol_organizador;
@@ -143,9 +143,24 @@ BEGIN
 	IF DATABASE_PRINCIPAL_ID('usr_cargador_de_resultados') IS NULL
 	    CREATE USER usr_cargador_de_resultados WITHOUT LOGIN;
 
-	IF DATABASE_PRINCIPAL_ID('usr_consulta_reportes') IS NULL
-	    CREATE USER usr_consulta_reportes WITHOUT LOGIN;
+	IF SUSER_ID('login_consulta_reportes') IS NULL
+	BEGIN
+	    CREATE LOGIN login_consulta_reportes 
+	        WITH PASSWORD = 'PasswordSegura123!',
+	             DEFAULT_DATABASE = GestionDelMundial,
+	             CHECK_POLICY = OFF;
+	END
 
+	IF DATABASE_PRINCIPAL_ID('usr_consulta_reportes') IS NULL
+	BEGIN
+	    CREATE USER usr_consulta_reportes FOR LOGIN login_consulta_reportes;
+	END
+	ELSE
+	BEGIN
+	    ALTER USER usr_consulta_reportes WITH LOGIN = login_consulta_reportes;
+	END
+
+	GRANT CONNECT TO usr_consulta_reportes;
 	
 	ALTER ROLE rol_administrador          ADD MEMBER usr_administracion;
 	ALTER ROLE rol_organizador            ADD MEMBER usr_organizador;

@@ -22,6 +22,7 @@ IF (@@TRANCOUNT > 0)
 :setvar MostrarDatos                 0 -- Realiza SELECTs de los datos importados.
 :setvar EjecutarTesteos              0 -- Ejecuta los testeos (siguen en proceso)
 :setvar SimularMundial               0 -- (Inestable, requiere un par de intentos)! Genera un mundial de mentirita.
+:setvar bypassMundialesPrevios       0 -- Omite toda la informacion no relacionada con el mundial 2022.
 
 -- Cifra el apellido de los arbitros y modifica todos los objetos que interactuan con ese campo, antes del import.
 :setvar CifrarDatosAntesDelImport 0
@@ -40,8 +41,14 @@ PRINT '[*] Creando tablas y SPs ...'
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\08-Arbitraje.sql
 :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Publicidad.sql
+:r $(rutaAlRepositorio)\Solucion\BBDD\Seguridad\Roles.sql
 
 :r $(rutaAlRepositorio)\Solucion\BBDD\Reportes\Reportes.sql
+
+PRINT '[*] Creando roles y usuarios...'
+EXEC Seguridad.sp_crear_roles 
+EXEC Seguridad.sp_crear_usuarios 
+
 
 IF ($(EjecutarTesteos) = 0) SET NOEXEC ON;
 GO
@@ -49,6 +56,14 @@ GO
     :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\10-Testing-Administracion.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\11-Testing-Mundial.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\15-Testing-Arbitraje.sql
+
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\Testing-Rol-Administrador.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\Testing-Rol-Cargador-De-Resultados.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\Testing-Rol-Consulta-Reportes.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\Testing-Rol-Delegado-De-Seleccion.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\Testing-Rol-Gestor-De-Publicidad.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\Testing-Rol-Gestor-Fifa.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Testeos\Testing-Rol-Organizador.sql
 
     PRINT '[*] Limpiando y reconstruyendo objetos ...'
     :r $(rutaAlRepositorio)\Solucion\BBDD\Miscelaneo\01-Limpieza.sql
@@ -61,6 +76,14 @@ GO
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\07-Eventos.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\08-Arbitraje.sql
     :r $(rutaAlRepositorio)\Solucion\BBDD\SPs\09-Publicidad.sql
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Seguridad\Roles.sql
+
+    :r $(rutaAlRepositorio)\Solucion\BBDD\Reportes\Reportes.sql
+
+
+    PRINT '[*] Creando roles y usuarios...'
+    EXEC Seguridad.sp_crear_roles 
+    EXEC Seguridad.sp_crear_usuarios 
 
 GO
 SET NOEXEC OFF; -- Fin testeos
@@ -88,6 +111,7 @@ IF ($(ImportarDatos) = 1)
 BEGIN
     PRINT '[*] iMPORTANDO DATOS.';
     exec Importacion.PoblarDB 
+            @BypassMundialesPrevios = $(bypassMundialesPrevios),
             @RutaConfederationsCSV = '$(rutaAlRepositorio)\Datasets\confederations.csv',
             @RutaTeamsCSV = '$(rutaAlRepositorio)\Datasets\teams.csv',
             @RutaPlayersCSV = '$(rutaAlRepositorio)\Datasets\players.csv',
