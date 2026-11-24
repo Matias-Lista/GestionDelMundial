@@ -1,578 +1,578 @@
-﻿<OcupacionPublicitaria Mundial="2022">
+﻿<OcupacionPublicitaria Mundial="2022" fecha_cotizacion="2026-11-23" tipo_cotizacion="ULTIMA_DISPONIBLE" cotizacion_usd_ars="1579.523556">
   <Partido nombre="Qatar vs Ecuador" fase="GRUPOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo="1000000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="El vuelo del cóndor" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo="1800000.00" />
-      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="El vuelo del cóndor" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="England vs Iran" fase="GRUPOS">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Rumbo al estadio desde Londres y Accra" costo="1000000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo="1000000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Sabor de Medio Oriente" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Hamburguesa Tres Leones" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Sabor de Medio Oriente" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Senegal vs Netherlands" fase="GRUPOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Hyundai" campaña="Conectando al Mundo" nombre="La marea naranja" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Hyundai" campaña="Conectando al Mundo" nombre="Ritmo y pasión" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Hyundai" campaña="Conectando al Mundo" nombre="La marea naranja" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="United States vs Wales" fase="GRUPOS">
     <sede nombre="Ahmad bin Ali Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo="1000000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="El dragón rojo" costo="1800000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Combo Norteamérica y Dragón Rojo" costo="1800000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Viaje instantáneo de Río a Cardiff" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="El dragón rojo" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Combo Norteamérica y Dragón Rojo" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Viaje instantáneo de Río a Cardiff" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Argentina vs Saudi Arabia" fase="GRUPOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="Los vecinos del Río de la Plata" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Desafío en el desierto: México y Arabia" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Desafío en el desierto: México y Arabia" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Denmark vs Tunisia" fase="GRUPOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Potencia híbrida en Berlín y Túnez" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Mexico vs Poland" fase="GRUPOS">
     <sede nombre="Stadium 974" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Bet365" campaña="Apuesta en Vivo" nombre="Tensión en Concacaf" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Lewandowski vs Ochoa" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Desafío en el desierto: México y Arabia" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Desafío en el desierto: México y Arabia" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Lewandowski vs Ochoa" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="France vs Australia" fase="GRUPOS">
     <sede nombre="Al Janoub Stadium" ciudad="Al Wakrah" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Bet365" campaña="Apuesta en Vivo" nombre="El próximo gol lo cantás vos" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Morocco vs Croatia" fase="GRUPOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo="1000000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="1000000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Tablero a cuadros" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Tablero a cuadros" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Germany vs Japan" fase="GRUPOS">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="El instante decisivo en Berlín y Seúl" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="El instante decisivo en Berlín y Seúl" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Spain vs Costa Rica" fase="GRUPOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Belgium vs Canada" fase="GRUPOS">
     <sede nombre="Ahmad bin Ali Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo="1800000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Un toque y a Qatar" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Un toque y a Qatar" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Switzerland vs Cameroon" fase="GRUPOS">
     <sede nombre="Al Janoub Stadium" ciudad="Al Wakrah" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Precisión Suiza, Fuerza Africana" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fantasía en Yaundé y Belgrado" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Precisión Suiza, Fuerza Africana" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fantasía en Yaundé y Belgrado" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Uruguay vs South Korea" fase="GRUPOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="El motor de Asia" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="El motor de Asia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="El instante decisivo en Berlín y Seúl" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Portugal vs Ghana" fase="GRUPOS">
     <sede nombre="Stadium 974" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Ruta a la gloria" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Rumbo al estadio desde Londres y Accra" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Ruta a la gloria" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Rumbo al estadio desde Londres y Accra" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Brazil vs Serbia" fase="GRUPOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fantasía en Yaundé y Belgrado" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Viaje instantáneo de Río a Cardiff" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Wales vs Iran" fase="GRUPOS">
     <sede nombre="Ahmad bin Ali Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="El dragón rojo" costo="1000000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Viaje instantáneo de Río a Cardiff" costo="1000000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Sabor de Medio Oriente" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Combo Norteamérica y Dragón Rojo" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="El dragón rojo" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Qatar vs Senegal" fase="GRUPOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Bienvenidos a Doha" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Pasión compartida en Doha y Madrid" costo="1000000.00" />
-      <pieza anunciante="Hyundai" campaña="Conectando al Mundo" nombre="Ritmo y pasión" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Bienvenidos a Doha" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Hyundai" campaña="Conectando al Mundo" nombre="Ritmo y pasión" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Netherlands vs Ecuador" fase="GRUPOS">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo="1800000.00" />
-      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="England vs United States" fase="GRUPOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Hamburguesa Tres Leones" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo="1800000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo="1800000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Combo Norteamérica y Dragón Rojo" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Hamburguesa Tres Leones" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Rumbo al estadio desde Londres y Accra" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Tunisia vs Australia" fase="GRUPOS">
     <sede nombre="Al Janoub Stadium" ciudad="Al Wakrah" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Poland vs Saudi Arabia" fase="GRUPOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Lewandowski vs Ochoa" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Desafío en el desierto: México y Arabia" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Lewandowski vs Ochoa" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="El desierto verde" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="France vs Denmark" fase="GRUPOS">
     <sede nombre="Stadium 974" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Argentina vs Mexico" fase="GRUPOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Clásico sudamericano en la mira" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo="1800000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="Los vecinos del Río de la Plata" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Japan vs Costa Rica" fase="GRUPOS">
     <sede nombre="Ahmad bin Ali Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo="1000000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Belgium vs Morocco" fase="GRUPOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Un toque y a Qatar" costo="1000000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo="1000000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Croatia vs Canada" fase="GRUPOS">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo="1800000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Un toque y a Qatar" costo="1800000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Un toque y a Qatar" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Spain vs Germany" fase="GRUPOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="El instante decisivo en Berlín y Seúl" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Potencia híbrida en Berlín y Túnez" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Potencia híbrida en Berlín y Túnez" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Cameroon vs Serbia" fase="GRUPOS">
     <sede nombre="Al Janoub Stadium" ciudad="Al Wakrah" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Precisión Suiza, Fuerza Africana" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fantasía en Yaundé y Belgrado" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fantasía en Yaundé y Belgrado" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="South Korea vs Ghana" fase="GRUPOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="El instante decisivo en Berlín y Seúl" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Rumbo al estadio desde Londres y Accra" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="El motor de Asia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="Destino Qatar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Ruta a la gloria" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Brazil vs Switzerland" fase="GRUPOS">
     <sede nombre="Stadium 974" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo="1800000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Clásico sudamericano en la mira" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Precisión Suiza, Fuerza Africana" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Clásico sudamericano en la mira" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Precisión Suiza, Fuerza Africana" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Portugal vs Uruguay" fase="GRUPOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo="1800000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="1800000.00" />
-      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="La garra charrúa sobre ruedas" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Ruta a la gloria" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="La garra charrúa sobre ruedas" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Ecuador vs Senegal" fase="GRUPOS">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo="1800000.00" />
-      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="El vuelo del cóndor" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Netherlands vs Qatar" fase="GRUPOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Bienvenidos a Doha" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="Destino Qatar" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Hyundai" campaña="Conectando al Mundo" nombre="La marea naranja" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="Destino Qatar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Bienvenidos a Doha" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Iran vs United States" fase="GRUPOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo="1000000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Sabor de Medio Oriente" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Wales vs England" fase="GRUPOS">
     <sede nombre="Ahmad bin Ali Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="7200000.00">
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="El dragón rojo" costo="1800000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Combo Norteamérica y Dragón Rojo" costo="1800000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo="1800000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="7200000.00" costo_total_usd="4558.34">
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="El dragón rojo" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Viaje instantáneo de Río a Cardiff" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Australia vs Denmark" fase="GRUPOS">
     <sede nombre="Al Janoub Stadium" ciudad="Al Wakrah" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Velocidad en Copenhague y Quito" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Tunisia vs France" fase="GRUPOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="La defensa nórdica" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Potencia híbrida en Berlín y Túnez" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Poland vs Argentina" fase="GRUPOS">
     <sede nombre="Stadium 974" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo="1000000.00" />
-      <pieza anunciante="BetWarrior" campaña="Apostá, no seas cagón!" nombre="Maradona - Jugate la jubilacion de tu abuela, cagon" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Lewandowski vs Ochoa" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="Los vecinos del Río de la Plata" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Saudi Arabia vs Mexico" fase="GRUPOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Desafío en el desierto: México y Arabia" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="El desierto verde" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Lewandowski vs Ochoa" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="El desierto verde" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Desafío en el desierto: México y Arabia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Lewandowski vs Ochoa" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Kilómetros de ilusión entre Teherán y Guadalajara" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Canada vs Morocco" fase="GRUPOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Garra y entrega de Toronto a Copenhague" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo="1000000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El balón oficial en Teherán y Toronto" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Un toque y a Qatar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Croatia vs Belgium" fase="GRUPOS">
     <sede nombre="Ahmad bin Ali Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Tablero a cuadros" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="1000000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Tablero a cuadros" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Menú mundialista de Bruselas a Doha" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Un toque y a Qatar" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Costa Rica vs Germany" fase="GRUPOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="El instante decisivo en Berlín y Seúl" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Potencia híbrida en Berlín y Túnez" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="El instante decisivo en Berlín y Seúl" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Japan vs Spain" fase="GRUPOS">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo="1000000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Ghana vs Uruguay" fase="GRUPOS">
     <sede nombre="Al Janoub Stadium" ciudad="Al Wakrah" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo="1000000.00" />
-      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="La garra charrúa sobre ruedas" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo="1800000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Ruta a la gloria" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="La garra charrúa sobre ruedas" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="South Korea vs Portugal" fase="GRUPOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="Destino Qatar" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="Destino Qatar" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="El motor de Asia" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Ruta a la gloria" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Cameroon vs Brazil" fase="GRUPOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="6400000.00">
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fantasía en Yaundé y Belgrado" costo="1000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo="1800000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Viaje instantáneo de Río a Cardiff" costo="1800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo="1800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="6400000.00" costo_total_usd="4051.85">
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Espíritu indomable en Yaundé y San José" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo_ars="1800000.00" costo_usd="1139.58" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo_ars="1800000.00" costo_usd="1139.58" />
     </piezas>
   </Partido>
   <Partido nombre="Serbia vs Switzerland" fase="GRUPOS">
     <sede nombre="Stadium 974" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="4000000.00">
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo="1000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fantasía en Yaundé y Belgrado" costo="1000000.00" />
-      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo="1000000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo="1000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="4000000.00" costo_total_usd="2532.41">
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo_ars="1000000.00" costo_usd="633.10" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo_ars="1000000.00" costo_usd="633.10" />
     </piezas>
   </Partido>
   <Partido nombre="Netherlands vs United States" fase="OCTAVOS">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="12700000.00">
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo="2200000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo="3500000.00" />
-      <pieza anunciante="Bet365" campaña="Apuesta en Vivo" nombre="Tensión en Concacaf" costo="3500000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo="3500000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="12700000.00" costo_total_usd="8040.40">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Leyendas que unen Seúl y Ámsterdam" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Bet365" campaña="Apuesta en Vivo" nombre="Tensión en Concacaf" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Festejo sin fronteras: Montevideo y Nueva York" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="3500000.00" costo_usd="2215.86" />
     </piezas>
   </Partido>
   <Partido nombre="Argentina vs Australia" fase="OCTAVOS">
     <sede nombre="Ahmad bin Ali Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="12700000.00">
-      <pieza anunciante="BetWarrior" campaña="Apostá, no seas cagón!" nombre="Maradona - Jugate la jubilacion de tu abuela, cagon" costo="3500000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Clásico sudamericano en la mira" costo="3500000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo="3500000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="De Sídney a San José rodando sin parar" costo="2200000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="12700000.00" costo_total_usd="8040.40">
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Clásico sudamericano en la mira" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="BetWarrior" campaña="Apostá, no seas cagón!" nombre="Maradona - Jugate la jubilacion de tu abuela, cagon" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo_ars="2200000.00" costo_usd="1392.83" />
     </piezas>
   </Partido>
   <Partido nombre="France vs Poland" fase="OCTAVOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="8800000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo="2200000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="2200000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo="2200000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo="2200000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="8800000.00" costo_total_usd="5571.30">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Toque preciso entre Bruselas y Varsovia" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo_ars="2200000.00" costo_usd="1392.83" />
     </piezas>
   </Partido>
   <Partido nombre="England vs Senegal" fase="OCTAVOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="12700000.00">
-      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Rumbo al estadio desde Londres y Accra" costo="3500000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo="3500000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo="3500000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo="2200000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="12700000.00" costo_total_usd="8040.40">
+      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Rumbo al estadio desde Londres y Accra" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Hamburguesa Tres Leones" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo_ars="2200000.00" costo_usd="1392.83" />
     </piezas>
   </Partido>
   <Partido nombre="Japan vs Croatia" fase="OCTAVOS">
     <sede nombre="Al Janoub Stadium" ciudad="Al Wakrah" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="8800000.00">
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="El viaje a Oriente" costo="2200000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo="2200000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Tablero a cuadros" costo="2200000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo="2200000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="8800000.00" costo_total_usd="5571.30">
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo_ars="2200000.00" costo_usd="1392.83" />
     </piezas>
   </Partido>
   <Partido nombre="Brazil vs South Korea" fase="OCTAVOS">
     <sede nombre="Stadium 974" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="12700000.00">
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Samba y Táctica" costo="3500000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo="3500000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo="3500000.00" />
-      <pieza anunciante="Nike" campaña="El Viaje del Hincha" nombre="Destino Qatar" costo="2200000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="12700000.00" costo_total_usd="8040.40">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Viaje instantáneo de Río a Cardiff" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo_ars="3500000.00" costo_usd="2215.86" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="El motor de Asia" costo_ars="2200000.00" costo_usd="1392.83" />
     </piezas>
   </Partido>
   <Partido nombre="Morocco vs Spain" fase="OCTAVOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="8800000.00">
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo="2200000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="2200000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo="2200000.00" />
-      <pieza anunciante="Visa" campaña="El Balón de Todos" nombre="Precisión Alemana y Toque Español" costo="2200000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="8800000.00" costo_total_usd="5571.30">
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Regates que unen Madrid y Accra" costo_ars="2200000.00" costo_usd="1392.83" />
     </piezas>
   </Partido>
   <Partido nombre="Portugal vs Switzerland" fase="OCTAVOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="8800000.00">
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo="2200000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo="2200000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Precisión Suiza, Fuerza Africana" costo="2200000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo="2200000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="8800000.00" costo_total_usd="5571.30">
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Sin fronteras entre Zúrich y Tokio" costo_ars="2200000.00" costo_usd="1392.83" />
+      <pieza anunciante="Visa" campaña="Impossible is Nothing 2022" nombre="Superación en Berna y Túnez" costo_ars="2200000.00" costo_usd="1392.83" />
     </piezas>
   </Partido>
   <Partido nombre="Croatia vs Brazil" fase="CUARTOS">
     <sede nombre="Education City Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="17400000.00">
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="3000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo="4800000.00" />
-      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo="4800000.00" />
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Clásico sudamericano en la mira" costo="4800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="17400000.00" costo_total_usd="11015.98">
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo_ars="3000000.00" costo_usd="1899.31" />
+      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Clásico sudamericano en la mira" costo_ars="4800000.00" costo_usd="3038.89" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Magia eterna de Brasil y Arabia" costo_ars="4800000.00" costo_usd="3038.89" />
+      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="La mitad del mundo y la samba" costo_ars="4800000.00" costo_usd="3038.89" />
     </piezas>
   </Partido>
   <Partido nombre="Netherlands vs Argentina" fase="CUARTOS">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="17400000.00">
-      <pieza anunciante="Hyundai" campaña="Conectando al Mundo" nombre="La marea naranja" costo="3000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo="4800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo="4800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo="4800000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="17400000.00" costo_total_usd="11015.98">
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo_ars="3000000.00" costo_usd="1899.31" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo_ars="4800000.00" costo_usd="3038.89" />
+      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="Los vecinos del Río de la Plata" costo_ars="4800000.00" costo_usd="3038.89" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo_ars="4800000.00" costo_usd="3038.89" />
     </piezas>
   </Partido>
   <Partido nombre="Morocco vs Portugal" fase="CUARTOS">
     <sede nombre="Al Thumama Stadium" ciudad="Doha" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="12000000.00">
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="3000000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo="3000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo="3000000.00" />
-      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Fútbol total entre Lisboa y Belgrado" costo="3000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="12000000.00" costo_total_usd="7597.23">
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo_ars="3000000.00" costo_usd="1899.31" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo_ars="3000000.00" costo_usd="1899.31" />
+      <pieza anunciante="Nike" campaña="Conduce al Éxito" nombre="Ruta a la gloria" costo_ars="3000000.00" costo_usd="1899.31" />
+      <pieza anunciante="Adidas" campaña="Joga Bonito Vuelve" nombre="Arte con el balón de Quito a Lisboa" costo_ars="3000000.00" costo_usd="1899.31" />
     </piezas>
   </Partido>
   <Partido nombre="England vs France" fase="CUARTOS">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="17400000.00">
-      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo="4800000.00" />
-      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Hamburguesa Tres Leones" costo="4800000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo="4800000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="3000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="17400000.00" costo_total_usd="11015.98">
+      <pieza anunciante="Bet365" campaña="Multiplica tu Pasión" nombre="Duelo de potencias europeas" costo_ars="4800000.00" costo_usd="3038.89" />
+      <pieza anunciante="Qatar Airways" campaña="El Menú del Hincha" nombre="Hamburguesa Tres Leones" costo_ars="4800000.00" costo_usd="3038.89" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Jugada maestra entre Londres y Varsovia" costo_ars="4800000.00" costo_usd="3038.89" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo_ars="3000000.00" costo_usd="1899.31" />
     </piezas>
   </Partido>
   <Partido nombre="Argentina vs Croatia" fase="SEMIFINAL">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="25500000.00">
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo="7000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Brindis en Buenos Aires y Tokio" costo="7000000.00" />
-      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo="7000000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo="4500000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="25500000.00" costo_total_usd="16144.11">
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Messi, Maradona, y Pele comiendo un asado juntos" costo_ars="7000000.00" costo_usd="4431.72" />
+      <pieza anunciante="BetWarrior" campaña="Apostá, no seas cagón!" nombre="Maradona - Jugate la jubilacion de tu abuela, cagon" costo_ars="7000000.00" costo_usd="4431.72" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La felicidad de tomar una buena coca" costo_ars="7000000.00" costo_usd="4431.72" />
+      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo_ars="4500000.00" costo_usd="2848.96" />
     </piezas>
   </Partido>
   <Partido nombre="France vs Morocco" fase="SEMIFINAL">
     <sede nombre="Al Bayt Stadium" ciudad="Al Khor" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="18000000.00">
-      <pieza anunciante="Bet365" campaña="Apuesta en Vivo" nombre="El próximo gol lo cantás vos" costo="4500000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo="4500000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="4500000.00" />
-      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo="4500000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="18000000.00" costo_total_usd="11395.84">
+      <pieza anunciante="Bet365" campaña="Apuesta en Vivo" nombre="El próximo gol lo cantás vos" costo_ars="4500000.00" costo_usd="2848.96" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo_ars="4500000.00" costo_usd="2848.96" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo_ars="4500000.00" costo_usd="2848.96" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo_ars="4500000.00" costo_usd="2848.96" />
     </piezas>
   </Partido>
   <Partido nombre="Croatia vs Morocco" fase="TERCER_PUESTO">
     <sede nombre="Khalifa International Stadium" ciudad="Al Rayyan" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="16000000.00">
-      <pieza anunciante="Coca-Cóla" campaña="Coca cola de campeones" nombre="Recuerdos de gloria en París y Zagreb" costo="4000000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo="4000000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Futuro brillante en Rabat y Sídney" costo="4000000.00" />
-      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo="4000000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="16000000.00" costo_total_usd="10129.64">
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Puente aéreo entre Zagreb y Ámsterdam" costo_ars="4000000.00" costo_usd="2532.41" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="Tablero a cuadros" costo_ars="4000000.00" costo_usd="2532.41" />
+      <pieza anunciante="McDonald's" campaña="Pagá y Viajá" nombre="El león del Atlas" costo_ars="4000000.00" costo_usd="2532.41" />
+      <pieza anunciante="Hyundai" campaña="Volamos con tu Sueño" nombre="Vuelo directo de Casablanca a Montevideo" costo_ars="4000000.00" costo_usd="2532.41" />
     </piezas>
   </Partido>
   <Partido nombre="Argentina vs France" fase="FINAL">
     <sede nombre="Lusail Stadium" ciudad="Lusail" pais="Qatar" />
-    <piezas espacios_ocupados="4" costo_total="26000000.00">
-      <pieza anunciante="Bplay" campaña="Tu Jugada Maestra" nombre="Los vecinos del Río de la Plata" costo="6500000.00" />
-      <pieza anunciante="BetWarrior" campaña="Apostá, no seas cagón!" nombre="Maradona - Jugate la jubilacion de tu abuela, cagon" costo="6500000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo="6500000.00" />
-      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo="6500000.00" />
+    <piezas espacios_ocupados="4" costo_total_ars="26000000.00" costo_total_usd="16460.66">
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="La mesa mundialista de Dakar y Rosario" costo_ars="6500000.00" costo_usd="4115.16" />
+      <pieza anunciante="Coca-Cóla" campaña="Juntos por la Coca" nombre="Messi tomando coca cola" costo_ars="6500000.00" costo_usd="4115.16" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Un segundo de gloria para París y Dakar" costo_ars="6500000.00" costo_usd="4115.16" />
+      <pieza anunciante="Adidas" campaña="Escribe el Futuro" nombre="Mbappé a la velocidad de la luz" costo_ars="6500000.00" costo_usd="4115.16" />
     </piezas>
   </Partido>
 </OcupacionPublicitaria>

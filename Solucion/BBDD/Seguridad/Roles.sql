@@ -131,9 +131,6 @@ BEGIN
 	IF DATABASE_PRINCIPAL_ID('usr_organizador') IS NULL
 	    CREATE USER usr_organizador WITHOUT LOGIN;
 
-	IF DATABASE_PRINCIPAL_ID('usr_gestor_fifa') IS NULL
-	    CREATE USER usr_gestor_fifa WITHOUT LOGIN;
-
 	IF DATABASE_PRINCIPAL_ID('usr_delegado_de_seleccion') IS NULL
 	    CREATE USER usr_delegado_de_seleccion WITHOUT LOGIN;
 
@@ -160,7 +157,23 @@ BEGIN
 	    ALTER USER usr_consulta_reportes WITH LOGIN = login_consulta_reportes;
 	END
 
+	IF SUSER_ID('login_gestor_fifa') IS NULL
+	BEGIN
+	    CREATE LOGIN login_gestor_fifa 
+	        WITH PASSWORD = 'PasswordGestor123!',
+	             DEFAULT_DATABASE = GestionDelMundial,
+	             CHECK_POLICY = OFF;
+	END
+
 	GRANT CONNECT TO usr_consulta_reportes;
+
+	IF DATABASE_PRINCIPAL_ID('usr_gestor_fifa') IS NULL
+	    CREATE USER usr_gestor_fifa FOR LOGIN login_gestor_fifa;
+	ELSE
+	    ALTER USER usr_gestor_fifa WITH LOGIN = login_gestor_fifa;
+
+	GRANT CONNECT TO usr_gestor_fifa;
+
 	
 	ALTER ROLE rol_administrador          ADD MEMBER usr_administracion;
 	ALTER ROLE rol_organizador            ADD MEMBER usr_organizador;

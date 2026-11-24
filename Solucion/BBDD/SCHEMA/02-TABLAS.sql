@@ -4,6 +4,15 @@
  * Descripción: Contiene todos los archivos necesarios para crear la base de datos, sus schemas, sus tablas, y sus restricciones.
  **/
 
+USE master;
+GO
+
+EXEC sp_configure 'show advanced options', 1;
+RECONFIGURE;
+EXEC sp_configure 'Ole Automation Procedures', 1;
+RECONFIGURE;
+GO
+
 --CREACION BASE DE DATOS
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'GestionDelMundial')
 BEGIN

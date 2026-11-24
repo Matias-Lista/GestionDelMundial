@@ -270,6 +270,10 @@ GO
 IF SUSER_ID('login_consulta_reportes') IS NOT NULL
     DROP LOGIN login_consulta_reportes;
 GO
+    
+IF SUSER_ID('login_gestor_fifa') IS NOT NULL
+    DROP LOGIN login_gestor_fifa;
+GO
 
 USE GestionDelMundial;
 GO

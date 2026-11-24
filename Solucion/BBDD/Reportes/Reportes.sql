@@ -266,8 +266,103 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
+	-- Obtener la fecha de inicio del Mundial consultado
+	DECLARE @fechaInicio DATE;
+	SELECT @fechaInicio = f_inicio
+	FROM Mundial.Mundiales
+	WHERE año = @AñoMundial;
+
+	IF @fechaInicio IS NULL
+	BEGIN
+		THROW 50001, 'No existe un mundial registrado para el año indicado.', 1;
+	END
+
+	DECLARE @fechaStr       VARCHAR(10)    = CONVERT(VARCHAR(10), @fechaInicio, 23);
+	DECLARE @cotizacionARS  DECIMAL(18, 6) = NULL;
+	DECLARE @tipoCotizacion VARCHAR(30)    = 'HISTORICA_INICIO_MUNDIAL';
+	DECLARE @obj            INT;
+	DECLARE @hr             INT;
+	DECLARE @status         INT;
+	DECLARE @url            NVARCHAR(300);
+	DECLARE @response       NVARCHAR(MAX);
+	DECLARE @errSrc         NVARCHAR(255);
+	DECLARE @errDesc        NVARCHAR(255);
+	DECLARE @RespTable      TABLE (respuesta NVARCHAR(MAX));
+
+	-- Consultar cotización histórica USD -> ARS al día de inicio del Mundial
+	SET @url = N'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@' + @fechaStr + N'/v1/currencies/usd.json';
+
+	EXEC @hr = sp_OACreate 'MSXML2.ServerXMLHTTP.6.0', @obj OUT;
+	IF @hr = 0
+	BEGIN
+		EXEC @hr = sp_OAMethod @obj, 'open', NULL, 'GET', @url, 'false';
+		IF @hr = 0 EXEC @hr = sp_OAMethod @obj, 'send';
+		IF @hr = 0 EXEC @hr = sp_OAGetProperty @obj, 'status', @status OUT;
+		IF @hr = 0 AND @status = 200
+		BEGIN
+			INSERT INTO @RespTable (respuesta)
+			EXEC @hr = sp_OAGetProperty @obj, 'responseText';
+		END
+		IF @hr <> 0
+			EXEC sp_OAGetErrorInfo @obj, @errSrc OUT, @errDesc OUT;
+
+		EXEC sp_OADestroy @obj;
+	END
+
+	SELECT TOP 1 @response = respuesta FROM @RespTable;
+	IF ISJSON(@response) = 1
+	BEGIN
+		SET @cotizacionARS = TRY_CAST(JSON_VALUE(@response, '$.usd.ars') AS DECIMAL(18, 6));
+	END
+
+	-- Fallback a última cotización disponible si la fecha no está en el histórico de la API (ej. 2022)
+	IF @cotizacionARS IS NULL
+	BEGIN
+		DELETE FROM @RespTable;
+		SET @response       = NULL;
+		SET @errDesc        = NULL;
+		SET @status         = NULL;
+		SET @tipoCotizacion = 'ULTIMA_DISPONIBLE';
+		SET @url            = N'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json';
+
+		EXEC @hr = sp_OACreate 'MSXML2.ServerXMLHTTP.6.0', @obj OUT;
+		IF @hr = 0
+		BEGIN
+			EXEC @hr = sp_OAMethod @obj, 'open', NULL, 'GET', @url, 'false';
+			IF @hr = 0 EXEC @hr = sp_OAMethod @obj, 'send';
+			IF @hr = 0 EXEC @hr = sp_OAGetProperty @obj, 'status', @status OUT;
+			IF @hr = 0 AND @status = 200
+			BEGIN
+				INSERT INTO @RespTable (respuesta)
+				EXEC @hr = sp_OAGetProperty @obj, 'responseText';
+			END
+			IF @hr <> 0
+				EXEC sp_OAGetErrorInfo @obj, @errSrc OUT, @errDesc OUT;
+
+			EXEC sp_OADestroy @obj;
+		END
+
+		SELECT TOP 1 @response = respuesta FROM @RespTable;
+		IF ISJSON(@response) = 1
+		BEGIN
+			SET @cotizacionARS = TRY_CAST(JSON_VALUE(@response, '$.usd.ars') AS DECIMAL(18, 6));
+			SET @fechaStr      = ISNULL(JSON_VALUE(@response, '$.date'), @fechaStr);
+		END
+	END
+
+	IF @cotizacionARS IS NULL OR @cotizacionARS <= 0
+	BEGIN
+		DECLARE @mensajeError NVARCHAR(500) = N'No se pudo obtener la cotización USD/ARS desde la API externa.' 
+			+ ISNULL(N' Detalle: ' + @errDesc, N'');
+		THROW 50001, @mensajeError, 1;
+	END
+
+	-- Generar reporte XML con costos individuales y sumados en ARS y USD
 	SELECT 
-		@AñoMundial AS [@Mundial],
+		@AñoMundial     AS [@Mundial],
+		@fechaStr       AS [@fecha_cotizacion],
+		@tipoCotizacion AS [@tipo_cotizacion],
+		@cotizacionARS  AS [@cotizacion_usd_ars],
 		(
 			SELECT 
 				CONCAT(ISNULL(Pais_A.nombre, 'A definir'), ' vs ', ISNULL(Pais_B.nombre, 'A definir')) AS [@nombre],
@@ -276,13 +371,15 @@ BEGIN
 				S.ciudad                  AS [sede/@ciudad],
 				Pais_Sede.nombre          AS [sede/@pais],
 				Totales.espacios_ocupados AS [piezas/@espacios_ocupados],
-				Totales.costo_total       AS [piezas/@costo_total],
+				Totales.costo_total_ars   AS [piezas/@costo_total_ars],
+				Totales.costo_total_usd   AS [piezas/@costo_total_usd],
 				(
 					SELECT 
-						A.razon_social AS [@anunciante],
-						C.nombre       AS [@campaña],
-						PDC.nombre     AS [@nombre],
-						RPE.costo      AS [@costo]
+						A.razon_social                                     AS [@anunciante],
+						C.nombre                                           AS [@campaña],
+						PDC.nombre                                         AS [@nombre],
+						CAST(RPE.costo AS DECIMAL(12, 2))                  AS [@costo_ars],
+						CAST(RPE.costo / @cotizacionARS AS DECIMAL(12, 2)) AS [@costo_usd]
 					FROM Publicidad.RegistroDePiezasEmitidas RPE
 					INNER JOIN Publicidad.PiezasDeContenido PDC ON PDC.id = RPE.pieza_de_contenido_id
 					INNER JOIN Publicidad.Campañas C           ON C.id = PDC.campaña_id
@@ -300,8 +397,9 @@ BEGIN
 			LEFT JOIN Administracion.Paises Pais_B     ON Pais_B.codigo = PP_B.pais_id
 			OUTER APPLY (
 				SELECT 
-					COUNT(*)                      AS espacios_ocupados,
-					ISNULL(SUM(RPE_Tot.costo), 0) AS costo_total
+					COUNT(*)                                                               AS espacios_ocupados,
+					CAST(ISNULL(SUM(RPE_Tot.costo), 0) AS DECIMAL(12, 2))                  AS costo_total_ars,
+					CAST(ISNULL(SUM(RPE_Tot.costo), 0) / @cotizacionARS AS DECIMAL(12, 2)) AS costo_total_usd
 				FROM Publicidad.RegistroDePiezasEmitidas RPE_Tot
 				WHERE RPE_Tot.partido_id = P.id
 			) Totales

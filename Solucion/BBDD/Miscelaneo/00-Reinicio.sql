@@ -22,7 +22,7 @@ IF (@@TRANCOUNT > 0)
 :setvar MostrarDatos                 0 -- Realiza SELECTs de los datos importados.
 :setvar EjecutarTesteos              0 -- Ejecuta los testeos (siguen en proceso)
 :setvar SimularMundial               0 -- (Inestable, requiere un par de intentos)! Genera un mundial de mentirita.
-:setvar bypassMundialesPrevios       0 -- Omite toda la informacion no relacionada con el mundial 2022.
+:setvar bypassMundialesPrevios       1 -- Omite toda la informacion no relacionada con el mundial 2022.
 
 -- Cifra el apellido de los arbitros y modifica todos los objetos que interactuan con ese campo, antes del import.
 :setvar CifrarDatosAntesDelImport 0
